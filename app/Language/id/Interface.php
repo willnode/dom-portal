@@ -3,5 +3,6 @@
 	'login' => 'Masuk',
 	'register' => 'Daftar',
 	'enterToPortal' => 'Masuk ke portal',
+	'registerToPortal' => 'Daftar ke portal',
 	'registerPrompt' => 'Belum punya akun?',
 ];

@@ -24,9 +24,11 @@ class VirtualMinShell
 	}
 	protected $featureFlags = [
 		"&dir=&webmin=&web=&mysql=&unix=",
-		"&ssl=&mail=&dns=",
-		"&spam=&webalizer=",
-		"&postgresql=",
+		"&ssl=",
+		"&mail=",
+		"&webalizer=",
+		"&dns=",
+		"&spam=&postgresql=",
 	];
 	public function createHosting($username, $password, $email, $domain, $slave, $plan, $privilenge, $template)
 	{
