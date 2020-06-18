@@ -46,11 +46,12 @@ class User extends BaseController
 				'username' => 'required|alpha_dash|min_length[5]|' .
 					'max_length[32]|is_unique[hosting.hosting_username]',
 				'slave' => 'required|is_not_unique[slaves.slave_id]',
+				'password' => 'required|min_length[8]',
 				'template' => 'permit_empty|in_list[wordpress,phpbb,opencart]',
 			])) {
 				$data = array_intersect_key(
 					$this->request->getPost(),
-					array_flip(['plan', 'username', 'slave'])
+					array_flip(['plan', 'username', 'slave', 'template', 'password'])
 				);
 				if (!$plan = $this->db->table('plans')->getWhere(['plan_id' => $data['plan']])->getRow()) return;
 				if (!$slave = $this->db->table('slaves')->getWhere(['slave_id' => $data['slave']])->getRow()) return;
@@ -64,6 +65,7 @@ class User extends BaseController
 					'purchase_active' => 1,
 					'purchase_plan' => $data['plan'],
 					'purchase_invoiced' => date('Y-m-d H:i:s', \time()),
+					'purchase_password' => $data['password'] ?? '',
 					'purchase_template' => $data['template'] ?? '',
 				];
 				if ($plan->plan_alias !== 'Free') {
@@ -96,7 +98,7 @@ class User extends BaseController
 					$payment['purchase_status'] = 'active';
 					(new VirtualMinShell())->createHosting(
 						$hosting['hosting_username'],
-						$hosting['hosting_username'],
+						$payment['purchase_password'],
 						$this->session->email,
 						$hosting['hosting_username'] . '.dom.my.id',
 						$slave->slave_alias,
@@ -126,7 +128,7 @@ class User extends BaseController
 							], ['purchase_id' => $id]);
 						}
 					}
-					return $this->response->redirect('/user/hosting/invoices/'.$payment['purchase_hosting']);
+					return $this->response->redirect('/user/hosting/invoices/' . $payment['purchase_hosting']);
 				}
 			}
 		}
@@ -233,7 +235,7 @@ class User extends BaseController
 							'purchase_active' => 2,
 						], ['purchase_id' => $data->purchase_id]);
 					}
-					return $this->response->redirect('/user/hosting/invoices/'.$payment['purchase_hosting']);
+					return $this->response->redirect('/user/hosting/invoices/' . $payment['purchase_hosting']);
 				}
 			}
 		}
@@ -294,7 +296,7 @@ class User extends BaseController
 					$this->db->table('hosting')->update([
 						'hosting_cname' => strtolower($_POST['cname'])
 					], ['hosting_id' => $data->hosting_id]);
-					return $this->response->redirect('user/hosting/detail/'.$data->hosting_id);
+					return $this->response->redirect('user/hosting/detail/' . $data->hosting_id);
 				}
 			}
 		}
@@ -338,7 +340,6 @@ class User extends BaseController
 					], ['purchase_id' => $data->purchase_id]);
 				}
 				return $this->response->redirect('user/hosting/invoices/' . $data->hosting_id);
-
 			}
 		}
 		return view('user/hosting/invoices', [
@@ -349,6 +350,11 @@ class User extends BaseController
 	protected function deleteHosting($data)
 	{
 		if ($this->request->getMethod() === 'post' && $data->plan_alias === 'Free' && ($_POST['wordpass'] ?? '') === $data->hosting_username) {
+			if (!$data->hosting_cname) {
+				(new VirtualMinShell)->removeFromServerDNS(
+					$data->hosting_username
+				);
+			}
 			(new VirtualMinShell())->deleteHosting($data->hosting_cname ?: $data->default_domain, $data->slave_alias);
 			$this->db->table('hosting')->delete([
 				'hosting_id' => $data->hosting_id,
@@ -388,6 +394,37 @@ class User extends BaseController
 				return $this->response->redirect('/user/hosting');
 			}
 		}
+	}
+	public function profile()
+	{
+		if ($this->request->getMethod() === 'post') {
+			if ($this->validate([
+				'name' => 'required|min_length[3]|max_length[255]',
+				'phone' => 'required|min_length[8]|max_length[16]',
+				'email' => 'required|valid_email',
+				'lang' => 'required|in_list[id,en]',
+			])) {
+				$data = array_intersect_key(
+					$this->request->getPost(),
+					array_flip(
+						['name', 'email', 'phone', 'lang']
+					)
+				);
+				$this->db->table('login')->update($data, [
+					'login_id' => $this->session->login_id
+				]);
+				foreach ($data as $key => $value) {
+					$this->session->set($key, $value);
+				}
+				$this->request->setLocale($this->session->lang);
+			}
+		}
+		return view('user/profile', [
+			'data' => $this->db->table('login')->getWhere([
+				'login_id' => $this->session->login_id,
+			])->getRow(),
+			'page' => 'profile',
+		]);
 	}
 
 	//--------------------------------------------------------------------

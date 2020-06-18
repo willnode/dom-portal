@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= lang('Interface.code') ?>">
 
 <?php include 'head.php' ?>
 
@@ -16,11 +16,12 @@
         <h1 class="mb-2"><?= lang('Interface.register') ?></h1>
         <?= $validation ? $validation->listErrors() : '' ?>
 
-        <input type="text" name="name" placeholder="Nama Lengkap" class="form-control mb-2">
-        <input type="text" name="email" placeholder="Email Aktif" class="form-control mb-2">
-        <input type="text" name="phone" placeholder="Nomor HP (08xx)" class="form-control mb-2">
+        <input type="text" name="name" placeholder="<?= lang('Interface.fullName') ?>" class="form-control mb-2">
+        <input type="text" name="email" placeholder="<?= lang('Interface.activeEmail') ?>" class="form-control mb-2">
+        <input type="text" name="phone" placeholder="Nomor HP lokal (08xx) atau internasional (+...)" class="form-control mb-2">
         <input type="password" name="password" placeholder="Password" class="form-control mb-2">
         <input type="password" name="passconf" placeholder="Password (Lagi)" class="form-control mb-2">
+        <div class="g-recaptcha" data-sitekey="<?= $recapthaSite ?>"></div>
         <p><small>Dengan mendaftar anda menyetujui Terms of Service Kami.</small></p>
         <input type="submit" value="Register" class="btn-primary btn">
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= lang('Interface.code') ?>">
 
 <?= view('user/head') ?>
 
@@ -19,11 +19,15 @@
                 <input class="form-control" id="username" minlength="5" maxlength="32" name="username" placeholder="hanya alfanumerik (cth. 'tokoku')" oninput="recalculate()" required>
               </div>
               <div class="form-group">
+                <label for="password">Password Admin Hosting</label>
+                <input class="form-control" id="password" minlength="8" name="password" required>
+              </div>
+              <div class="form-group">
                 <label for="slave">Server Slave</label>
                 <select class="form-control" id="slave" name="slave" required>
                   <?php foreach ($slaves as $slave) : ?>
                     <label class="form-check">
-                    <option value="<?= $slave->slave_id ?>"><?= $slave->slave_alias." (Penggunaan: ".($slave->utilization*100)."%)" ?></option>
+                      <option value="<?= $slave->slave_id ?>"><?= $slave->slave_alias . " (Penggunaan: " . ($slave->utilization * 100) . "%)" ?></option>
                     </label>
                   <?php endforeach ?>
                 </select>
@@ -31,6 +35,15 @@
               <div class="form-group">
                 <label for="username">Domain Hosting</label>
                 <input class="form-control" id="cname" name="cname" value="dom.my.id" disabled oninput="recalculate()" required placeholder="masukkan domain kustom (cth. 'tokoku.my.id')" pattern="^[a-zA-Z0-9][a-zA-Z0-9_.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
+              </div>
+              <div class="form-group">
+                <label for="template">Pilih Template</label>
+                <select name="template" class="form-control">
+                  <option>Kosong</option>
+                  <option value="wordpress">WordPress</option>
+                  <option value="phpbb">phpBB</option>
+                  <option value="opencart">OpenCart</option>
+                </select>
               </div>
             </div>
           </label>
@@ -129,4 +142,5 @@
     }
   </script>
 </body>
+
 </html>

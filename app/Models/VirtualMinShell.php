@@ -39,9 +39,11 @@ class VirtualMinShell
 			}
 		}
 		if ($template) {
+			$template = ucfirst($template).'+Template';
 			$flags .= "&template=$template";
 		}
-		$cmd = "program=create-domain&user=$username&pass=$password" .
+		$password = urlencode($password);
+		$cmd = "program=create-domain&user=$username&pass=$password=&mysql-pass=$password&postgres-pass=$password" .
 			"&email=$email&domain=$domain&plan=$plan&limits-from-plan=$flags";
 		$this->execute($this->wrapWget($cmd, $slave));
 	}

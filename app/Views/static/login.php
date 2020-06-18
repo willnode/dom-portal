@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= lang('Interface.code') ?>">
 
 <?php include 'head.php' ?>
 
@@ -14,15 +14,14 @@
 		<div class="col-md-4">
 			<form method="POST" class="container h-100 d-flex flex-column justify-content-center text-center">
 				<h1 class="mb-2"><?= lang('Interface.login') ?></h1>
-				<input type="text" name="email" placeholder="Email" class="form-control mb-2">
+				<input type="text" name="email" placeholder="<?= lang('Interface.email') ?>" class="form-control mb-2">
 				<input type="password" name="password" autocomplete="current-password"
-				placeholder="Password" class="form-control mb-2">
+				placeholder="<?= lang('Interface.password') ?>" class="form-control mb-2">
 				<input type="submit" value="<?= lang('Interface.login') ?>" class="btn-primary btn mb-4">
 				<p><a href="<?= href('register') ?>" class="btn btn-link"><?= lang('Interface.registerPrompt') ?></a></p>
 			</form>
 		</div>
 	</div>
-
 </body>
 
 </html>

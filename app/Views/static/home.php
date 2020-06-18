@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= lang('Interface.code') ?>">
 
 <?php include 'head.php' ?>
 
