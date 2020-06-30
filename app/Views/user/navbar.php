@@ -6,8 +6,11 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item <?= ($page ?? '') === 'hosting' ? 'active' : '' ?>">
+    <li class="nav-item <?= ($page ?? '') === 'hosting' ? 'active' : '' ?>">
         <a class="nav-link" href="/user/hosting"><?= lang('Interface.hosting') ?></a>
+      </li>
+      <li class="nav-item <?= ($page ?? '') === 'domain' ? 'active' : '' ?>">
+        <a class="nav-link" href="/user/domain"><?= lang('Interface.domain') ?></a>
       </li>
 	</ul>
 	<ul class="navbar-nav">

@@ -8,10 +8,9 @@ class PaymentGate
 {
 	public function createPayment($id, $amount, $name, $challenge)
 	{
+		$url = Services::request()->config->paymentURL;
 		$key = Services::request()->config->paymentKey;
-		$prod = Services::request()->config->paymentEnv === 'production';
-		$sub = $prod ? 'my' : 'sandbox';
-		$ch = curl_init("https://$sub.ipaymu.com/payment/");
+		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, [
 			'key' => $key,

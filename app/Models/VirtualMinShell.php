@@ -6,21 +6,33 @@ use Config\Services;
 
 class VirtualMinShell
 {
-	protected function execute($cmd)
+	static $output;
+
+	protected function execute($cmd, $title = '')
 	{
 		if (ENVIRONMENT === 'production') {
-			exec('echo "' . $cmd . '"|at now');
+			set_time_limit(300);
+			$username = Services::request()->config->sudoWebminUser;
+			$password = Services::request()->config->sudoWebminPass;
+			VirtualMinShell::$output .= $title."\n";
+			$ch = curl_init($cmd);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			$response = curl_exec($ch);
+			VirtualMinShell::$output .= $response."\n\n";
+			curl_close($ch);
+			return $response;
 		} else {
-			exec('start echo "' . $cmd . '"');
+			VirtualMinShell::$output .= $title."\n";
+			VirtualMinShell::$output .= $cmd."\n\n";
 		}
 	}
 	protected function wrapWget($params, $slave_dn)
 	{
-		$username = Services::request()->config->sudoWebminUser;
-		$password = Services::request()->config->sudoWebminPass;
 		$port = Services::request()->config->sudoWebminPort;
-		return "wget -O - --quiet --http-user=$username --http-passwd=$password --no-check-certificate " .
-			"'https://$slave_dn.dom.my.id:$port/virtual-server/remote.cgi?$params'";
+		return "https://$slave_dn.dom.my.id:$port/virtual-server/remote.cgi?$params";
 	}
 	protected $featureFlags = [
 		"&dir=&webmin=&web=&mysql=&unix=",
@@ -39,13 +51,13 @@ class VirtualMinShell
 			}
 		}
 		if ($template) {
-			$template = ucfirst($template).'+Template';
+			$template = ucfirst($template) . '+Template';
 			$flags .= "&template=$template";
 		}
 		$password = urlencode($password);
-		$cmd = "program=create-domain&user=$username&pass=$password=&mysql-pass=$password&postgres-pass=$password" .
+		$cmd = "program=create-domain&user=$username&pass=$password" .
 			"&email=$email&domain=$domain&plan=$plan&limits-from-plan=$flags";
-		$this->execute($this->wrapWget($cmd, $slave));
+		$this->execute($this->wrapWget($cmd, $slave), "=== Create Hosting for $domain ===");
 	}
 	public function upgradeHosting($domain, $slave, $oldprivilenge, $newplan, $newprivilenge)
 	{
@@ -68,22 +80,22 @@ class VirtualMinShell
 	public function renameHosting($domain, $slave, $newusername)
 	{
 		$cmd = "program=modify-domain&domain=$domain&user=$newusername";
-		$this->execute($this->wrapWget($cmd, $slave));
+		$this->execute($this->wrapWget($cmd, $slave), "=== Rename hosting $domain ===");
 	}
 	public function cnameHosting($domain, $slave, $newdomain)
 	{
 		$cmd = "program=modify-domain&domain=$domain&newdomain=$newdomain";
-		$this->execute($this->wrapWget($cmd, $slave));
+		$this->execute($this->wrapWget($cmd, $slave), "=== Change domain for $domain ===");
 	}
 	public function addToServerDNS($username, $slave_ip)
 	{
-		$cmd = "program=modify-dns&domain=dom.my.id&add-record=$username+A+$slave_ip";
-		$this->execute($this->wrapWget($cmd, 'panel'));
+		$cmd = "program=modify-dns&domain=dom.my.id&add-record=$username+A+$slave_ip&add-record=www.$username+A+$slave_ip";
+		$this->execute($this->wrapWget($cmd, 'portal'), "=== Adding DNS record for $username to central DOM ===");
 	}
 	public function removeFromServerDNS($username)
 	{
-		$cmd = "program=modify-dns&domain=dom.my.id&remove-record=$username+A";
-		$this->execute($this->wrapWget($cmd, 'panel'));
+		$cmd = "program=modify-dns&domain=dom.my.id&remove-record=$username+A&remove-record=www.$username+A";
+		$this->execute($this->wrapWget($cmd, 'portal'), "=== Removing DNS record for $username to central DOM ===");
 	}
 	public function resetHosting($domain, $slave, $newpw)
 	{
@@ -103,6 +115,6 @@ class VirtualMinShell
 	public function deleteHosting($domain, $slave)
 	{
 		$cmd = "program=delete-domain&domain=$domain";
-		$this->execute($this->wrapWget($cmd, $slave));
+		$this->execute($this->wrapWget($cmd, $slave), "=== Delete Hosting for $domain ===");
 	}
 }

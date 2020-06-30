@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Models\BannedNames;
+use App\Models\CountryCodes;
+use App\Models\LiquidRegistrar;
 use App\Models\PaymentGate;
 use App\Models\VirtualMinShell;
 use Config\Services;
@@ -47,7 +49,7 @@ class User extends BaseController
 					'max_length[32]|is_unique[hosting.hosting_username]',
 				'slave' => 'required|is_not_unique[slaves.slave_id]',
 				'password' => 'required|min_length[8]',
-				'template' => 'permit_empty|in_list[wordpress,phpbb,opencart]',
+				'template' => empty($_POST['template']) ? 'permit_empty' : 'in_list[wordpress,phpbb,opencart]',
 			])) {
 				$data = array_intersect_key(
 					$this->request->getPost(),
@@ -127,8 +129,12 @@ class User extends BaseController
 								'purchase_session' => $pay->sessionID ?? ''
 							], ['purchase_id' => $id]);
 						}
+						return $this->response->redirect('/user/hosting/invoices/' . $payment['purchase_hosting']);
 					}
-					return $this->response->redirect('/user/hosting/invoices/' . $payment['purchase_hosting']);
+					return view('user/hosting/output', [
+						'output' => VirtualMinShell::$output,
+						'link' => '/user/hosting/invoices/' . $payment['purchase_hosting'],
+					]);
 				}
 			}
 		}
@@ -137,6 +143,8 @@ class User extends BaseController
 				'plan_id', 'plan_alias', 'plan_price'
 			])->get()->getResult(),
 			'slaves' => $this->db->table('slaves__usage')->get()->getResult(),
+			'liquid' => fetchOne('liquid', ['liquid_login' => $this->session->login_id]),
+			'schemes' => $this->db->table('schemes')->get()->getResult(),
 			'validation' => $this->validator,
 		]);
 	}
@@ -234,8 +242,12 @@ class User extends BaseController
 						$this->db->table('purchase')->update([
 							'purchase_active' => 2,
 						], ['purchase_id' => $data->purchase_id]);
+						return $this->response->redirect('/user/hosting/invoices/' . $payment['purchase_hosting']);
 					}
-					return $this->response->redirect('/user/hosting/invoices/' . $payment['purchase_hosting']);
+					return view('user/hosting/output', [
+						'output' => VirtualMinShell::$output,
+						'link' => '/user/hosting/invoices/' . $payment['purchase_hosting'],
+					]);
 				}
 			}
 		}
@@ -269,6 +281,11 @@ class User extends BaseController
 				$this->db->table('hosting')->update([
 					'hosting_username' => strtolower($_POST['username'])
 				], ['hosting_id' => $data->hosting_id]);
+
+				return view('user/hosting/output', [
+					'output' => VirtualMinShell::$output,
+					'link' => '/user/hosting/detail/' . $data->hosting_id
+				]);
 			}
 		}
 		return view('user/hosting/rename', [
@@ -293,10 +310,15 @@ class User extends BaseController
 						$data->slave_alias,
 						strtolower($_POST['cname'])
 					);
+
 					$this->db->table('hosting')->update([
 						'hosting_cname' => strtolower($_POST['cname'])
 					], ['hosting_id' => $data->hosting_id]);
-					return $this->response->redirect('user/hosting/detail/' . $data->hosting_id);
+
+					return view('user/hosting/output', [
+						'output' => VirtualMinShell::$output,
+						'link' => '/user/hosting/invoices/' . $data->hosting_id,
+					]);
 				}
 			}
 		}
@@ -359,7 +381,10 @@ class User extends BaseController
 			$this->db->table('hosting')->delete([
 				'hosting_id' => $data->hosting_id,
 			]);
-			return $this->response->redirect('/user/hosting');
+			return view('user/hosting/output', [
+				'output' => VirtualMinShell::$output,
+				'link' => '/user/hosting/',
+			]);
 		}
 		return view('user/hosting/delete', [
 			'data' => $data,
@@ -395,6 +420,202 @@ class User extends BaseController
 			}
 		}
 	}
+
+	protected function checkDomain()
+	{
+		if (!empty($_GET['name']) && !empty($_GET['scheme'])) {
+			$name = $_GET['name'];
+			$scheme = fetchOne('schemes', ['scheme_id' => $_GET['scheme']]);
+			if (strlen($name) > 512 || strpos($name, '.') !== false || !$scheme || $scheme->scheme_price == 0) {
+				return $this->response->setJSON(['status' => 'invalid']);
+			}
+			$domain = $name . $scheme->scheme_alias;
+			$response = (new LiquidRegistrar())->isDomainAvailable($domain);
+			// possible values: error, regthroughothers, available
+			$status = 'error';
+			if (isset($response[0]->{$domain}->status)) {
+				$status = $response[0]->{$domain}->status;
+			} else if (isset($response[0]->{""}->status)) {
+				$status = $response[0]->{""}->status;
+			}
+			return $this->response->setJSON([
+				'status' => $status,
+				'domain' => $domain,
+				'price' => $scheme->scheme_price,
+				'renew' => $scheme->scheme_renew,
+			]);
+		}
+		return $this->response->setJSON(['status' => 'invalid']);
+	}
+
+	protected function createDomain()
+	{
+		if ($this->request->getMethod() === 'post') {
+			if ($this->validate([
+				'domain_name' => 'required|regex_match[/^[-\w]+$/]',
+				'domain_scheme' => 'required|is_not_unique[schemes.scheme_id]',
+				'years' => 'required|greater_than[0]|less_than[6]',
+				'registrant_contact_id' => 'required|integer',
+				'billing_contact_id' => 'required|integer',
+				'admin_contact_id' => 'required|integer',
+				'tech_contact_id' => 'required|integer',
+			])) {
+				$post = array_intersect_key(
+					$this->request->getPost(),
+					array_flip([
+						'domain_name', 'domain_scheme', 'years', 'registrant_contact_id',
+						'billing_contact_id', 'admin_contact_id', 'tech_contact_id',
+						'purchase_privacy_protection'
+					])
+				);
+				$scheme = fetchOne('schemes', ['scheme_id' => $post['domain_scheme']]);
+				if ($scheme->scheme_price == 0) return;
+				$post['domain_name'] .= $scheme->scheme_alias;
+				unset($post['domain_scheme']);
+				$post['customer_id'] = $this->liquid->liquid_id;
+				$post['ns'] = 'ns1.dom.my.id,ns2.dom.my.id';
+				$post['invoice_option'] = 'only_add';
+				$output = (new LiquidRegistrar())->issuePurchaseDomain($post);
+				error_log(json_encode($output));
+				return $this->syncDomain();
+			}
+		}
+
+		return view('user/domain/create', [
+			'schemes' => $this->db->table('schemes')->get()->getResult(),
+			'contacts' => json_decode($this->liquid->liquid_cache_contacts ?: '[]'),
+		]);
+	}
+	protected function listDomain()
+	{
+		if (strtolower($_POST['action'] ?? '') === 'sync') {
+			return $this->syncDomain();
+		}
+		return view('user/domain/list', [
+			'list' => [],
+			'page' => 'domain',
+		]);
+	}
+
+	protected function loginDomain()
+	{
+		return view('user/domain/login', [
+			'user' => $this->session->email,
+			'pass' => '***REMOVED***',
+			'uri' => $this->request->config->liquidCustomer,
+		]);
+	}
+	protected function editDomain($id)
+	{
+		return view('user/domain/create', []);
+	}
+	protected function invoiceDomain($id)
+	{
+		return view('user/domain/invoice', []);
+	}
+	protected function deleteDomain($id)
+	{
+		return view('user/domain/domain', []);
+	}
+	protected function introDomain()
+	{
+		if ($this->request->getMethod() === 'post') {
+			if ($this->validate([
+				'name' => 'required',
+				'email' => 'required|valid_email',
+				'password' => 'required|min_length[8]',
+				'company' => 'required',
+				'tel_no' => 'required',
+				'tel_cc_no' => 'required|integer',
+				'address_line_1' => 'required',
+				'city' => 'required',
+				'state' => 'required',
+				'country_code' => 'required',
+				'zipcode' => 'required',
+			])) {
+				$post = array_intersect_key(
+					$this->request->getPost(),
+					array_flip([
+						'name', 'email', 'password', 'company', 'tel_no', 'tel_cc_no',
+						'alt_tel_no', 'alt_tel_cc_no', 'address_line_1', 'address_line_2', 'address_line_1',
+						'city', 'state', 'country_code', 'zipcode'
+					])
+				);
+				$data = (new LiquidRegistrar())->createCustomer($post);
+				if (isset($data->customer_id)) {
+					$this->db->table('liquid')->insert([
+						'liquid_id' => $data->customer_id,
+						'liquid_password' => $post['password'],
+						'liquid_login' => $_SESSION['login_id'],
+					]);
+					return $this->syncDomain();
+				}
+				return view('user/hosting/output', [
+					'output' => json_encode($data),
+					'link' => '/user/domain/',
+				]);
+			}
+		}
+		return view('user/domain/intro', [
+			'page' => 'domain',
+			'data' => $_SESSION,
+			'codes' => CountryCodes::$codes,
+		]);
+	}
+	protected function syncDomain()
+	{
+		$liquid = new LiquidRegistrar();
+		// get ID matches email
+		$data = $liquid->getCustomerWithEmail($_SESSION['email']);
+		if ($data && count($data) > 0) {
+			$liquid_cache_customer = $data[0];
+			$liquid_id = $liquid_cache_customer->customer_id;
+			$liquid_cache_contacts = $liquid->getListOfContacts($liquid_id);
+			$liquid_pending_transactions = $liquid->getPendingTransactions($liquid_id);
+			$liquid_default_contacts = $liquid->getDefaultContacts($liquid_id);
+
+			$this->db->table('liquid')->update([
+				'liquid_id' => $liquid_id,
+				'liquid_cache_customer' => json_encode($liquid_cache_customer),
+				'liquid_cache_contacts' => json_encode($liquid_cache_contacts),
+				'liquid_pending_transactions' => json_encode($liquid_pending_transactions),
+				'liquid_default_contacts' => json_encode($liquid_default_contacts),
+			], [
+				'liquid_login' => $this->session->login_id,
+			]);
+		} else {
+			$this->db->table('liquid')->delete([
+				'liquid_login' => $this->session->login_id,
+			]);
+		}
+		return $this->response->redirect('/user/domain');
+	}
+
+	protected $liquid;
+
+	public function domain($page = 'list', $id = 0)
+	{
+		$this->liquid = fetchOne('liquid', ['liquid_login' => $this->session->login_id]);
+		if ($this->liquid) {
+			if ($page == 'list') {
+				return $this->listDomain();
+			} else if ($page == 'check') {
+				return $this->checkDomain();
+			} else if ($page == 'login') {
+				return $this->loginDomain();
+			} else if ($page == 'create') {
+				return $this->createDomain();
+			} else if ($page == 'edit') {
+				return $this->editDomain($id);
+			} else if ($page == 'invoice') {
+				return $this->invoiceDomain($id);
+			} else if ($page == 'delete') {
+				return $this->deleteDomain($id);
+			}
+		} else {
+			return $this->introDomain();
+		}
+	}
 	public function profile()
 	{
 		if ($this->request->getMethod() === 'post') {
@@ -424,6 +645,21 @@ class User extends BaseController
 				'login_id' => $this->session->login_id,
 			])->getRow(),
 			'page' => 'profile',
+		]);
+	}
+
+	public function delete()
+	{
+		$ok = $this->db->table('hosting')->where(['hosting_login' => $this->session->login_id])->countAll() === 0;
+		if ($ok && $this->request->getMethod() === 'post' && strpos($this->request->getPost('wordpass'), 'Y') !== FALSE) {
+			$this->db->table('login')->delete([
+				'login_id' => $this->session->login_id,
+			]);
+			$this->session->destroy();
+			return $this->response->redirect('/');
+		}
+		return view('user/delete', [
+			'ok' => $ok,
 		]);
 	}
 

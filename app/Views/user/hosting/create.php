@@ -5,22 +5,31 @@
 
 <body>
   <?= view('user/navbar') ?>
-  <div class="container">
-    <h1>Buat Hosting</h1>
+  <div class="container-fluid">
+    <h1>Order Hosting Baru</h1>
     <?= $validation ? $validation->listErrors() : '' ?>
     <form method="POST" name="upgrade">
       <div class="row">
-        <div class="col-lg-5">
-          <label class="card">
+        <div class="col-lg-4">
+          <div class="card my-2">
             <div class="card-body">
-              <h3 class="card-title">Data Hosting</h3>
+              <h3 class="card-title">Opsi</h3>
               <div class="form-group">
-                <label for="username">ID Hosting</label>
-                <input class="form-control" id="username" minlength="5" maxlength="32" name="username" placeholder="hanya alfanumerik (cth. 'tokoku')" oninput="recalculate()" required>
+                <label for="username">Username Portal</label>
+                <input class="form-control" id="username" minlength="5" maxlength="32" name="username" placeholder="hanya alfanumerik" pattern="^[-\w]+$" oninput="recalculate()" required>
               </div>
               <div class="form-group">
-                <label for="password">Password Admin Hosting</label>
-                <input class="form-control" id="password" minlength="8" name="password" required>
+                <label for="name">Password Portal</label>
+                <div class="input-group">
+                  <input class="form-control" id="password" oninput="this.type = 'password'" name="password" type="password" minlength="8" autocomplete="new-password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$">
+                  <div class="input-group-append">
+                    <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
+                  </div>
+                </div>
+                <small class="form-text text-muted">
+                  Password ini digunakan untuk masuk Portal Hosting. Harus berbeda dengan password portal sekarang.
+                  Password ini juga digunakan sebagai autentikasi pada area lain, seperti Database, Email dan FTP.
+                </small>
               </div>
               <div class="form-group">
                 <label for="slave">Server Slave</label>
@@ -33,44 +42,114 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="username">Domain Hosting</label>
-                <input class="form-control" id="cname" name="cname" value="dom.my.id" disabled oninput="recalculate()" required placeholder="masukkan domain kustom (cth. 'tokoku.my.id')" pattern="^[a-zA-Z0-9][a-zA-Z0-9_.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
-              </div>
-              <div class="form-group">
                 <label for="template">Pilih Template</label>
                 <select name="template" class="form-control">
-                  <option>Kosong</option>
+                  <option value="">Kosong</option>
                   <option value="wordpress">WordPress</option>
                   <option value="phpbb">phpBB</option>
                   <option value="opencart">OpenCart</option>
                 </select>
               </div>
             </div>
-          </label>
+          </div>
         </div>
-        <div class="col-lg-3">
-          <div class="card">
+        <div class="col-lg-4">
+          <div class="card my-2">
             <div class="card-body">
-              <h2 class="card-title">Paket Hosting</h2>
-              <p>Pilih jenis paket</p>
-              <?php foreach ($plans as $plan) : ?>
-                <label class="form-check">
-                  <input class="form-check-input" type="radio" name="plan" value="<?= $plan->plan_id ?>" onchange="recalculate()" required>
-                  <?= ucfirst($plan->plan_alias) ?>
-                </label>
-              <?php endforeach ?>
-              <p>(<a href="https://dom.my.id/price" target="_blank">Lihat perbandingan paket</a>)</p>
-              <p>Pilih jangka tahun</p>
-              <input type="number" class="form-control" name="years" value="1" min="1" max="5" onchange="recalculate()">
+              <h3 class="card-title">Paket</h3>
+              <div class="form-group">
+                <label for="plan">Pilih jenis paket</label>
+                <select name="plan" id="plan" class="form-control" onchange="recalculate()" required>
+                  <?php foreach ($plans as $plan) : ?>
+                    <option value="<?= $plan->plan_id ?>"><?= ucfirst($plan->plan_alias) ?></option>
+                  <?php endforeach ?>
+                </select>
+                <small class="form-text text-muted">
+                  <a href="https://dom.my.id/price" target="_blank">Lihat perbandingan paket</a>.
+                </small>
+              </div>
+              <div class="form-group">
+                <label for="years">Pilih jangka tahun</label>
+                <input type="number" disabled class="form-control" name="years" value="1" min="1" max="5" onchange="recalculate()">
+              </div>
+              <h3 class="card-title">Domain</h3>
+              <div class="form-group">
+                <label for="domain_mode">Pilih opsi domain</label>
+                <select name="domain_mode" disabled id="domain_mode" class="form-control" onchange="recalculate()" required>
+                  <option value="free" selected>Gunakan domain gratis</option>
+                  <option value="buy">Beli domain baru</option>
+                  <option value="custom">Gunakan yang sudah ada</option>
+                </select>
+              </div>
+              <div id="dm-free">
+                <div class="form-group">
+                  <input class="form-control" id="free_cname" value=".dom.my.id" disabled>
+                  <small class="form-text text-muted">
+                    Domain gratis hanya menyediakan fitur terbatas. Anda tak bisa menambahkan subdomain dan menerima email dengan domain gratis.
+                  </small>
+                </div>
+              </div>
+              <div id="dm-buy" class="d-none">
+                <?php if ($liquid) : ?>
+                  <div class="form-group">
+                    <label>Cari Domain</label>
+                    <div class="input-group">
+                      <input name="buy_cname" id="buy_cname" class="form-control" pattern="^[-\w]+$" required oninput="recalculate()">
+                      <select class="form-control" name="buy_scheme" id="buy_scheme" required style="max-width: 120px" onchange="recalculate()">
+                        <?php foreach ($schemes as $s) : if ($s->scheme_price !== '0') : ?>
+                            <option value="<?= $s->scheme_id ?>"><?= $s->scheme_alias ?></option>
+                        <?php endif;
+                        endforeach; ?>
+                      </select>
+                      <div class="input-group-append">
+                        <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
+                      </div>
+                    </div>
+                    <small class="form-text text-muted">
+                      <a href="https://dom.my.id/domain" target="_blank">Lihat daftar top level domain tersedia</a>.
+                    </small>
+                  </div>
+                  <p id="buy-status-prompt" class="alert alert-primary">
+                    Silahkan cek ketersediaan domain sebelum lanjut.
+                  </p>
+                  <p id="buy-status-available" class="alert alert-success d-none">
+                    Domain tersedia!
+                  </p>
+                  <p id="buy-status-loading" class="alert alert-warning d-none">
+                    Sedang mengecek...
+                  </p>
+                  <p id="buy-status-error" class="alert alert-danger d-none">
+                    Domain sedang tidak tersedia.
+                  </p>
+                <?php else : ?>
+                  <p class="alert alert-danger">
+                    <small>
+                      Kami tidak dapat memproses pembelian domain sebelum anda mengisi data yang kami butuhkan. <a href="/user/domain?then=reload" target="_blank">Isi sekarang</a>.
+                    </small>
+                  </p>
+                <?php endif ?>
+              </div>
+              <div id="dm-custom" class="d-none">
+                <div class="form-group">
+                  <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="masukkan domain kustom" pattern="^[a-zA-Z0-9][a-zA-Z0-9_.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
+                  <small class="form-text text-muted">
+                    Setelah anda membeli hosting anda perlu mengarahkan domain yang anda sudah beli ke IP address hosting.
+                  </small>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         <div class="col-lg-4">
-          <div class="card">
+          <div class="card my-2">
             <div class="card-body">
               <div class="d-flex">
                 <h6>Harga Paket</h6>
                 <div class="ml-auto" id="outprice">-</div>
+              </div>
+              <div class="d-flex">
+                <h6>Harga Domain</h6>
+                <div class="ml-auto" id="outdomain">-</div>
               </div>
               <div class="d-flex">
                 <h6>Masa Hosting</h6>
@@ -94,7 +173,7 @@
                 <h6>Tanggal Kadaluarsa</h6>
                 <div class="ml-auto" id="outexp">-</div>
               </div>
-              <input type="submit" value="Bayar" class="btn btn-primary mt-3">
+              <input type="submit" value="Order Sekarang" class="form-control btn-lg btn btn-primary mt-3">
             </div>
           </div>
         </div>
@@ -103,42 +182,121 @@
     </form>
   </div>
 
+  <script>
+    function useRandPass() {
+      $('#password').val(genRandPass(12));
+      $('#password').attr('type', 'text');
+    }
+
+    function genRandPass(pLength) {
+
+      var keyListLower = "abcdefghijklmnopqrstuvwxyz",
+        keyListUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        keyListInt = "123456789",
+        keyListSpec = "!@#_",
+        password = '';
+      var len = Math.ceil(pLength / 3) - 1;
+      var lenSpec = pLength - 3 * len;
+
+      for (i = 0; i < len; i++) {
+        password += keyListLower.charAt(Math.floor(Math.random() * keyListLower.length));
+        password += keyListUpper.charAt(Math.floor(Math.random() * keyListUpper.length));
+        password += keyListInt.charAt(Math.floor(Math.random() * keyListInt.length));
+      }
+
+      for (i = 0; i < lenSpec; i++)
+        password += keyListSpec.charAt(Math.floor(Math.random() * keyListSpec.length));
+
+      password = password.split('').sort(function() {
+        return 0.5 - Math.random()
+      }).join('');
+
+      return password;
+    }
+  </script>
   <script id="plans" type="application/json">
     <?= json_encode($plans) ?>
   </script>
+  <script id="schemes" type="application/json">
+    <?= $liquid ? json_encode($schemes) : 'null' ?>
+  </script>
   <script>
-    var plans = JSON.parse(document.getElementById('plans').innerHTML);
-    plans = plans.reduce((a, b) => (a[b.plan_id] = b, a), {});
+    var plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.plan_id] = b, a), {});
+    var schemes = JSON.parse(document.getElementById('schemes').innerHTML).reduce((a, b) => (a[b.scheme_id] = b, a), {});
+    var formatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    });
+    var activedomain = null;
+
+    function checkDomain() {
+      var name = window.upgrade.buy_cname;
+      var scheme = window.upgrade.buy_scheme;
+      if (name.reportValidity && !name.reportValidity()) {
+        return;
+      }
+      activedomain = null;
+      recalculate();
+      $('#buy-status-available,#buy-status-error,#buy-status-prompt').toggleClass('d-none', true);
+      $('#buy-status-loading').toggleClass('d-none', false);
+
+      fetch(`/user/domain/check?name=${name.value}&scheme=${scheme.value}`).then(r =>
+        r.json()).then(r => {
+        activedomain = r;
+        $(r.status === 'available' ? '#buy-status-available' : '#buy-status-error').toggleClass('d-none', false);
+        $('#buy-status-error').toggleClass('d-none', true);
+        recalculate();
+      }).catch(e => {
+        activedomain = null;
+        $('#buy-status-loading').toggleClass('d-none', true);
+        $('#buy-status-error').toggleClass('d-none', false);
+      });
+    }
 
     function recalculate() {
-      var plan = window.upgrade.plan.value || 1;
-      var years = parseInt(window.upgrade.years.value);
-      if (plan) {
-        var unit = parseInt(plans[plan].plan_price);
-        window.upgrade.cname.disabled = unit == 0;
-        window.upgrade.years.disabled = unit == 0;
-        if (window.upgrade.cname.disabled) {
-          window.upgrade.cname.value = window.upgrade.username.value + '.dom.my.id';
-        } else if (window.upgrade.cname.value.endsWith('dom.my.id')) {
-          window.upgrade.cname.value = '';
-        }
-        unit *= 10000;
-        if (unit == 0) years = 0.25;
-        var formatter = new Intl.NumberFormat('id-ID', {
-          style: 'currency',
-          currency: 'IDR',
-          maximumFractionDigits: 0,
-          minimumFractionDigits: 0,
-        });
-        var tip = 5000;
-        var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
-        $('#outprice').text(unit == 0 ? 'Gratis' : formatter.format(unit));
-        $('#outyear').html(unit == 0 ? '3 Bulan' : '&times; ' + years + ' Tahun');
-        $('#outtotal').text(unit == 0 ? 'Gratis' : formatter.format(unit * years));
-        $('#outtip').text(unit == 0 ? '-' : formatter.format(tip));
-        $('#outbill').text(unit == 0 ? 'Gratis' : formatter.format(unit * years + tip));
-        $('#outexp').text(exp.toISOString().substr(0, 10));
+      // Get values
+      var tip = 5000;
+      var form = window.upgrade;
+      var dommod = form.domain_mode.value;
+      var scheme = dommod === 'buy' ? parseInt(schemes[form.buy_scheme.value].scheme_price) * 1000 : 0;
+      var unit = parseInt(plans[form.plan.value].plan_price) * 10000;
+      var years = unit === 0 ? 0.25 : parseInt(form.years.value);
+      var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
+      // Alter UI
+      if (unit == 0) {
+        form.domain_mode.value = 'free';
+      } else if (form.custom_cname.value.endsWith('dom.my.id')) {
+        form.custom_cname.value = '';
       }
+      $('#dm-free').toggleClass('d-none', dommod !== 'free');
+      $('#dm-buy').toggleClass('d-none', dommod !== 'buy');
+      $('#dm-custom').toggleClass('d-none', dommod !== 'custom');
+      form.free_cname.value = form.username.value + '.dom.my.id';
+      form.years.disabled = form.domain_mode.disabled = unit === 0;
+      form.custom_cname.disabled = dommod !== 'custom';
+      form.buy_cname.disabled = dommod !== 'buy';
+      form.buy_scheme.disabled = dommod !== 'buy';
+
+      // Show values
+      if (unit == 0) {
+        $('#outprice').text('Gratis');
+        $('#outdomain').text('Gratis');
+        $('#outyear').html('3 Bulan');
+        $('#outtotal').text('Gratis');
+        $('#outtip').text('-');
+        $('#outbill').text('Gratis');
+      } else {
+        $('#outprice').text(formatter.format(unit));
+        $('#outdomain').text(formatter.format(scheme));
+        $('#outyear').html('&times; ' + years + ' Tahun');
+        $('#outtotal').text(formatter.format((unit + scheme) * years));
+        $('#outtip').text(formatter.format(tip));
+        $('#outbill').text(formatter.format((unit + scheme) * years + tip));
+      }
+
+      $('#outexp').text(exp.toISOString().substr(0, 10));
     }
   </script>
 </body>

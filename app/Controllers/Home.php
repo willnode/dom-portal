@@ -66,7 +66,10 @@ class Home extends BaseController
 						);
 					}
 
-					return $this->response->redirect('user/hosting/invoices/' . $data->hosting_id);
+					return view('user/hosting/output', [
+						'output' => VirtualMinShell::$output,
+						'link' => '/user/hosting/invoices/' . $data->hosting_id,
+					]);
 				}
 			}
 		}

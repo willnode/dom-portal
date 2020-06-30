@@ -1,5 +1,6 @@
 <?php
 
+use Config\Database;
 use Config\Services;
 
 /**
@@ -16,7 +17,12 @@ use Config\Services;
  * @link: https://codeigniter4.github.io/CodeIgniter4/
  */
 
- function href($url) {
+function href($url) {
 	 $req = Services::request();
 	 return base_url($req->getLocale().'/'.$url);
+}
+
+function fetchOne($table, $where) {
+	$db = Database::connect();
+	return $db->table($table)->where($where)->get()->getRow();
 }

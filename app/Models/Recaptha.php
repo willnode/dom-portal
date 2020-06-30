@@ -6,19 +6,20 @@ use Config\Services;
 
 class Recaptha
 {
-	public $recapthaVerify = 'https://www.google.com/recaptcha/api/siteverify';
+	public $recapthaUrl = 'https://www.google.com/recaptcha/api/siteverify';
 	public $recapthaSite;
 	public $recapthaSecret;
 
 	public function __construct()
 	{
+		$this->recapthaUrl = Services::request()->config->recapthaURL;
 		$this->recapthaSite = Services::request()->config->recapthaSite;
 		$this->recapthaSecret = Services::request()->config->recapthaSecret;
 	}
 
 	public function verify($response)
 	{
-		$ch = curl_init($this->recapthaVerify);
+		$ch = curl_init($this->recapthaUrl);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, [
 			'secret' => $this->recapthaSecret,

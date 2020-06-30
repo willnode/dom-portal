@@ -4,13 +4,19 @@ use CodeIgniter\Config\BaseConfig;
 
 class App extends BaseConfig
 {
+	// Must be filled using .env file (gitignored)
 	public $sudoWebminUser;
 	public $sudoWebminPass;
 	public $sudoWebminPort;
+	public $paymentURL;
 	public $paymentKey;
-	public $paymentEnv;
+	public $recapthaURL;
 	public $recapthaSite;
 	public $recapthaSecret;
+	public $liquidURL;
+	public $liquidCustomer;
+	public $liquidID;
+	public $liquidKey;
 
 	/*
 	|--------------------------------------------------------------------------
