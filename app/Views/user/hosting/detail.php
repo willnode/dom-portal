@@ -20,9 +20,7 @@
             </div>
             <div>Custom Domain</div>
             <div class="input-group mb-3">
-              <input value="<?=
-                              $data->hosting_cname ?: $data->default_domain
-                            ?>" type="text" class="form-control" readonly>
+              <input value="<?= $data->domain_name ?>" type="text" class="form-control" readonly>
               <div class="input-group-append">
                 <a href="/user/hosting/cname/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Ganti</a>
               </div>
@@ -31,7 +29,7 @@
             <div class="input-group mb-3">
               <input value="<?= $data->slave_alias . ' / ' . $data->slave_ip ?>" type="text" class="form-control" readonly>
               <div class="input-group-append">
-                <a href="https://<?= $data->slave_alias ?>.dom.my.id:8443/" target="_blank" class="btn btn-outline-secondary">Buka Panel Webmin</a>
+                <a href="/user/hosting/login/<?= $data->hosting_id ?>" target="_blank" class="btn btn-outline-secondary">Buka Panel Webmin</a>
               </div>
             </div>
             <div>Opsi Administratif</div>
@@ -52,7 +50,7 @@
                 <a href="/user/hosting/invoices/<?= $data->hosting_id?>"
                 class="ml-auto btn btn-primary">Selesaikan Pembayaran</a>
               <?php elseif ($data->purchase_status === 'active') : ?>
-                <a href="http://<?= $data->hosting_cname ?: $data->default_domain?>" target="_blank" rel="noopener noreferrer"
+                <a href="http://<?= $data->domain_name?>" target="_blank" rel="noopener noreferrer"
                 class="ml-auto btn btn-primary">Buka Website</a>
               <?php endif ?>
             </div>
@@ -77,7 +75,7 @@
                 <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Perpanjang</a>
               </div>
             </div>
-            <?php if ($data->plan_alias !== 'Free' && $data->purchase_status === 'active' && !$data->hosting_cname) : ?>
+            <?php if ($data->plan_alias !== 'Free' && $data->purchase_status === 'active' && $data->domain_scheme == 1) : ?>
               <div class="alert alert-warning">
                 <p>Anda mengaktifkan paket premium namun belum mengganti kustom domain!</p>
                 <p>Perlu diperhatikan bahwa selama anda belum memasang kustom domain pada hosting maka

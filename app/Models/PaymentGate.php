@@ -10,6 +10,7 @@ class PaymentGate
 	{
 		$url = Services::request()->config->paymentURL;
 		$key = Services::request()->config->paymentKey;
+		$secret = Services::request()->config->paymentSecret;
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, [
@@ -19,9 +20,9 @@ class PaymentGate
 			'quantity[]' => 1,
 			'product[]' => $name,
 			'format' => 'json',
-			'ureturn' => base_url("notify?id=$id&challenge=$challenge"),
-			'uncancel' => base_url('user/hosting/'),
-			'unotify' =>  base_url("notify?id=$id&challenge=$challenge"),
+			'ureturn' => base_url("user/hosting/?status=return"),
+			'uncancel' => base_url('user/hosting/?status=cancel'),
+			'unotify' =>  base_url("notify?id=$id&challenge=$challenge&secret=$secret"),
 			'buyer_name' => Services::session()->name,
 			'buyer_email' => Services::session()->email,
 			'buyer_phone' => Services::session()->phone,

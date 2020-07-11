@@ -2,9 +2,11 @@
 
 namespace App\Controllers;
 
+use App\Models\LiquidRegistrar;
 use App\Models\Recaptha;
 use App\Models\VirtualMinShell;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use ErrorException;
 
 class Home extends BaseController
 {
@@ -15,16 +17,54 @@ class Home extends BaseController
 
 	public function notify()
 	{
-		if (isset($_GET['id'], $_GET['challenge'])) {
+		if (
+			isset($_GET['id'], $_GET['challenge'], $_GET['secret']) &&
+			(ENVIRONMENT === 'development' || (
+				$_GET['secret'] == $this->request->config->paymentSecret &&
+				isset($_POST['trx_id'], $_POST['sid'], $_POST['status'], $_POST['via']) &&
+				$_POST['status'] == 'berhasil' // iPaymu notification
+			))
+		) {
 			$data = $this->db->table('hosting__display')->where([
 				'purchase_id' => $_GET['id'],
 				'purchase_challenge' => $_GET['challenge']
 			])->get()->getRow();
 			if ($data) {
+				// At this point we process the purchase
+				// In case anything fails, at least we have record it.
+
+				$login = fetchOne('login', ['login_id' => $data->hosting_login]);
+
+				$receipt = [
+					'name' => $login->name,
+					'id_payment' => $_POST['trx_id'] ?? '-',
+					'id_purchase' => $data->purchase_id,
+					'name_purchase' => "Hosting $data->plan_alias $data->purchase_years Tahun" . ($data->purchase_liquid ? " dengan domain $data->domain_name" : ""),
+					'amount_purchase' => 'Rp '.number_format($data->purchase_price, 0, ',', '.'),
+					'time_purchase' => date('Y-m-d H:i:s'),
+					'via_purchase' => $_POST['via'] ?? '-',
+				];
+
+				log_message('notice', 'PURCHASE: '.json_encode($receipt));
+
+				if ($data->purchase_liquid) {
+					$r = explode('|', $data->purchase_liquid);
+					$liquid = (new LiquidRegistrar());
+					$liquid->confirmPurchaseDomain($r[0], [
+						'transaction_id' => $r[1],
+						'cancel_invoice' => '0',
+					]);
+					$this->db->table('liquid')->update([
+						'liquid_cache_domains' => json_encode($liquid->getListOfDomains($r[0])),
+						'liquid_pending_transactions' => json_encode($liquid->getPendingTransactions($r[0])),
+					], [
+						'liquid_id' => $r[0],
+					]);
+				}
 				if ($this->db->table('purchase')->update([
 					'purchase_status' => 'active',
+					'purchase_invoiced' => date('Y-m-d H:i:s'),
 					'purchase_challenge' => null,
-					'purchase_password' => null,
 					'purchase_template' => null,
 				], ['purchase_id' => $data->purchase_id])) {
 					$old =  $this->db->table('purchase')->getWhere([
@@ -39,11 +79,11 @@ class Home extends BaseController
 							'purchase_id' => $old->purchase_id,
 						]);
 						(new VirtualMinShell())->enableHosting(
-							$data->hosting_cname ?: $data->default_domain,
+							$data->domain_name,
 							$data->slave_alias
 						);
 						(new VirtualMinShell())->upgradeHosting(
-							$data->hosting_cname ?: $data->default_domain,
+							$data->domain_name,
 							$data->slave_alias,
 							$this->db->table('plans')->getWhere([
 								'plan_id' => $old->purchase_plan
@@ -54,21 +94,48 @@ class Home extends BaseController
 					} else {
 						(new VirtualMinShell())->createHosting(
 							$data->hosting_username,
-							$data->purchase_password,
-							$this->db->table('login')->getWhere([
-								'login_id' => $data->hosting_login
-							])->getRow()->email,
-							$data->hosting_cname ?: $data->default_domain,
+							$data->hosting_password,
+							$login->email,
+							$data->domain_name,
 							$data->slave_alias,
 							$data->plan_alias,
 							$data->plan_features,
 							$data->purchase_template
 						);
 					}
+					log_message('notice', VirtualMinShell::$output);
+					$em = \Config\Services::email();
+					$em->setTo($login->email);
+					$em->setSubject('Pembayaran | DOM Cloud');
+					$em->setMessage(view('static/receipt_email', $receipt));
+					if (!$em->send()) {
+						log_message('critical', $em->printDebugger());
+					}
+					return 'OK';
+				}
+			}
+		}
+		throw new PageNotFoundException();
+	}
 
-					return view('user/hosting/output', [
-						'output' => VirtualMinShell::$output,
-						'link' => '/user/hosting/invoices/' . $data->hosting_id,
+	public function verify()
+	{
+
+		if (!empty($_GET['code'])) {
+			$code = explode(':', base64_decode($_GET['code'], true));
+			if (count($code) == 2) {
+				$row = fetchOne('login', [
+					'email' => $code[0],
+					'otp' => $code[1],
+				]);
+				if ($row) {
+					$this->db->table('login')->update([
+						'email_verified' => date('Y-m-d H:i:s'),
+						'otp' => null,
+					], $row);
+					$this->session->destroy();
+					return view('static/verified', [
+						'email' => $code[0],
 					]);
 				}
 			}

@@ -23,7 +23,7 @@
 			</div>
 		<?php else : ?>
 			<div class="alert alert-danger">
-				Anda tidak dapat menghapus akun ini jika masih ada hosting yang terdaftar.
+				Anda tidak dapat menghapus akun ini jika masih ada hosting atau domain yang terdaftar.
 			</div>
 		<?php endif ?>
 		<a href="/user/profile" class="mt-3 btn btn-secondary">Kembali</a>

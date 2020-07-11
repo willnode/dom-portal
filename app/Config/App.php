@@ -10,6 +10,7 @@ class App extends BaseConfig
 	public $sudoWebminPort;
 	public $paymentURL;
 	public $paymentKey;
+	public $paymentSecret;
 	public $recapthaURL;
 	public $recapthaSite;
 	public $recapthaSecret;

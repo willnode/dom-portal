@@ -7,7 +7,10 @@ use App\Models\CountryCodes;
 use App\Models\LiquidRegistrar;
 use App\Models\PaymentGate;
 use App\Models\VirtualMinShell;
+use CodeIgniter\Email\Email as EmailEmail;
+use Config\Email;
 use Config\Services;
+use ErrorException;
 
 class User extends BaseController
 {
@@ -49,58 +52,86 @@ class User extends BaseController
 					'max_length[32]|is_unique[hosting.hosting_username]',
 				'slave' => 'required|is_not_unique[slaves.slave_id]',
 				'password' => 'required|min_length[8]',
+				'domain_mode' => empty($_POST['domain_mode']) ? 'permit_empty' : 'required|in_list[free,buy,custom]',
 				'template' => empty($_POST['template']) ? 'permit_empty' : 'in_list[wordpress,phpbb,opencart]',
 			])) {
 				$data = array_intersect_key(
 					$this->request->getPost(),
-					array_flip(['plan', 'username', 'slave', 'template', 'password'])
+					array_flip(['plan', 'username', 'slave', 'template', 'password', 'domain_mode'])
 				);
+				if (empty($data['domain_mode'])) $data['domain_mode'] = 'free';
 				if (!$plan = $this->db->table('plans')->getWhere(['plan_id' => $data['plan']])->getRow()) return;
 				if (!$slave = $this->db->table('slaves')->getWhere(['slave_id' => $data['slave']])->getRow()) return;
 				if (array_search(strtolower($data['username']), (new BannedNames())->names) !== FALSE) return;
 				$hosting = [
 					'hosting_login' => $this->session->login_id,
 					'hosting_username' => strtolower($data['username']),
+					'hosting_password' => $data['password'] ?? '',
 					'hosting_slave' => $data['slave'],
+				];
+				$domain = [
+					'domain_login' => $this->session->login_id,
 				];
 				$payment = [
 					'purchase_active' => 1,
 					'purchase_plan' => $data['plan'],
 					'purchase_invoiced' => date('Y-m-d H:i:s', \time()),
-					'purchase_password' => $data['password'] ?? '',
 					'purchase_template' => $data['template'] ?? '',
 				];
 				if ($plan->plan_alias !== 'Free') {
 					if ($this->validate([
-						'cname' => 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
-							'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosting.hosting_cname]',
+						'custom_cname' => $data['domain_mode'] === 'custom' ? 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
+							'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[domain.domain_name]' : 'permit_empty',
+						'buy_cname' => $data['domain_mode'] === 'buy' ? 'required|regex_match[/^[-\w]+$/]' : 'permit_empty',
+						'buy_scheme' => $data['domain_mode'] === 'buy' ? 'required|is_not_unique[schemes.scheme_id]' : 'permit_empty',
 						'years' => 'required|greater_than[0]|less_than[6]',
 					])) {
-						$data = array_intersect_key(
-							$this->request->getPost(),
-							array_flip(['cname', 'years'])
-						);
-						$hosting['hosting_cname'] = strtolower($data['cname']);
-						$payment['purchase_expired'] = date('Y-m-d H:i:s', strtotime("+$data[years] years", \time()));
+						if ($data['domain_mode'] === 'free') {
+							$domain['domain_name'] = $hosting['hosting_username'] . '.dom.my.id';
+							$domain['domain_scheme'] = 1;
+							$domprice = 0;
+						} else if ($data['domain_mode'] === 'buy') {
+							$scheme = fetchOne('schemes', ['scheme_id' => $_POST['buy_scheme']]);
+							$domain['domain_name'] = $_POST['buy_cname'] . $scheme->scheme_alias;
+							$domain['domain_scheme'] = $_POST['buy_scheme'];
+							$domprice = $scheme->scheme_price * 1000;
+							$liq = fetchOne('liquid', ['liquid_login' => $this->session->login_id]);
+							$liqc = json_decode($liq->liquid_default_contacts);
+							$liquid['domain_name'] = $domain['domain_name'];
+							$liquid['customer_id'] = $liq->liquid_id;
+							$liquid['years'] = $_POST['years'];
+							$liquid['registrant_contact_id'] = $liqc->registrant_contact->contact_id;
+							$liquid['billing_contact_id'] = $liqc->billing_contact->contact_id;
+							$liquid['admin_contact_id'] = $liqc->admin_contact->contact_id;
+							$liquid['tech_contact_id'] = $liqc->tech_contact->contact_id;
+							$liquid['purchase_privacy_protection'] = '0';
+							// $liquid['ns'] = 'ns1.dom.my.id,ns2.dom.my.id';
+							$liquid['invoice_option'] = 'only_add';
+							$rrr = (new LiquidRegistrar())->issuePurchaseDomain($liquid);
+							$domain['domain_liquid'] = $rrr->domain_id;
+							$payment['purchase_liquid'] = $liq->liquid_id . '|' . $rrr->transaction_id;
+						} else if ($data['domain_mode'] === 'custom') {
+							$domain['domain_name'] = $hosting['custom_cname'];
+							$domprice = 0;
+						}
+						$payment['purchase_expired'] = $domain['domain_expired'] = date('Y-m-d H:i:s', strtotime("+$_POST[years] years", \time()));
 						$payment['purchase_status'] = 'pending';
-						$payment['purchase_years'] = $data['years'];
-						$payment['purchase_challenge'] = random_int(111111, 999999);
-						$payment['purchase_price'] = $plan->plan_price * 10000 * $data['years'] + 5000;
+						$payment['purchase_years'] = $_POST['years'];
+						$payment['purchase_challenge'] = random_int(111111111, 999999999);
+						$payment['purchase_price'] = ($plan->plan_price * 10000 + $domprice) * $_POST['years'] + 5000;
 					} else {
-						return view('user/hosting/create', [
-							'plans' => $this->db->table('plans')->select([
-								'plan_id', 'plan_alias', 'plan_price'
-							])->get()->getResult(),
-							'slaves' => $this->db->table('slaves__usage')->get()->getResult(),
-							'validation' => $this->validator,
-						]);
+						$this->request->setMethod('get');
+						return $this->createHosting();
 					}
 				} else {
-					$payment['purchase_expired'] = date('Y-m-d H:i:s', strtotime("+3 months", \time()));
+					// Free plan. Just create
 					$payment['purchase_status'] = 'active';
+					$payment['purchase_expired'] = $domain['domain_expired'] = date('Y-m-d H:i:s', strtotime("+3 months", \time()));
+					$domain['domain_name'] = $hosting['hosting_username'] . '.dom.my.id';
+					$domain['domain_scheme'] = 1;
 					(new VirtualMinShell())->createHosting(
 						$hosting['hosting_username'],
-						$payment['purchase_password'],
+						$hosting['hosting_password'],
 						$this->session->email,
 						$hosting['hosting_username'] . '.dom.my.id',
 						$slave->slave_alias,
@@ -112,29 +143,17 @@ class User extends BaseController
 						$hosting['hosting_username'],
 						$slave->slave_ip
 					);
+					log_message('notice', VirtualMinShell::$output);
 				}
-				if ($this->db->table('hosting')->insert($hosting)) {
-					$payment['purchase_hosting'] = $this->db->insertID();
-					$this->db->table('purchase')->insert($payment);
-					if ($plan->plan_alias !== 'Free') {
-						$id = $this->db->insertID();
-						$pay = (new PaymentGate())->createPayment(
-							$id,
-							$payment['purchase_price'],
-							"Hosting $plan->plan_alias $data[years] Tahun",
-							$payment['purchase_challenge']
-						);
-						if ($pay && isset($pay->sessionID)) {
-							$this->db->table('purchase')->update([
-								'purchase_session' => $pay->sessionID ?? ''
-							], ['purchase_id' => $id]);
+				// Send to Database
+				if ($this->db->table('domain')->insert($domain)) {
+					$hosting['hosting_domain'] = $this->db->insertID();
+					if ($this->db->table('hosting')->insert($hosting)) {
+						$payment['purchase_hosting'] = $this->db->insertID();
+						if ($this->db->table('purchase')->insert($payment)) {
+							return $this->response->redirect('/user/hosting/invoices/' . $payment['purchase_hosting']);
 						}
-						return $this->response->redirect('/user/hosting/invoices/' . $payment['purchase_hosting']);
 					}
-					return view('user/hosting/output', [
-						'output' => VirtualMinShell::$output,
-						'link' => '/user/hosting/invoices/' . $payment['purchase_hosting'],
-					]);
 				}
 			}
 		}
@@ -185,40 +204,58 @@ class User extends BaseController
 						}
 						$payment['purchase_years'] = $post['years'];
 						$payment['purchase_status'] = 'pending';
-						$payment['purchase_challenge'] = random_int(111111, 999999);
+						$payment['purchase_challenge'] = random_int(111111111, 999999999);
+						$this->db->table('purchase')->update([
+							'purchase_active' => 2,
+						], ['purchase_id' => $data->purchase_id]);
 					} else {
-						return view('user/hosting/create', [
-							'plans' => $this->db->table('plans')->select([
-								'plan_id', 'plan_alias', 'plan_price'
-							])->get()->getResult(),
-							'slaves' => $this->db->table('slaves__usage')->get()->getResult(),
-							'validation' => $this->validator,
-						]);
+						$this->request->setMethod('get');
+						return $this->upgradeHosting($data);
 					}
 				} else {
+					// Downgrade to free
 					$payment['purchase_expired'] = date('Y-m-d H:i:s', strtotime("+3 months", \time()));
 					$payment['purchase_status'] = 'active';
 					(new VirtualMinShell())->upgradeHosting(
-						$data->hosting_cname ?: $data->default_domain,
+						$data->domain_name,
 						$data->slave_alias,
 						$data->plan_features,
 						$plan->plan_alias,
 						$plan->plan_features
 					);
-					if ($data->plan_alias !== 'Free' && $data->hosting_cname) {
-						// Downgrade to free
+					if ($data->plan_alias !== 'Free' && $data->domain_scheme != 1) {
+						// Change back to free domain
+						if ($data->domain_scheme) {
+							// Create new domain, leave the original
+							if (!$this->db->table('domain')->insert([
+								'domain_login' => $data->domain_login,
+								'domain_name' => $data->hosting_username . '.dom.my.id',
+								'domain_scheme' => 1,
+							])) {
+								$this->request->setMethod('get');
+								return $this->upgradeHosting($data);
+							}
+							$this->db->table('hosting')->update([
+								'hosting_domain' => $this->db->insertID(),
+							], ['hosting_id' => $data->hosting_id]);
+						} else {
+							// Change current alias domain
+							$this->db->table('domain')->update([
+								'domain_name' =>  $data->hosting_username . '.dom.my.id',
+								'domain_scheme' => 1,
+							], ['domain_id' => $data->domain_id]);
+						}
 						(new VirtualMinShell)->cnameHosting(
-							$data->hosting_cname,
+							$data->domain_name,
 							$data->slave_alias,
-							$data->default_domain
+							$data->hosting_username . '.dom.my.id'
 						);
 						(new VirtualMinShell)->addToServerDNS(
 							$data->hosting_username,
 							$data->slave_ip
 						);
-						$this->db->table('hosting')->update([
-							'hosting_cname' => null
-						], ['hosting_id' => $data->hosting_id]);
+
+						log_message('notice', VirtualMinShell::$output);
 					}
 					$this->db->table('purchase')->update([
 						'purchase_status' => 'expired',
@@ -226,28 +263,7 @@ class User extends BaseController
 					], ['purchase_id' => $data->purchase_id]);
 				}
 				if ($this->db->table('purchase')->insert($payment)) {
-					if ($plan->plan_alias !== 'Free') {
-						$id = $this->db->insertID();
-						$pay = (new PaymentGate())->createPayment(
-							$id,
-							$payment['purchase_price'],
-							"Hosting $plan->plan_alias $payment[purchase_years] Tahun",
-							$payment['purchase_challenge']
-						);
-						if ($pay && isset($pay->sessionID)) {
-							$this->db->table('purchase')->update([
-								'purchase_session' => $pay->sessionID ?? ''
-							], ['purchase_id' => $id]);
-						}
-						$this->db->table('purchase')->update([
-							'purchase_active' => 2,
-						], ['purchase_id' => $data->purchase_id]);
-						return $this->response->redirect('/user/hosting/invoices/' . $payment['purchase_hosting']);
-					}
-					return view('user/hosting/output', [
-						'output' => VirtualMinShell::$output,
-						'link' => '/user/hosting/invoices/' . $payment['purchase_hosting'],
-					]);
+					return $this->response->redirect('/user/hosting/invoices/' . $payment['purchase_hosting']);
 				}
 			}
 		}
@@ -262,6 +278,14 @@ class User extends BaseController
 	{
 		return view('user/hosting/detail', [
 			'data' => $data,
+		]);
+	}
+	protected function loginHosting($data)
+	{
+		return view('user/hosting/login', [
+			'uri' => "https://$data->slave_alias.dom.my.id:8443/session_login.cgi",
+			'user' => $data->hosting_username,
+			'pass' => $data->hosting_password,
 		]);
 	}
 	protected function renameHosting($data)
@@ -332,6 +356,12 @@ class User extends BaseController
 			->getWhere(['purchase_hosting' => $data->hosting_id])->getResult();
 		if ($this->request->getMethod() === 'post' && !empty($action = $_POST['action']) && $data->purchase_status === 'pending') {
 			if ($action === 'cancel') {
+				if ($data->purchase_liquid) {
+					$r = explode('|', $data->purchase_liquid);
+					(new LiquidRegistrar())->cancelPurchaseDomain($r[0], [
+						'transaction_id' => $r[1],
+					]);
+				}
 				if (count($history) === 1) {
 					$this->db->table('hosting')->delete([
 						'hosting_id' => $data->hosting_id
@@ -347,21 +377,21 @@ class User extends BaseController
 						'purchase_active' => 2,
 						'purchase_hosting' => $data->hosting_id,
 					]);
-					return $this->response->redirect('user/hosting/invoices/' . $data->hosting_id);
+					return $this->response->redirect('/user/hosting/invoices/' . $data->hosting_id);
 				}
-			} else if ($action === 'renew') {
+			} else if ($action === 'pay') {
 				$pay = (new PaymentGate())->createPayment(
 					$data->purchase_id,
 					$data->purchase_price,
-					"Hosting $data->plan_alias $data->purchase_years Tahun",
+					"Hosting $data->plan_alias $data->purchase_years Tahun" . ($data->purchase_liquid ? " dengan domain $data->domain_name" : ""),
 					$data->purchase_challenge
 				);
 				if ($pay && isset($pay->sessionID)) {
-					$this->db->table('purchase')->update([
-						'purchase_session' => $pay->sessionID ?? ''
-					], ['purchase_id' => $data->purchase_id]);
+					return $this->response->redirect(
+						$this->request->config->paymentURL . $pay->sessionID
+					);
 				}
-				return $this->response->redirect('user/hosting/invoices/' . $data->hosting_id);
+				return $this->response->redirect('/user/hosting/invoices/' . $data->hosting_id);
 			}
 		}
 		return view('user/hosting/invoices', [
@@ -372,19 +402,34 @@ class User extends BaseController
 	protected function deleteHosting($data)
 	{
 		if ($this->request->getMethod() === 'post' && $data->plan_alias === 'Free' && ($_POST['wordpass'] ?? '') === $data->hosting_username) {
-			if (!$data->hosting_cname) {
+			// Handle domain
+			if ($data->domain_scheme == 1) {
+				// Remove domain
 				(new VirtualMinShell)->removeFromServerDNS(
-					$data->hosting_username
+					$data->domain_name
 				);
+				$this->db->table('domain')->delete([
+					'domain_id' => $data->domain_id,
+				]);
+			} else if ($data->domain_scheme) {
+				// Set NULL
+				$this->db->table('hosting')->update([
+					'hosting_domain' => null,
+				], [
+					'hosting_id' => $data->hosting_id,
+				]);
+			} else {
+				// Self registering, just delete
+				$this->db->table('domain')->delete([
+					'domain_id' => $data->domain_id,
+				]);
 			}
-			(new VirtualMinShell())->deleteHosting($data->hosting_cname ?: $data->default_domain, $data->slave_alias);
+			(new VirtualMinShell())->deleteHosting($data->domain_name, $data->slave_alias);
 			$this->db->table('hosting')->delete([
 				'hosting_id' => $data->hosting_id,
 			]);
-			return view('user/hosting/output', [
-				'output' => VirtualMinShell::$output,
-				'link' => '/user/hosting/',
-			]);
+			log_message('notice', VirtualMinShell::$output);
+			return $this->response->redirect('/user/hosting/');
 		}
 		return view('user/hosting/delete', [
 			'data' => $data,
@@ -392,6 +437,9 @@ class User extends BaseController
 	}
 	public function hosting($page = 'list', $id = 0)
 	{
+		if (!$this->session->email_verified) {
+			return $this->verify_email();
+		}
 		if ($page === 'list') {
 			return $this->listHosting();
 		} else if ($page === 'create') {
@@ -404,6 +452,8 @@ class User extends BaseController
 			if ($data) {
 				if ($page === 'detail') {
 					return $this->detailHosting($data);
+				} else if ($page === 'login') {
+					return $this->loginHosting($data);
 				} else if ($page === 'rename') {
 					return $this->renameHosting($data);
 				} else if ($page === 'cname') {
@@ -473,10 +523,9 @@ class User extends BaseController
 				$post['domain_name'] .= $scheme->scheme_alias;
 				unset($post['domain_scheme']);
 				$post['customer_id'] = $this->liquid->liquid_id;
-				$post['ns'] = 'ns1.dom.my.id,ns2.dom.my.id';
+				// $post['ns'] = 'ns1.dom.my.id,ns2.dom.my.id';
 				$post['invoice_option'] = 'only_add';
-				$output = (new LiquidRegistrar())->issuePurchaseDomain($post);
-				error_log(json_encode($output));
+				log_message('notice', (new LiquidRegistrar())->issuePurchaseDomain($post));
 				return $this->syncDomain();
 			}
 		}
@@ -492,7 +541,9 @@ class User extends BaseController
 			return $this->syncDomain();
 		}
 		return view('user/domain/list', [
-			'list' => [],
+			'list' => $this->db->table('domain')->where([
+				'domain_login' => $this->session->login_id
+			])->get()->getResult(),
 			'page' => 'domain',
 		]);
 	}
@@ -501,7 +552,7 @@ class User extends BaseController
 	{
 		return view('user/domain/login', [
 			'user' => $this->session->email,
-			'pass' => '***REMOVED***',
+			'pass' => $this->liquid->liquid_password,
 			'uri' => $this->request->config->liquidCustomer,
 		]);
 	}
@@ -548,7 +599,9 @@ class User extends BaseController
 						'liquid_password' => $post['password'],
 						'liquid_login' => $_SESSION['login_id'],
 					]);
-					return $this->syncDomain();
+					$s = $this->syncDomain();
+					return ($_GET['then'] ?? '') !== 'reload' ? $s :
+						'<!doctype html><body><script>window.opener.location.reload();window.close();</script></body>';
 				}
 				return view('user/hosting/output', [
 					'output' => json_encode($data),
@@ -571,12 +624,14 @@ class User extends BaseController
 			$liquid_cache_customer = $data[0];
 			$liquid_id = $liquid_cache_customer->customer_id;
 			$liquid_cache_contacts = $liquid->getListOfContacts($liquid_id);
+			$liquid_cache_domains = $liquid->getListOfDomains($liquid_id);
 			$liquid_pending_transactions = $liquid->getPendingTransactions($liquid_id);
 			$liquid_default_contacts = $liquid->getDefaultContacts($liquid_id);
 
 			$this->db->table('liquid')->update([
 				'liquid_id' => $liquid_id,
 				'liquid_cache_customer' => json_encode($liquid_cache_customer),
+				'liquid_cache_domains' => json_encode($liquid_cache_domains),
 				'liquid_cache_contacts' => json_encode($liquid_cache_contacts),
 				'liquid_pending_transactions' => json_encode($liquid_pending_transactions),
 				'liquid_default_contacts' => json_encode($liquid_default_contacts),
@@ -595,6 +650,9 @@ class User extends BaseController
 
 	public function domain($page = 'list', $id = 0)
 	{
+		if (!$this->session->email_verified) {
+			return $this->verify_email();
+		}
 		$this->liquid = fetchOne('liquid', ['liquid_login' => $this->session->login_id]);
 		if ($this->liquid) {
 			if ($page == 'list') {
@@ -616,13 +674,41 @@ class User extends BaseController
 			return $this->introDomain();
 		}
 	}
+	public function verify_email()
+	{
+		if ($this->request->getMethod() === 'post' && ($_POST['action'] === 'resend')) {
+			$data = fetchOne('login', ['login_id' => $this->session->login_id]);
+			if (!$data->otp) {
+				$data->otp = random_int(111111111, 999999999);
+				$this->db->table('login')->update([
+					'otp' => $data->otp
+				], [
+					'login_id' => $data->login_id
+				]);
+			}
+			$em = \Config\Services::email();
+			$em->setTo($data->email);
+			$em->setSubject('Verifikasi Email | DOM Cloud');
+			$em->setMessage(view('static/verify_email', [
+				'name' => $data->name,
+				'link' => base_url('verify?code=' . urlencode(base64_encode($data->email . ':' . $data->otp)))
+			]));
+			if (!$em->send()) {
+				log_message('critical', $em->printDebugger());
+				throw new ErrorException("Unable to send message");
+			}
+		}
+		return view('user/veremail', [
+			'email' => $this->session->email,
+		]);
+	}
 	public function profile()
 	{
 		if ($this->request->getMethod() === 'post') {
 			if ($this->validate([
 				'name' => 'required|min_length[3]|max_length[255]',
 				'phone' => 'required|min_length[8]|max_length[16]',
-				'email' => 'required|valid_email',
+				'email' => $this->session->email_verified ? 'permit_empty' : 'required|valid_email',
 				'lang' => 'required|in_list[id,en]',
 			])) {
 				$data = array_intersect_key(
@@ -631,6 +717,9 @@ class User extends BaseController
 						['name', 'email', 'phone', 'lang']
 					)
 				);
+				if ($this->session->email_verified) {
+					unset($data['email']);
+				}
 				$this->db->table('login')->update($data, [
 					'login_id' => $this->session->login_id
 				]);
@@ -641,9 +730,8 @@ class User extends BaseController
 			}
 		}
 		return view('user/profile', [
-			'data' => $this->db->table('login')->getWhere([
-				'login_id' => $this->session->login_id,
-			])->getRow(),
+			'data' => fetchOne('login', ['login_id' => $this->session->login_id]),
+			'email_verified' => $this->session->email_verified,
 			'page' => 'profile',
 		]);
 	}
@@ -651,7 +739,17 @@ class User extends BaseController
 	public function delete()
 	{
 		$ok = $this->db->table('hosting')->where(['hosting_login' => $this->session->login_id])->countAll() === 0;
+		$ok = $ok && $this->db->table('domain')->where(['domain_login' => $this->session->login_id])->countAll() === 0;
 		if ($ok && $this->request->getMethod() === 'post' && strpos($this->request->getPost('wordpass'), 'Y') !== FALSE) {
+			$liquid = fetchOne('liquid', [
+				'liquid_login' =>  $this->session->login_id
+			]);
+			if ($liquid) {
+				(new LiquidRegistrar())->deleteCustomer($liquid->liquid_id);
+				$this->db->table('liquid')->delete([
+					'liquid_login' => $this->session->login_id,
+				]);
+			}
 			$this->db->table('login')->delete([
 				'login_id' => $this->session->login_id,
 			]);

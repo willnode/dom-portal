@@ -14,7 +14,7 @@
           <thead>
             <tr>
               <th>Domain</th>
-              <th>Status</th>
+              <th>Akses Portal</th>
               <th>Masa Tenggang</th>
             </tr>
           </thead>
@@ -26,7 +26,7 @@
                     <?= $domain->domain_name ?>
                   </a>
                 </td>
-                <td><?= ucfirst($domain->domain_status) ?></td>
+                <td><?= $domain->domain_liquid ? 'Ya' : 'Tidak' ?></td>
                 <td><?= ucfirst($domain->domain_expired) ?></td>
               </tr>
             <?php endforeach ?>
@@ -35,9 +35,9 @@
       </div>
     </div>
     <div class="d-flex">
-      <a class="btn btn-success m-2" href="/user/domain/create">Order Baru</a>
+      <!-- <a class="btn btn-success m-2" href="/user/domain/create">Order Baru</a> -->
       <form method="post" class="ml-auto"><input type="submit" name="action" value="Sync" class="btn btn-warning m-2"></form>
-      <a href="/user/domain/login" class="btn btn-primary m-2">Login Domain Panel</a>
+      <a href="/user/domain/login" class="btn btn-primary m-2">Login Portal Domain</a>
     </div>
   </div>
 

@@ -6,18 +6,21 @@ use Config\Services;
 
 class LiquidRegistrar
 {
-	protected function callApi($route, $post = null)
+	protected function callApi($route, $post = null, $method = null)
 	{
 		$url = Services::request()->config->liquidURL;
 		$id = Services::request()->config->liquidID;
 		$key = Services::request()->config->liquidKey;
 		$ch = curl_init($url . $route);
-		//echo $url . $route; exit;
+		// echo $url . $route; exit;
 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_USERPWD, $id . ":" . $key);
 		if ($post) {
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+		}
+		if ($method) {
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 		}
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
@@ -29,13 +32,16 @@ class LiquidRegistrar
 			$json = json_decode($response);
 			$type = ($json->type ?? '');
 			if ($type == 'unauthorized' || $type == 'invalid_request') {
+				log_message('error', 'DOMAIN: '. $response);
 				echo view('user/hosting/output', [
 					'output' => $type == 'unauthorized' ?
 						'The registrar service was busy. Try again later in 15 minutes.' :
-						$json->message ?? json_encode($json),
+						json_encode($json),
 					'link' => '/user/domain/',
 				]);
 				exit;
+			} else {
+				log_message('notice', 'DOMAIN: '. $response);
 			}
 			return $json;
 		} else {
@@ -50,7 +56,6 @@ class LiquidRegistrar
 
 	public function isDomainAvailable($domain)
 	{
-		error_log(urlencode($domain));
 		return $this->callApi('/domains/availability?domain=' . urlencode($domain));
 	}
 
@@ -84,18 +89,23 @@ class LiquidRegistrar
 		return $this->callApi("/domains", $query);
 	}
 
-	public function confirmPurchaseDomain($query)
+	public function cancelPurchaseDomain($customer_id, $query)
 	{
-		# code...
+		return $this->callApi("/customers/$customer_id/transactions/cancel", $query);
 	}
 
-	public function deleteDomain($id)
+	public function confirmPurchaseDomain($customer_id, $query)
 	{
-		# code...
+		return $this->callApi("/customers/$customer_id/transactions/execute", $query);
 	}
 
-	public function deleteCustomer($id)
+	public function deleteDomain($domain, $customer_id)
 	{
-		# code...
+		return $this->callApi("/domains/$domain?customer_id=$customer_id", null, "DELETE");
+	}
+
+	public function deleteCustomer($customer_id)
+	{
+		return $this->callApi("/customers/$customer_id", null, "DELETE");
 	}
 }

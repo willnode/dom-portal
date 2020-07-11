@@ -18,7 +18,7 @@
             </div>
             <div class="form-group">
               <label for="email"><?= lang('Interface.email') ?></label>
-              <input class="form-control" id="email" maxlength="255" name="email" type="email" required placeholder="<?= lang('Interface.activeEmail') ?>" value="<?= esc($data->email, 'attr') ?>">
+              <input class="form-control" <?=$email_verified ? 'disabled' : ''?> id="email" maxlength="255" name="email" type="email" required placeholder="<?= lang('Interface.activeEmail') ?>" value="<?= esc($data->email, 'attr') ?>">
             </div>
             <div class="form-group">
               <label for="phone"><?= lang('Interface.phone') ?></label>

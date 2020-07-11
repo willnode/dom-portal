@@ -14,19 +14,19 @@ class VirtualMinShell
 			set_time_limit(300);
 			$username = Services::request()->config->sudoWebminUser;
 			$password = Services::request()->config->sudoWebminPass;
-			VirtualMinShell::$output .= $title."\n";
+			VirtualMinShell::$output .= 'HOSTING: '.$title."\n";
 			$ch = curl_init($cmd);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 			$response = curl_exec($ch);
-			VirtualMinShell::$output .= $response."\n\n";
+			VirtualMinShell::$output .= $response."\n";
 			curl_close($ch);
 			return $response;
 		} else {
-			VirtualMinShell::$output .= $title."\n";
-			VirtualMinShell::$output .= $cmd."\n\n";
+			VirtualMinShell::$output .= 'HOSTING: '.$title."\n";
+			VirtualMinShell::$output .= $cmd."\n";
 		}
 	}
 	protected function wrapWget($params, $slave_dn)
@@ -36,11 +36,8 @@ class VirtualMinShell
 	}
 	protected $featureFlags = [
 		"&dir=&webmin=&web=&mysql=&unix=",
-		"&ssl=",
-		"&mail=",
-		"&webalizer=",
-		"&dns=",
-		"&spam=&postgresql=",
+		"&ssl=&dns=",
+		"&virtualmin-awstats=",
 	];
 	public function createHosting($username, $password, $email, $domain, $slave, $plan, $privilenge, $template)
 	{
@@ -57,7 +54,7 @@ class VirtualMinShell
 		$password = urlencode($password);
 		$cmd = "program=create-domain&user=$username&pass=$password" .
 			"&email=$email&domain=$domain&plan=$plan&limits-from-plan=$flags";
-		$this->execute($this->wrapWget($cmd, $slave), "=== Create Hosting for $domain ===");
+		$this->execute($this->wrapWget($cmd, $slave), " Create Hosting for $domain ");
 	}
 	public function upgradeHosting($domain, $slave, $oldprivilenge, $newplan, $newprivilenge)
 	{
@@ -80,22 +77,22 @@ class VirtualMinShell
 	public function renameHosting($domain, $slave, $newusername)
 	{
 		$cmd = "program=modify-domain&domain=$domain&user=$newusername";
-		$this->execute($this->wrapWget($cmd, $slave), "=== Rename hosting $domain ===");
+		$this->execute($this->wrapWget($cmd, $slave), " Rename hosting $domain ");
 	}
 	public function cnameHosting($domain, $slave, $newdomain)
 	{
 		$cmd = "program=modify-domain&domain=$domain&newdomain=$newdomain";
-		$this->execute($this->wrapWget($cmd, $slave), "=== Change domain for $domain ===");
+		$this->execute($this->wrapWget($cmd, $slave), " Change domain for $domain ");
 	}
 	public function addToServerDNS($username, $slave_ip)
 	{
 		$cmd = "program=modify-dns&domain=dom.my.id&add-record=$username+A+$slave_ip&add-record=www.$username+A+$slave_ip";
-		$this->execute($this->wrapWget($cmd, 'portal'), "=== Adding DNS record for $username to central DOM ===");
+		$this->execute($this->wrapWget($cmd, 'portal'), " Adding DNS record for $username to central DOM ");
 	}
 	public function removeFromServerDNS($username)
 	{
 		$cmd = "program=modify-dns&domain=dom.my.id&remove-record=$username+A&remove-record=www.$username+A";
-		$this->execute($this->wrapWget($cmd, 'portal'), "=== Removing DNS record for $username to central DOM ===");
+		$this->execute($this->wrapWget($cmd, 'portal'), " Removing DNS record for $username to central DOM ");
 	}
 	public function resetHosting($domain, $slave, $newpw)
 	{
@@ -115,6 +112,6 @@ class VirtualMinShell
 	public function deleteHosting($domain, $slave)
 	{
 		$cmd = "program=delete-domain&domain=$domain";
-		$this->execute($this->wrapWget($cmd, $slave), "=== Delete Hosting for $domain ===");
+		$this->execute($this->wrapWget($cmd, $slave), " Delete Hosting for $domain ");
 	}
 }

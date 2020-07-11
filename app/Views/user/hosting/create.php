@@ -75,7 +75,7 @@
               <h3 class="card-title">Domain</h3>
               <div class="form-group">
                 <label for="domain_mode">Pilih opsi domain</label>
-                <select name="domain_mode" disabled id="domain_mode" class="form-control" onchange="recalculate()" required>
+                <select name="domain_mode" id="domain_mode" disabled class="form-control" onchange="recalculate()" required>
                   <option value="free" selected>Gunakan domain gratis</option>
                   <option value="buy">Beli domain baru</option>
                   <option value="custom">Gunakan yang sudah ada</option>
@@ -222,7 +222,8 @@
   </script>
   <script>
     var plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.plan_id] = b, a), {});
-    var schemes = JSON.parse(document.getElementById('schemes').innerHTML).reduce((a, b) => (a[b.scheme_id] = b, a), {});
+    var schemes = JSON.parse(document.getElementById('schemes').innerHTML);
+    schemes = schemes && schemes.reduce((a, b) => (a[b.scheme_id] = b, a), {});
     var formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
@@ -246,7 +247,7 @@
         r.json()).then(r => {
         activedomain = r;
         $(r.status === 'available' ? '#buy-status-available' : '#buy-status-error').toggleClass('d-none', false);
-        $('#buy-status-error').toggleClass('d-none', true);
+        $('#buy-status-loading').toggleClass('d-none', true);
         recalculate();
       }).catch(e => {
         activedomain = null;
@@ -260,13 +261,14 @@
       var tip = 5000;
       var form = window.upgrade;
       var dommod = form.domain_mode.value;
-      var scheme = dommod === 'buy' ? parseInt(schemes[form.buy_scheme.value].scheme_price) * 1000 : 0;
+      var scheme = dommod === 'buy' && form.buy_scheme ? parseInt(schemes[form.buy_scheme.value].scheme_price) * 1000 : 0;
       var unit = parseInt(plans[form.plan.value].plan_price) * 10000;
       var years = unit === 0 ? 0.25 : parseInt(form.years.value);
       var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
       // Alter UI
       if (unit == 0) {
-        form.domain_mode.value = 'free';
+        dommod = form.domain_mode.value = 'free';
+        scheme = 0;
       } else if (form.custom_cname.value.endsWith('dom.my.id')) {
         form.custom_cname.value = '';
       }
@@ -274,10 +276,13 @@
       $('#dm-buy').toggleClass('d-none', dommod !== 'buy');
       $('#dm-custom').toggleClass('d-none', dommod !== 'custom');
       form.free_cname.value = form.username.value + '.dom.my.id';
-      form.years.disabled = form.domain_mode.disabled = unit === 0;
+      form.domain_mode.disabled = unit === 0;
+      form.years.disabled = unit === 0;
       form.custom_cname.disabled = dommod !== 'custom';
-      form.buy_cname.disabled = dommod !== 'buy';
-      form.buy_scheme.disabled = dommod !== 'buy';
+      if (form.buy_cname) {
+        form.buy_cname.disabled = dommod !== 'buy';
+        form.buy_scheme.disabled = dommod !== 'buy';
+      }
 
       // Show values
       if (unit == 0) {
