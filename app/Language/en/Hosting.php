@@ -1,3 +1,21 @@
 <?php return [
+	'listTitle' => 'Hosting List',
+	'newOrder' => 'New Order',
+	'portalUsername' => 'Portal Username',
+	'portalPassword' => 'Portal Password',
+	'slaveServer' => 'Slave Server',
+	'chooseTemplate' => 'Choose Template',
+	'selectPacketType' => 'Select Scheme Type',
+	'lookPacketDiff' => 'Find out scheme differences',
+	'yearDuration' => 'Duration in years',
+	'selectDomainKind' => 'Select Domain Kind',
 
+	'schemePrice' => 'Scheme Price',
+	'domainPrice' => 'Domain Price',
+	'hostingDuration' => 'Hosting Duration',
+	'hostingCost' => 'Hosting Cost',
+	'transactionCost' => 'Transaction Cost',
+	'totalPayment' => 'Total Payment',
+	'expirationDate' => 'Expiration Date',
+	'orderNow' => 'Order Now',
 ];

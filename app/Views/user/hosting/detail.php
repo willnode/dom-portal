@@ -14,23 +14,17 @@
             <div>Username Hosting</div>
             <div class="input-group mb-3">
               <input type="text" class="form-control" value="<?= $data->hosting_username ?>" readonly>
-              <div class="input-group-append">
-                <a href="/user/hosting/rename/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Ganti</a>
-              </div>
+              <a href="/user/hosting/rename/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Ganti</a>
             </div>
             <div>Custom Domain</div>
             <div class="input-group mb-3">
               <input value="<?= $data->domain_name ?>" type="text" class="form-control" readonly>
-              <div class="input-group-append">
-                <a href="/user/hosting/cname/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Ganti</a>
-              </div>
+              <a href="/user/hosting/cname/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Ganti</a>
             </div>
             <div>Slave ID / Alamat IP</div>
             <div class="input-group mb-3">
               <input value="<?= $data->slave_alias . ' / ' . $data->slave_ip ?>" type="text" class="form-control" readonly>
-              <div class="input-group-append">
-                <a href="/user/hosting/login/<?= $data->hosting_id ?>" target="_blank" class="btn btn-outline-secondary">Buka Panel Webmin</a>
-              </div>
+              <a href="/user/hosting/login/<?= $data->hosting_id ?>" target="_blank" class="btn btn-outline-secondary">Buka Panel Webmin</a>
             </div>
             <div>Opsi Administratif</div>
             <div class="btn-group d-flex justify-content-end mt-2">
@@ -47,33 +41,25 @@
             <div class="input-group mb-3">
               <h3><?= ucfirst($data->purchase_status) ?></h3>
               <?php if ($data->purchase_status === 'pending') : ?>
-                <a href="/user/hosting/invoices/<?= $data->hosting_id?>"
-                class="ml-auto btn btn-primary">Selesaikan Pembayaran</a>
+                <a href="/user/hosting/invoices/<?= $data->hosting_id ?>" class="ml-auto btn btn-primary">Selesaikan Pembayaran</a>
               <?php elseif ($data->purchase_status === 'active') : ?>
-                <a href="http://<?= $data->domain_name?>" target="_blank" rel="noopener noreferrer"
-                class="ml-auto btn btn-primary">Buka Website</a>
+                <a href="http://<?= $data->domain_name ?>" target="_blank" rel="noopener noreferrer" class="ml-auto btn btn-primary">Buka Website</a>
               <?php endif ?>
             </div>
             <div>Paket Terpilih</div>
             <div class="input-group mb-3">
               <input type="text" class="form-control" value="<?= $data->plan_alias ?>" readonly>
-              <div class="input-group-append">
-                <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Ganti</a>
-              </div>
+              <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Ganti</a>
             </div>
             <div>Tanggal Pembelian</div>
             <div class="input-group mb-3">
               <input type="text" class="form-control" value="<?= $data->purchase_invoiced ?>" readonly>
-              <div class="input-group-append">
-                <a href="/user/hosting/invoices/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Arsip</a>
-              </div>
+              <a href="/user/hosting/invoices/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Arsip</a>
             </div>
             <div>Tanggal Kadaluarsa</div>
             <div class="input-group mb-3">
               <input type="text" class="form-control" value="<?= $data->purchase_expired ?>" readonly>
-              <div class="input-group-append">
-                <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Perpanjang</a>
-              </div>
+              <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Perpanjang</a>
             </div>
             <?php if ($data->plan_alias !== 'Free' && $data->purchase_status === 'active' && $data->domain_scheme == 1) : ?>
               <div class="alert alert-warning">

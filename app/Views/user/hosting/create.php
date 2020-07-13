@@ -13,27 +13,23 @@
         <div class="col-lg-4">
           <div class="card my-2">
             <div class="card-body">
-              <h3 class="card-title">Opsi</h3>
-              <div class="form-group">
-                <label for="username">Username Portal</label>
+              <div class="mb-3">
+                <label class="form-label" for="username"><?= lang('Hosting.portalUsername') ?></label>
                 <input class="form-control" id="username" minlength="5" maxlength="32" name="username" placeholder="hanya alfanumerik" pattern="^[-\w]+$" oninput="recalculate()" required>
               </div>
-              <div class="form-group">
-                <label for="name">Password Portal</label>
+              <div class="mb-3">
+                <label class="form-label" for="name"><?= lang('Hosting.portalPassword') ?></label>
                 <div class="input-group">
                   <input class="form-control" id="password" oninput="this.type = 'password'" name="password" type="password" minlength="8" autocomplete="new-password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$">
-                  <div class="input-group-append">
-                    <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
-                  </div>
+                  <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
                 </div>
                 <small class="form-text text-muted">
-                  Password ini digunakan untuk masuk Portal Hosting. Harus berbeda dengan password portal sekarang.
-                  Password ini juga digunakan sebagai autentikasi pada area lain, seperti Database, Email dan FTP.
+                  <?= lang('Interface.passwordNotice') ?>.
                 </small>
               </div>
-              <div class="form-group">
-                <label for="slave">Server Slave</label>
-                <select class="form-control" id="slave" name="slave" required>
+              <div class="mb-3">
+                <label class="form-label" for="slave"><?= lang('Hosting.slaveServer') ?></label>
+                <select class="form-select" id="slave" name="slave" required>
                   <?php foreach ($slaves as $slave) : ?>
                     <label class="form-check">
                       <option value="<?= $slave->slave_id ?>"><?= $slave->slave_alias . " (Penggunaan: " . ($slave->utilization * 100) . "%)" ?></option>
@@ -41,9 +37,9 @@
                   <?php endforeach ?>
                 </select>
               </div>
-              <div class="form-group">
-                <label for="template">Pilih Template</label>
-                <select name="template" class="form-control">
+              <div class="mb-3">
+                <label class="form-label" for="template"><?= lang('Hosting.chooseTemplate') ?></label>
+                <select name="template" class="form-select">
                   <option value="">Kosong</option>
                   <option value="wordpress">WordPress</option>
                   <option value="phpbb">phpBB</option>
@@ -57,53 +53,56 @@
           <div class="card my-2">
             <div class="card-body">
               <h3 class="card-title">Paket</h3>
-              <div class="form-group">
-                <label for="plan">Pilih jenis paket</label>
-                <select name="plan" id="plan" class="form-control" onchange="recalculate()" required>
+              <div class="mb-3">
+                <label class="form-label" for="plan"><?= lang('Hosting.selectPacketType') ?></label>
+                <select name="plan" id="plan" class="form-select" onchange="recalculate()" required>
                   <?php foreach ($plans as $plan) : ?>
                     <option value="<?= $plan->plan_id ?>"><?= ucfirst($plan->plan_alias) ?></option>
                   <?php endforeach ?>
                 </select>
                 <small class="form-text text-muted">
-                  <a href="https://dom.my.id/price" target="_blank">Lihat perbandingan paket</a>.
+                  <a href="https://dom.my.id/price" target="_blank"><?= lang('Hosting.lookPacketDiff') ?></a>.
                 </small>
               </div>
-              <div class="form-group">
-                <label for="years">Pilih jangka tahun</label>
-                <input type="number" disabled class="form-control" name="years" value="1" min="1" max="5" onchange="recalculate()">
+              <div class="mb-3 row align-items-center">
+                <div class="col">
+                  <label for="years"><?= lang('Hosting.yearDuration') ?></label>
+                </div>
+                <div class="col">
+                  <input type="number" disabled class="form-control" name="years" value="1" min="1" max="5" onchange="recalculate()">
+                </div>
               </div>
               <h3 class="card-title">Domain</h3>
-              <div class="form-group">
-                <label for="domain_mode">Pilih opsi domain</label>
-                <select name="domain_mode" id="domain_mode" disabled class="form-control" onchange="recalculate()" required>
+              <div class="mb-3">
+                <label class="form-label" for="domain_mode"><?= lang('Hosting.selectDomainKind') ?></label>
+                <select name="domain_mode" id="domain_mode" disabled class="form-select" onchange="recalculate()" required>
                   <option value="free" selected>Gunakan domain gratis</option>
                   <option value="buy">Beli domain baru</option>
                   <option value="custom">Gunakan yang sudah ada</option>
                 </select>
               </div>
               <div id="dm-free">
-                <div class="form-group">
+                <div class="mb-3">
                   <input class="form-control" id="free_cname" value=".dom.my.id" disabled>
                   <small class="form-text text-muted">
-                    Domain gratis hanya menyediakan fitur terbatas. Anda tak bisa menambahkan subdomain dan menerima email dengan domain gratis.
+                    Domain gratis hanya menyediakan fitur terbatas.
+                    <br><a href="https://dok.dom.my.id/domain" target="_blank" rel="noopener noreferrer">Pelajari lebih lanjut</a>.
                   </small>
                 </div>
               </div>
               <div id="dm-buy" class="d-none">
                 <?php if ($liquid) : ?>
-                  <div class="form-group">
-                    <label>Cari Domain</label>
+                  <div class="mb-3">
+                    <label class="form-label">Cari Domain</label>
                     <div class="input-group">
                       <input name="buy_cname" id="buy_cname" class="form-control" pattern="^[-\w]+$" required oninput="recalculate()">
-                      <select class="form-control" name="buy_scheme" id="buy_scheme" required style="max-width: 120px" onchange="recalculate()">
+                      <select class="form-select" name="buy_scheme" id="buy_scheme" required style="max-width: 120px" onchange="recalculate()">
                         <?php foreach ($schemes as $s) : if ($s->scheme_price !== '0') : ?>
                             <option value="<?= $s->scheme_id ?>"><?= $s->scheme_alias ?></option>
                         <?php endif;
                         endforeach; ?>
                       </select>
-                      <div class="input-group-append">
-                        <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
-                      </div>
+                      <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
                     </div>
                     <small class="form-text text-muted">
                       <a href="https://dom.my.id/domain" target="_blank">Lihat daftar top level domain tersedia</a>.
@@ -124,16 +123,18 @@
                 <?php else : ?>
                   <p class="alert alert-danger">
                     <small>
-                      Kami tidak dapat memproses pembelian domain sebelum anda mengisi data yang kami butuhkan. <a href="/user/domain?then=reload" target="_blank">Isi sekarang</a>.
+                      Kami tidak dapat memproses pembelian domain sebelum anda mengisi data yang kami butuhkan.
+                      <br><a href="/user/domain?then=reload" target="_blank">Isi sekarang</a>.
                     </small>
                   </p>
                 <?php endif ?>
               </div>
               <div id="dm-custom" class="d-none">
-                <div class="form-group">
+                <div class="mb-3">
                   <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="masukkan domain kustom" pattern="^[a-zA-Z0-9][a-zA-Z0-9_.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
                   <small class="form-text text-muted">
-                    Setelah anda membeli hosting anda perlu mengarahkan domain yang anda sudah beli ke IP address hosting.
+                    Anda perlu mengarahkan domain setelah ini.
+                    <br><a href="https://dok.dom.my.id/domain" target="_blank" rel="noopener noreferrer">Pelajari lebih lanjut</a>.
                   </small>
                 </div>
               </div>
@@ -144,36 +145,36 @@
           <div class="card my-2">
             <div class="card-body">
               <div class="d-flex">
-                <h6>Harga Paket</h6>
+                <h6><?= lang('Hosting.schemePrice') ?></h6>
                 <div class="ml-auto" id="outprice">-</div>
               </div>
               <div class="d-flex">
-                <h6>Harga Domain</h6>
+                <h6><?= lang('Hosting.domainPrice') ?></h6>
                 <div class="ml-auto" id="outdomain">-</div>
               </div>
               <div class="d-flex">
-                <h6>Masa Hosting</h6>
+                <h6><?= lang('Hosting.hostingDuration') ?></h6>
                 <div class="ml-auto" id="outyear">-</div>
               </div>
               <hr>
               <div class="d-flex">
-                <h6>Biaya Hosting</h6>
+                <h6><?= lang('Hosting.hostingCost') ?></h6>
                 <div class="ml-auto" id="outtotal">-</div>
               </div>
               <div class="d-flex">
-                <h6>Biaya Transaksi</h6>
+                <h6><?= lang('Hosting.transactionCost') ?></h6>
                 <div class="ml-auto" id="outtip">-</div>
               </div>
               <hr>
               <div class="d-flex">
-                <h6>Total Pembayaran</h6>
+                <h6><?= lang('Hosting.totalPayment') ?></h6>
                 <div class="ml-auto" id="outbill">-</div>
               </div>
               <div class="d-flex">
-                <h6>Tanggal Kadaluarsa</h6>
+                <h6><?= lang('Hosting.expirationDate') ?></h6>
                 <div class="ml-auto" id="outexp">-</div>
               </div>
-              <input type="submit" value="Order Sekarang" class="form-control btn-lg btn btn-primary mt-3">
+              <input type="submit" value="<?= lang('Hosting.orderNow') ?>" class="form-control btn-lg btn btn-primary mt-3">
             </div>
           </div>
         </div>
@@ -184,9 +185,10 @@
 
   <script>
     function useRandPass() {
-      $('#password').val(genRandPass(12));
-      $('#password').attr('type', 'text');
+      document.getElementById('password').value = genRandPass(12);
+      document.getElementById('password').type = 'text';
     }
+    useRandPass();
 
     function genRandPass(pLength) {
 

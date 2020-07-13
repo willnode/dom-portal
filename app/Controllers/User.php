@@ -697,6 +697,8 @@ class User extends BaseController
 				log_message('critical', $em->printDebugger());
 				throw new ErrorException("Unable to send message");
 			}
+			$this->session->destroy();
+			return $this->response->redirect('/id/login?msg=emailsent');
 		}
 		return view('user/veremail', [
 			'email' => $this->session->email,
@@ -734,6 +736,23 @@ class User extends BaseController
 			'email_verified' => $this->session->email_verified,
 			'page' => 'profile',
 		]);
+	}
+
+	public function reset()
+	{
+		if ($this->request->getMethod() === 'post') {
+			if ($this->validate([
+				'password' => 'required|min_length[8]',
+				'passconf' => 'required|matches[password]',
+			])) {
+				$this->db->table('login')->update([
+					'password' => password_hash($_POST['password'], PASSWORD_BCRYPT)
+				], [
+					'login_id' => $this->session->login_id
+				]);
+			}
+		}
+		return $this->response->redirect('/user/profile');
 	}
 
 	public function delete()

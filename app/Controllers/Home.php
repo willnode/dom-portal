@@ -6,7 +6,6 @@ use App\Models\LiquidRegistrar;
 use App\Models\Recaptha;
 use App\Models\VirtualMinShell;
 use CodeIgniter\Exceptions\PageNotFoundException;
-use ErrorException;
 
 class Home extends BaseController
 {
@@ -132,7 +131,7 @@ class Home extends BaseController
 					$this->db->table('login')->update([
 						'email_verified' => date('Y-m-d H:i:s'),
 						'otp' => null,
-					], $row);
+					], (array)$row);
 					$this->session->destroy();
 					return view('static/verified', [
 						'email' => $code[0],
@@ -161,7 +160,7 @@ class Home extends BaseController
 					foreach ($login as $key => $value) {
 						$this->session->set($key, $value);
 					}
-					return $this->response->redirect('/user');
+					return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
 				}
 			}
 		}

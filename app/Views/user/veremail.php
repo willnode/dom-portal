@@ -13,7 +13,7 @@
     <div class="d-flex">
       <form method="post" class="my-2">
         <input type="hidden" name="action" value="resend">
-        <input type="submit" class="btn btn-success" value="Kirim Ulang Email Konfirmasi">
+        <input type="submit" class="btn btn-success" onclick="return confirm('Yakin untuk mengirim ulang email? Tindakan ini juga melogout sesi anda sekarang. Mohon cek inbox email setelah ini.')" value="Kirim Ulang Email Konfirmasi">
       </form>
       <a href="/user/profile" class="btn btn-secondary ml-auto my-2">Salah email?</a>
     </div>

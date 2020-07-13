@@ -1,15 +1,21 @@
 <?php return [
 	'code' => 'en',
-	'appTitle' => 'DOM Cloud Hosting Solution',
+	'appTitle' => 'DOM Cloud Hosting',
 	'login' => 'Sign In',
 	'register' => 'Register',
 	'logout' => 'Sign Out',
 	'profile' => 'Profile',
 	'hosting' => 'Hosting',
 	'domain' => 'Domain',
+	'scheme' => 'Scheme',
+	'status' => 'Status',
+	'expiration' => 'Expiration',
 	'enterToPortal' => 'Enter to portal',
 	'registerToPortal' => 'Register to portal',
 	'registerPrompt' => 'Don\'t have account?',
+
+	'learnMore' => 'Learn more',
+	'passwordNotice' => 'You don\'t need to remember this password',
 
 	'name' => 'Name',
 	'email' => 'Email',

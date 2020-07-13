@@ -1,15 +1,21 @@
 <?php return [
 	'code' => 'id',
-	'appTitle' => 'DOM Cloud Hosting Solution',
+	'appTitle' => 'DOM Cloud Hosting',
 	'login' => 'Masuk',
 	'register' => 'Daftar',
 	'logout' => 'Keluar',
 	'profile' => 'Profil',
 	'hosting' => 'Hosting',
 	'domain' => 'Domain',
+	'scheme' => 'Paket',
+	'status' => 'Status',
+	'expiration' => 'Masa Tenggang',
 	'enterToPortal' => 'Masuk ke portal',
 	'registerToPortal' => 'Daftar ke portal',
 	'registerPrompt' => 'Belum punya akun?',
+
+	'learnMore' => 'Pelajari lebih lanjut',
+	'passwordNotice' => 'Anda tidak perlu mengingat password ini',
 
 	'name' => 'Nama',
 	'email' => 'Email',

@@ -1,3 +1,21 @@
 <?php return [
+	'listTitle' => 'Daftar Hosting',
+	'newOrder' => 'Order Baru',
+	'portalUsername' => 'Username Portal',
+	'portalPassword' => 'Password Portal',
+	'slaveServer' => 'Server Slave',
+	'chooseTemplate' => 'Pilih Template',
+	'selectPacketType' => 'Pilih jenis paket',
+	'lookPacketDiff' => 'Lihat perbandingan paket',
+	'yearDuration' => 'Jangka tahun',
+	'selectDomainKind' => 'Pilih opsi domain',
 
+	'schemePrice' => 'Harga Paket',
+	'domainPrice' => 'Harga Domain',
+	'hostingDuration' => 'Masa Hosting',
+	'hostingCost' => 'Biaya Hosting',
+	'transactionCost' => 'Biaya Transaksi',
+	'totalPayment' => 'Total Pembayaran',
+	'expirationDate' => 'Tanggal Kadaluarsa',
+	'orderNow' => 'Order Sekarang',
 ];

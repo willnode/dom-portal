@@ -18,32 +18,30 @@
         <div class="card my-2">
           <div class="card-body">
             <h3>Data Administrasi</h3>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Nama Lengkap</label>
               <input class="form-control" id="name" name="name" value="<?= esc($data['name'], 'attr') ?>" autocomplete="name" readonly required>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Nama Bisnis / Perusahaan</label>
               <input class="form-control" id="company" name="company" autocomplete="organization" required>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Email</label>
               <input class="form-control" id="email" name="email" autocomplete="email" value="<?= esc($data['email'], 'attr') ?>" readonly required>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Password</label>
               <div class="input-group">
                 <input class="form-control" id="password" oninput="this.type = 'password'" name="password" type="password" minlength="8" autocomplete="new-password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$">
-                <div class="input-group-append">
-                  <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
-                </div>
+                <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
               </div>
               <small class="form-text text-muted">
                 Password ini digunakan sebagai akun masuk Portal Domain. Harus berbeda dengan password portal sekarang.
                 Anda tidak perlu mengingat password ini karena akan disimpan untuk auto-login ke portal domain.
               </small>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Nomor Telepon</label>
               <div class="input-group">
                 <div class="input-group-prepend">
@@ -53,7 +51,7 @@
                 <input class="form-control" name="tel_no" autocomplete="tel-extension" required>
               </div>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Nomor Telepon Alternatif (opsional)</label>
               <div class="input-group">
                 <div class="input-group-prepend">
@@ -70,27 +68,27 @@
         <div class="card">
           <div class="card-body">
             <h3 class="mb-3">Data Alamat</h3>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Alamat (Baris 1)</label>
               <input class="form-control" autocomplete="address-level1" name="address_line_1" required>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Alamat (Baris 2, Opsional)</label>
               <input class="form-control" autocomplete="address-level2" name="address_line_2">
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Alamat (Baris 3, Opsional)</label>
               <input class="form-control" autocomplete="address-level3" name="address_line_3">
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Kota</label>
               <input class="form-control" autocomplete="address-level4" name="city" required>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Provinsi</label>
               <input class="form-control" name="state" required>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Negara</label>
               <select class="form-control" name="country_code" required>
                 <?php foreach ($codes as $code) : $c = strtolower($code['country']);
@@ -99,7 +97,7 @@
                 <?php endforeach ?>
               </select>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="name">Kode Zip</label>
               <input class="form-control" autocomplete="postal-code" name="zipcode" required minlength="4">
             </div>
