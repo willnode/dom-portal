@@ -40,10 +40,16 @@
               <div class="mb-3">
                 <label class="form-label" for="template"><?= lang('Hosting.chooseTemplate') ?></label>
                 <select name="template" class="form-select">
-                  <option value="">Kosong</option>
-                  <option value="wordpress">WordPress</option>
-                  <option value="phpbb">phpBB</option>
-                  <option value="opencart">OpenCart</option>
+                  <?php $tt = "Default" ?>
+                  <optgroup label="Default">
+                    <?php foreach ($templates as $t) : ?>
+                      <?php if ($t->template_category !== $tt) : $tt = $t->template_category ?>
+                  </optgroup>
+                  <optgroup label="<?= $tt ?>">
+                  <?php endif ?>
+                  <option value="<?= $t->template_id ?>"><?= $t->template_name ?></option>
+                <?php endforeach ?>
+                  </optgroup>
                 </select>
               </div>
             </div>

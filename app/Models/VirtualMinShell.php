@@ -48,7 +48,6 @@ class VirtualMinShell
 			}
 		}
 		if ($template) {
-			$template = ucfirst($template) . '+Template';
 			$flags .= "&template=$template";
 		}
 		$password = urlencode($password);

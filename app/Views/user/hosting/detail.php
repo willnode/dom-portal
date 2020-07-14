@@ -24,12 +24,13 @@
             <div>Slave ID / Alamat IP</div>
             <div class="input-group mb-3">
               <input value="<?= $data->slave_alias . ' / ' . $data->slave_ip ?>" type="text" class="form-control" readonly>
-              <a href="/user/hosting/login/<?= $data->hosting_id ?>" target="_blank" class="btn btn-outline-secondary">Buka Panel Webmin</a>
+              <a href="/user/hosting/login/<?= $data->hosting_id ?>" target="_blank" class="btn btn-outline-secondary">Buka Portal Webmin</a>
             </div>
             <div>Opsi Administratif</div>
             <div class="btn-group d-flex justify-content-end mt-2">
-              <a href="/user/hosting/reset/<?= $data->hosting_id ?>" class="btn btn-outline-primary">Ganti Password Webmin</a>
-              <a href="/user/hosting/delete/<?= $data->hosting_id ?>" class="btn btn-outline-danger">Hapus Hosting Permanen</a>
+              <a href="/user/hosting/see/<?= $data->hosting_id ?>" class="btn btn-outline-primary">Atur Server Login</a>
+              <!-- <a href="/user/hosting/reset/<?= $data->hosting_id ?>" class="btn btn-outline-primary">Ganti Password</a> -->
+              <a href="/user/hosting/delete/<?= $data->hosting_id ?>" class="btn btn-outline-danger">Hapus Hosting</a>
             </div>
           </div>
         </div>
@@ -61,15 +62,6 @@
               <input type="text" class="form-control" value="<?= $data->purchase_expired ?>" readonly>
               <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Perpanjang</a>
             </div>
-            <?php if ($data->plan_alias !== 'Free' && $data->purchase_status === 'active' && $data->domain_scheme == 1) : ?>
-              <div class="alert alert-warning">
-                <p>Anda mengaktifkan paket premium namun belum mengganti kustom domain!</p>
-                <p>Perlu diperhatikan bahwa selama anda belum memasang kustom domain pada hosting maka
-                  anda tidak dapat menikmati fitur premium yang sudah anda bayar.
-                  <a href="/user/hosting/cname/<?= $data->hosting_id ?>">Ganti sekarang.</a>
-                </p>
-              </div>
-            <?php endif ?>
           </div>
         </div>
       </div>

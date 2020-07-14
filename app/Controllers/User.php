@@ -8,6 +8,7 @@ use App\Models\LiquidRegistrar;
 use App\Models\PaymentGate;
 use App\Models\VirtualMinShell;
 use CodeIgniter\Email\Email as EmailEmail;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use Config\Email;
 use Config\Services;
 use ErrorException;
@@ -53,7 +54,7 @@ class User extends BaseController
 				'slave' => 'required|is_not_unique[slaves.slave_id]',
 				'password' => 'required|min_length[8]',
 				'domain_mode' => empty($_POST['domain_mode']) ? 'permit_empty' : 'required|in_list[free,buy,custom]',
-				'template' => empty($_POST['template']) ? 'permit_empty' : 'in_list[wordpress,phpbb,opencart]',
+				'template' => empty($_POST['template']) ? 'permit_empty' : 'is_not_unique[templates.template_id]',
 			])) {
 				$data = array_intersect_key(
 					$this->request->getPost(),
@@ -76,7 +77,7 @@ class User extends BaseController
 					'purchase_active' => 1,
 					'purchase_plan' => $data['plan'],
 					'purchase_invoiced' => date('Y-m-d H:i:s', \time()),
-					'purchase_template' => $data['template'] ?? '',
+					'purchase_template' => $data['template'] ? fetchOne('templates', ['template_id' => $data['template']])->template_alias : '',
 				];
 				if ($plan->plan_alias !== 'Free') {
 					if ($this->validate([
@@ -164,6 +165,7 @@ class User extends BaseController
 			'slaves' => $this->db->table('slaves__usage')->get()->getResult(),
 			'liquid' => fetchOne('liquid', ['liquid_login' => $this->session->login_id]),
 			'schemes' => $this->db->table('schemes')->get()->getResult(),
+			'templates' => $this->db->table('templates')->get()->getResult(),
 			'validation' => $this->validator,
 		]);
 	}
@@ -286,6 +288,18 @@ class User extends BaseController
 			'uri' => "https://$data->slave_alias.dom.my.id:8443/session_login.cgi",
 			'user' => $data->hosting_username,
 			'pass' => $data->hosting_password,
+		]);
+	}
+	protected function seeHosting($data)
+	{
+		$shown = ($_GET['show'] ?? '') === 'password';
+		return view('user/hosting/see', [
+			'id' => $data->hosting_id,
+			'slave' => $data->slave_alias,
+			'user' => $data->hosting_username,
+			'pass' => $shown ? esc($data->hosting_password) :
+				'&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;',
+			'shown' => $shown,
 		]);
 	}
 	protected function renameHosting($data)
@@ -458,6 +472,8 @@ class User extends BaseController
 					return $this->renameHosting($data);
 				} else if ($page === 'cname') {
 					return $this->cnameHosting($data);
+				} else if ($page === 'see') {
+					return $this->seeHosting($data);
 				} else if ($page === 'upgrade') {
 					return $this->upgradeHosting($data);
 				} else if ($page === 'invoices') {
@@ -469,6 +485,7 @@ class User extends BaseController
 				return $this->response->redirect('/user/hosting');
 			}
 		}
+		throw new PageNotFoundException();
 	}
 
 	protected function checkDomain()
