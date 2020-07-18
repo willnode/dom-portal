@@ -54,15 +54,16 @@ class User extends BaseController
 				'slave' => 'required|is_not_unique[slaves.slave_id]',
 				'password' => 'required|min_length[8]',
 				'domain_mode' => empty($_POST['domain_mode']) ? 'permit_empty' : 'required|in_list[free,buy,custom]',
-				'template' => empty($_POST['template']) ? 'permit_empty' : 'is_not_unique[templates.template_id]',
+				'template' => 'required|is_not_unique[templates.template_id]',
 			])) {
 				$data = array_intersect_key(
 					$this->request->getPost(),
 					array_flip(['plan', 'username', 'slave', 'template', 'password', 'domain_mode'])
 				);
 				if (empty($data['domain_mode'])) $data['domain_mode'] = 'free';
-				if (!$plan = $this->db->table('plans')->getWhere(['plan_id' => $data['plan']])->getRow()) return;
-				if (!$slave = $this->db->table('slaves')->getWhere(['slave_id' => $data['slave']])->getRow()) return;
+				if (!$plan = fetchOne('plans', ['plan_id' => $data['plan']])) return;
+				if (!$slave = fetchOne('slaves', ['slave_id' => $data['slave']])->getRow()) return;
+				if (!$template = fetchOne('templates', ['template_id' => $data['template']])->getRow()) return;
 				if (array_search(strtolower($data['username']), (new BannedNames())->names) !== FALSE) return;
 				$hosting = [
 					'hosting_login' => $this->session->login_id,
@@ -77,7 +78,7 @@ class User extends BaseController
 					'purchase_active' => 1,
 					'purchase_plan' => $data['plan'],
 					'purchase_invoiced' => date('Y-m-d H:i:s', \time()),
-					'purchase_template' => $data['template'] ? fetchOne('templates', ['template_id' => $data['template']])->template_alias : '',
+					'purchase_template' => $data['template'] ? fetchOne('templates', [])->template_alias : '',
 				];
 				if ($plan->plan_alias !== 'Free') {
 					if ($this->validate([
@@ -573,9 +574,12 @@ class User extends BaseController
 			'uri' => $this->request->config->liquidCustomer,
 		]);
 	}
-	protected function editDomain($id)
+	protected function detailDomain($domain)
 	{
-		return view('user/domain/create', []);
+		return view('user/domain/detail', [
+			'data' => $domain,
+			'hosting' => fetchOne('hosting', ['hosting_domain' => $domain->domain_id])
+		]);
 	}
 	protected function invoiceDomain($id)
 	{
@@ -680,13 +684,22 @@ class User extends BaseController
 				return $this->loginDomain();
 			} else if ($page == 'create') {
 				return $this->createDomain();
-			} else if ($page == 'edit') {
-				return $this->editDomain($id);
-			} else if ($page == 'invoice') {
-				return $this->invoiceDomain($id);
-			} else if ($page == 'delete') {
-				return $this->deleteDomain($id);
+			} else {
+				$domain = fetchOne('domain', [
+					'domain_id' => $id,
+					'domain_login' => $this->session->login_id
+				]);
+				if ($domain) {
+					if ($page == 'detail') {
+						return $this->detailDomain($domain);
+					} else if ($page == 'invoice') {
+						return $this->invoiceDomain($domain);
+					} else if ($page == 'delete') {
+						return $this->deleteDomain($domain);
+					}
+				}
 			}
+			return $this->response->redirect('/user/domain');
 		} else {
 			return $this->introDomain();
 		}

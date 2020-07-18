@@ -30,6 +30,9 @@
                 <option value="id" <?= $data->lang === 'id' ? 'selected' : '' ?>>Bahasa Indonesia</option>
                 <option value="en" <?= $data->lang === 'en' ? 'selected' : '' ?>>English</option>
               </select>
+              <?php if ($data->lang === 'en') : ?>
+                <p><small>The english translation currently is in progress and very limited.</small></p>
+              <?php endif ?>
             </div>
             <p><input type="submit" class="btn btn-primary" value="<?= lang('Interface.saveProfile') ?>"></p>
           </form>

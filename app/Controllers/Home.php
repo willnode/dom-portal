@@ -49,9 +49,12 @@ class Home extends BaseController
 				if ($data->purchase_liquid) {
 					$r = explode('|', $data->purchase_liquid);
 					$liquid = (new LiquidRegistrar());
+					$liquid->confirmFundDomain($r[0], [
+						'amount' => $data->purchase_years * $data->scheme_price,
+						'description' => "Funds for ".$data->domain_name,
+					]);
 					$liquid->confirmPurchaseDomain($r[0], [
 						'transaction_id' => $r[1],
-						'cancel_invoice' => '0',
 					]);
 					$this->db->table('liquid')->update([
 						'liquid_cache_domains' => json_encode($liquid->getListOfDomains($r[0])),

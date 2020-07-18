@@ -32,7 +32,7 @@ class LiquidRegistrar
 			$json = json_decode($response);
 			$type = ($json->type ?? '');
 			if ($type == 'unauthorized' || $type == 'invalid_request') {
-				log_message('error', 'DOMAIN: '. $response);
+				log_message('error', 'DOMAIN: '.$route.'\n'. $response);
 				echo view('user/hosting/output', [
 					'output' => $type == 'unauthorized' ?
 						'The registrar service was busy. Try again later in 15 minutes.' :
@@ -41,7 +41,7 @@ class LiquidRegistrar
 				]);
 				exit;
 			} else {
-				log_message('notice', 'DOMAIN: '. $response);
+				log_message('notice', 'DOMAIN: '.$route.'\n'. $response);
 			}
 			return $json;
 		} else {
@@ -94,9 +94,14 @@ class LiquidRegistrar
 		return $this->callApi("/customers/$customer_id/transactions/cancel", $query);
 	}
 
+	public function confirmFundDomain($customer_id, $query)
+	{
+		return $this->callApi("/customers/$customer_id/transactions/fund", $query);
+	}
+
 	public function confirmPurchaseDomain($customer_id, $query)
 	{
-		return $this->callApi("/customers/$customer_id/transactions/execute", $query);
+		return $this->callApi("/customers/$customer_id/transactions/pay_add_only", $query);
 	}
 
 	public function deleteDomain($domain, $customer_id)

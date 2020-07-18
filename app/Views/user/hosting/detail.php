@@ -60,7 +60,7 @@
             <div>Tanggal Kadaluarsa</div>
             <div class="input-group mb-3">
               <input type="text" class="form-control" value="<?= $data->purchase_expired ?>" readonly>
-              <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Perpanjang</a>
+              <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>#extend" class="btn btn-outline-secondary">Perpanjang</a>
             </div>
           </div>
         </div>

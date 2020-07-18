@@ -35,9 +35,9 @@
       </div>
     </div>
     <div class="d-flex">
-      <!-- <a class="btn btn-success m-2" href="/user/domain/create">Order Baru</a> -->
-      <form method="post" class="ml-auto"><input type="submit" name="action" value="Sync" class="btn btn-warning m-2"></form>
-      <a href="/user/domain/login" class="btn btn-primary m-2">Login Portal Domain</a>
+      <a class="btn btn-success m-2" href="/user/domain/create">Order Baru</a>
+      <form method="post" class="ml-auto"><input type="submit" name="action" value="Sinkronkan" class="btn btn-warning m-2"></form>
+      <a href="/user/domain/login" target="_blank" class="btn btn-primary m-2">Login Portal Domain</a>
     </div>
   </div>
 

@@ -39,7 +39,7 @@
               </div>
               <div class="mb-3">
                 <label class="form-label" for="template"><?= lang('Hosting.chooseTemplate') ?></label>
-                <select name="template" class="form-select">
+                <select name="template" class="form-select" required>
                   <?php $tt = "Default" ?>
                   <optgroup label="Default">
                     <?php foreach ($templates as $t) : ?>

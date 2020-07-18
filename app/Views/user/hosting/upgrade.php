@@ -25,23 +25,30 @@
                     <b>Beli Baru</b>
                   </div>
                   <div class="pl-4">
-                    Metode ini menghapus pembelian paket sebelumnya.
+                    Metode ini mengganti pembelian paket sebelumnya.
                     Anda bebas memilih jenis paket yang ingin diterapkan.
                   </div>
                 </label>
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="extend" onchange="syncPlans()" class="mr-2" <?= $data->plan_alias === 'Free' ? 'disabled' : '' ?>>
+                    <input type="radio" name="mode" value="extend" onchange="syncPlans()" class="mr-2" <?= $data->plan_price == 0 ? 'disabled' : '' ?>>
                     <b>Perpanjang</b>
                   </div>
                   <div class="pl-4">
                     Metode ini memperpanjang jangka waktu hosting.
                     Anda hanya bisa memperpanjang jangka waktu dalam jenis paket yang sama.
+                    <div class="form-check">
+                      <input class="form-check-input" checked type="checkbox" value="" id="flexCheckDefault">
+                      <label class="form-check-label" for="flexCheckDefault">
+                        Juga perpanjang domain
+                      </label>
+                    </div>
                   </div>
+
                 </label>
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="upgrade" onchange="syncPlans()" class="mr-2" <?= $data->plan_alias === 'Free' ? 'disabled' : '' ?>>
+                    <input type="radio" name="mode" value="upgrade" onchange="syncPlans()" class="mr-2" <?= $data->plan_price == 0 ? 'disabled' : '' ?>>
                     <b>Upgrade</b>
                   </div>
                   <div class="pl-4">

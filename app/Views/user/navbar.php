@@ -10,16 +10,16 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item <?= ($page ?? '') === 'hosting' ? 'active' : '' ?>">
-          <a class="nav-link" href="/user/hosting"><?= lang('Interface.hosting') ?></a>
+        <li class="nav-item">
+          <a class="nav-link <?= ($page ?? '') === 'hosting' ? 'active' : '' ?>" href="/user/hosting"><?= lang('Interface.hosting') ?></a>
         </li>
-        <li class="nav-item <?= ($page ?? '') === 'domain' ? 'active' : '' ?>">
-          <a class="nav-link" href="/user/domain"><?= lang('Interface.domain') ?></a>
+        <li class="nav-item">
+          <a class="nav-link <?= ($page ?? '') === 'domain' ? 'active' : '' ?>" href="/user/domain"><?= lang('Interface.domain') ?></a>
         </li>
       </ul>
       <ul class="navbar-nav">
-        <li class="nav-item <?= ($page ?? '') === 'profile' ? 'active' : '' ?>">
-          <a class="nav-link" href="/user/profile"><?= lang('Interface.profile') ?></a>
+        <li class="nav-item">
+          <a class="nav-link <?= ($page ?? '') === 'profile' ? 'active' : '' ?>" href="/user/profile"><?= lang('Interface.profile') ?></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/logout"><?= lang('Interface.logout') ?></a>
