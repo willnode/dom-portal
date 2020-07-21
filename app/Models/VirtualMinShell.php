@@ -126,10 +126,10 @@ class VirtualMinShell
 		$nesval = [];
 		foreach ($data as $line) {
 			$line = rtrim($line);
-			if (count($line) >= 4 && $line[0] === ' ') {
+			if (strlen($line) >= 4 && $line[0] === ' ') {
 				$line = explode(':', ltrim($line), 2);
 				$nesval[$line[0]] = ltrim($line[1]);
-			} else if (count($line) >= 0) {
+			} else if (strlen($line) >= 0) {
 				if ($neskey) {
 					$result[$neskey] = $nesval;
 					$nesval = [];
@@ -153,10 +153,10 @@ class VirtualMinShell
 		$nesval = [];
 		foreach ($data as $line) {
 			$line = rtrim($line);
-			if (count($line) >= 4 && $line[0] === ' ') {
+			if (strlen($line) >= 4 && $line[0] === ' ') {
 				$line = explode(':', ltrim($line), 3);
 				$nesval[$line[0]] = ltrim($line[2]);
-			} else if (count($line) >= 0) {
+			} else if (strlen($line) >= 0) {
 				if ($neskey) {
 					$result[$neskey] = $nesval;
 					$nesval = [];
