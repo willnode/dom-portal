@@ -27,7 +27,7 @@ class CronJob extends BaseCommand
         foreach ($db->table('slaves')->get()->getResult() as $slave) {
             $domains = (new VirtualMinShell())->listDomainsInfo($slave->slave_alias);
             $bandwidths = (new VirtualMinShell())->listBandwidthInfo($slave->slave_alias);
-            $hostings = $db->table('hosting_dislay')->getWhere([
+            $hostings = $db->table('hosting__display')->getWhere([
                 'hosting_slave' => $slave->slave_id
             ])->getResult();
             foreach ($hostings as $hosting) {
