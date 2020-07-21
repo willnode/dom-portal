@@ -10,23 +10,25 @@ class VirtualMinShell
 
 	protected function execute($cmd, $title = '')
 	{
-		if (ENVIRONMENT === 'production') {
+		if (ENVIRONMENT === 'production' || $title === NULL) {
 			set_time_limit(300);
 			$username = Services::request()->config->sudoWebminUser;
 			$password = Services::request()->config->sudoWebminPass;
-			VirtualMinShell::$output .= 'HOSTING: '.$title."\n";
+			if ($title !== NULL)
+				VirtualMinShell::$output .= 'HOSTING: ' . $title . ' (' . $cmd . ')' . "\n";
 			$ch = curl_init($cmd);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 			$response = curl_exec($ch);
-			VirtualMinShell::$output .= $response."\n";
+			if ($title !== NULL)
+				VirtualMinShell::$output .= $response . "\n";
 			curl_close($ch);
 			return $response;
 		} else {
-			VirtualMinShell::$output .= 'HOSTING: '.$title."\n";
-			VirtualMinShell::$output .= $cmd."\n";
+			VirtualMinShell::$output .= 'HOSTING: ' . $title . "\n";
+			VirtualMinShell::$output .= $cmd . "\n";
 		}
 	}
 	protected function wrapWget($params, $slave_dn)
@@ -103,14 +105,74 @@ class VirtualMinShell
 		$cmd = "program=enable-domain&domain=$domain";
 		$this->execute($this->wrapWget($cmd, $slave));
 	}
-	public function disableHosting($domain, $slave)
+	public function disableHosting($domain, $slave, $why)
 	{
-		$cmd = "program=disable-domain&domain=$domain";
+		$cmd = "program=disable-domain&domain=$domain&why=".urlencode($why);
 		$this->execute($this->wrapWget($cmd, $slave));
 	}
 	public function deleteHosting($domain, $slave)
 	{
 		$cmd = "program=delete-domain&domain=$domain";
 		$this->execute($this->wrapWget($cmd, $slave), " Delete Hosting for $domain ");
+	}
+	public function listDomainsInfo($slave)
+	{
+		$cmd = "program=list-domains&multiline=";
+		$data = $this->execute($this->wrapWget($cmd, $slave), NULL);
+
+		$data = explode("\n", $data);
+		$result = [];
+		$neskey = null;
+		$nesval = [];
+		foreach ($data as $line) {
+			$line = rtrim($line);
+			if (count($line) >= 4 && $line[0] === ' ') {
+				$line = explode(':', ltrim($line), 2);
+				$nesval[$line[0]] = ltrim($line[1]);
+			} else if (count($line) >= 0) {
+				if ($neskey) {
+					$result[$neskey] = $nesval;
+					$nesval = [];
+				}
+				$neskey = $line;
+			} else {
+				$result[$neskey] = $nesval;
+				break;
+			}
+		}
+		return $result;
+	}
+	public function listBandwidthInfo($slave)
+	{
+		$cmd = "program=list-bandwidth&all-domains=";
+		$data = $this->execute($this->wrapWget($cmd, $slave), NULL);
+
+		$data = explode("\n", $data);
+		$result = [];
+		$neskey = null;
+		$nesval = [];
+		foreach ($data as $line) {
+			$line = rtrim($line);
+			if (count($line) >= 4 && $line[0] === ' ') {
+				$line = explode(':', ltrim($line), 3);
+				$nesval[$line[0]] = ltrim($line[2]);
+			} else if (count($line) >= 0) {
+				if ($neskey) {
+					$result[$neskey] = $nesval;
+					$nesval = [];
+				}
+				$neskey = rtrim($line, ":\r");
+			} else {
+				$result[$neskey] = $nesval;
+				break;
+			}
+		}
+		return $result;
+	}
+	public function listSystemInfo($slave)
+	{
+		$cmd = "program=info";
+		$data = $this->execute($this->wrapWget($cmd, $slave), NULL);
+		return $data;
 	}
 }
