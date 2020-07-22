@@ -80,7 +80,7 @@ class User extends BaseController
 					'purchase_invoiced' => date('Y-m-d H:i:s', \time()),
 					'purchase_template' => $data['template'] ? $template->template_alias : '',
 				];
-				if ($plan->plan_alias !== 'Free') {
+				if ($plan->plan_price != 0) {
 					if ($this->validate([
 						'custom_cname' => $data['domain_mode'] === 'custom' ? 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
 							'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[domain.domain_name]' : 'permit_empty',
@@ -190,7 +190,7 @@ class User extends BaseController
 					'purchase_plan' => $post['plan'],
 					'purchase_invoiced' => date('Y-m-d H:i:s', \time()),
 				];
-				if ($plan->plan_alias !== 'Free') {
+				if ($plan->plan_price != 0) {
 					if ($this->validate([
 						'years' => $post['mode'] !== 'upgrade' ? 'required|greater_than[0]|less_than[6]' : 'permit_empty',
 					])) {
@@ -226,7 +226,7 @@ class User extends BaseController
 						$plan->plan_alias,
 						$plan->plan_features
 					);
-					if ($data->plan_alias !== 'Free' && $data->domain_scheme != 1) {
+					if ($data->plan_price != 0 && $data->domain_scheme != 1) {
 						// Change back to free domain
 						if ($data->domain_scheme) {
 							// Create new domain, leave the original
@@ -305,7 +305,7 @@ class User extends BaseController
 	}
 	protected function renameHosting($data)
 	{
-		if ($this->request->getMethod() === 'post' && $data->plan_alias !== 'Free' && $data->purchase_status === 'active') {
+		if ($this->request->getMethod() === 'post' && $data->plan_price != 0 && $data->purchase_status === 'active') {
 			if ($this->validate([
 				'username' => 'required|alpha_dash|min_length[5]|' .
 					'max_length[32]|is_unique[hosting.hosting_username]',
@@ -333,7 +333,7 @@ class User extends BaseController
 	}
 	protected function cnameHosting($data)
 	{
-		if ($this->request->getMethod() === 'post' && $data->plan_alias !== 'Free' && $data->purchase_status === 'active') {
+		if ($this->request->getMethod() === 'post' && $data->plan_price != 0 && $data->purchase_status === 'active') {
 			if ($this->validate([
 				'cname' => 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
 					'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosting.hosting_cname]',
@@ -416,7 +416,7 @@ class User extends BaseController
 	}
 	protected function deleteHosting($data)
 	{
-		if ($this->request->getMethod() === 'post' && $data->plan_alias === 'Free' && ($_POST['wordpass'] ?? '') === $data->hosting_username) {
+		if ($this->request->getMethod() === 'post' && $data->plan_price == 0 && ($_POST['wordpass'] ?? '') === $data->hosting_username) {
 			// Handle domain
 			if ($data->domain_scheme == 1) {
 				// Remove domain
@@ -706,7 +706,7 @@ class User extends BaseController
 	}
 	public function verify_email()
 	{
-		if ($this->request->getMethod() === 'post' && ($this->request->getPost('action') === 'resend')) {
+		if ($this->request->getMethod() === 'post' && ($_POST['action'] === 'resend')) {
 			$data = fetchOne('login', ['login_id' => $this->session->login_id]);
 			if (!$data->otp) {
 				$data->otp = random_int(111111111, 999999999);
