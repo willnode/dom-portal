@@ -62,8 +62,8 @@ class User extends BaseController
 				);
 				if (empty($data['domain_mode'])) $data['domain_mode'] = 'free';
 				if (!$plan = fetchOne('plans', ['plan_id' => $data['plan']])) return;
-				if (!$slave = fetchOne('slaves', ['slave_id' => $data['slave']])->getRow()) return;
-				if (!$template = fetchOne('templates', ['template_id' => $data['template']])->getRow()) return;
+				if (!$slave = fetchOne('slaves', ['slave_id' => $data['slave']])) return;
+				if (!$template = fetchOne('templates', ['template_id' => $data['template']])) return;
 				if (array_search(strtolower($data['username']), (new BannedNames())->names) !== FALSE) return;
 				$hosting = [
 					'hosting_login' => $this->session->login_id,
@@ -78,7 +78,7 @@ class User extends BaseController
 					'purchase_active' => 1,
 					'purchase_plan' => $data['plan'],
 					'purchase_invoiced' => date('Y-m-d H:i:s', \time()),
-					'purchase_template' => $data['template'] ? fetchOne('templates', [])->template_alias : '',
+					'purchase_template' => $data['template'] ? $template->template_alias : '',
 				];
 				if ($plan->plan_alias !== 'Free') {
 					if ($this->validate([
@@ -706,7 +706,7 @@ class User extends BaseController
 	}
 	public function verify_email()
 	{
-		if ($this->request->getMethod() === 'post' && ($_POST['action'] === 'resend')) {
+		if ($this->request->getMethod() === 'post' && ($this->request->getPost('action') === 'resend')) {
 			$data = fetchOne('login', ['login_id' => $this->session->login_id]);
 			if (!$data->otp) {
 				$data->otp = random_int(111111111, 999999999);

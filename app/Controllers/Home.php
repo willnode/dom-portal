@@ -202,6 +202,8 @@ class Home extends BaseController
 					);
 					$data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
 					$this->db->table('login')->insert($data);
+					$_POST['action'] = 'resend';
+					(new User())->verify_email();
 					return $this->login();
 				}
 			}
