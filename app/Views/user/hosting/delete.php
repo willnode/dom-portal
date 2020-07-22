@@ -7,7 +7,7 @@
 	<?= view('user/navbar') ?>
 	<div class="container">
 		<h1 class="mb-3">Menghapus Hosting</h1>
-		<?php if ($data->plan_alias === 'Free') : ?>
+		<?php if ($data->plan_price == 0) : ?>
 			<div class="card">
 				<div class="card-body">
 					<div class="alert alert-danger">
