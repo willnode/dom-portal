@@ -15,7 +15,7 @@
 			<form method="POST" class="container h-100 d-flex flex-column justify-content-center text-center">
 				<h1 class="mb-4 h3"><?= lang('Interface.recoverYourPassword') ?></h1>
 				<input type="text" name="email" placeholder="<?= lang('Interface.email') ?>" class="form-control mb-2">
-				<div class="g-recaptcha" data-sitekey="<?= $recapthaSite ?>"></div>
+				<div class="g-recaptcha mb-2 mx-auto" data-sitekey="<?= $recapthaSite ?>"></div>
 				<input type="submit" value="<?= lang('Interface.login') ?>" class="btn-warning btn mb-4">
 			</form>
 		</div>

@@ -21,7 +21,7 @@
         <input type="text" name="phone" placeholder="Nomor HP lokal (08xx) atau internasional (+...)" class="form-control mb-2">
         <input type="password" name="password" placeholder="<?= lang('Interface.password') ?>" class="form-control mb-2">
         <input type="password" name="passconf" placeholder="<?= lang('Interface.passwordAgain') ?>" class="form-control mb-2">
-        <div class="g-recaptcha" data-sitekey="<?= $recapthaSite ?>"></div>
+        <div class="g-recaptcha mb-2 mx-auto" data-sitekey="<?= $recapthaSite ?>"></div>
         <p><small>Dengan mendaftar anda menyetujui Terms of Service Kami.</small></p>
         <input type="submit" value="<?= lang('Interface.register') ?>" class="btn-success btn">
 
