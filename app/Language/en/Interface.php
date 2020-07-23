@@ -13,7 +13,11 @@
 	'enterToPortal' => 'Enter to portal',
 	'registerToPortal' => 'Register to portal',
 	'registerPrompt' => 'Don\'t have account?',
+	'forgotPrompt' => 'Forgot Password?',
+	'recoverYourPassword' => 'Recover Your Password',
 
+	'wrongLogin' => 'Wrong email or password',
+	'emailSent' => 'The email for verification has been sent, please check your inbox before login.',
 	'learnMore' => 'Learn more',
 	'passwordNotice' => 'You don\'t need to remember this password',
 
@@ -21,6 +25,7 @@
 	'email' => 'Email',
 	'phone' => 'Phone Number',
 	'password' => 'Password',
+	'passwordAgain' => 'Password (Again)',
 	'language' => 'Language',
 	'fullName' => 'Full Name',
 	'activeEmail' => 'Active Email',

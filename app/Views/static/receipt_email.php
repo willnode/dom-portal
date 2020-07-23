@@ -39,7 +39,7 @@
 		<p>Pembelian anda akan segera aktif; Apabila masih belum, mohon kontak kami.</p>
 		<hr>
 		<footer>
-			<p>DOM Cloud Hosting Solution Indonesia</p>
+			<p>DOM Cloud Hosting</p>
 			<p>https://dom.my.id</p>
 		</footer>
 	</main>

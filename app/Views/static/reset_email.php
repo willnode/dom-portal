@@ -8,10 +8,10 @@
 <body>
 	<main>
 		<header>
-			<h1>Konfimasikan Email Kamu</h1>
+			<h1>Reset Ulang Password Anda</h1>
 		</header>
 		<p>Yth, <?= $name ?></p>
-		<p>Terima kasih sudah mendaftar di DOM Cloud. Segera konfirmasikan email kamu agar kamu bisa memulai menyiapkan hosting.</p>
+		<p>Berikut link untuk mereset password anda. Apabila anda tidak memintanya, mohon abaikan email ini.</p>
 		<a href="<?= $link ?>" class="button"> Konfirmasi Email Sekarang</a>
 		<p>Apabila link diatas bermasalah, salin link berikut:</p>
 		<pre><?= $link ?></pre>

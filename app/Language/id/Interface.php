@@ -13,7 +13,11 @@
 	'enterToPortal' => 'Masuk ke portal',
 	'registerToPortal' => 'Daftar ke portal',
 	'registerPrompt' => 'Belum punya akun?',
+	'forgotPrompt' => 'Lupa Password?',
+	'recoverYourPassword' => 'Pulihkan Password Anda',
 
+	'wrongLogin' => 'Salah email atau password',
+	'emailSent' => 'Email untuk verifikasi telah dikirim, mohon cek inbox anda sebelum masuk.',
 	'learnMore' => 'Pelajari lebih lanjut',
 	'passwordNotice' => 'Anda tidak perlu mengingat password ini',
 
@@ -21,6 +25,7 @@
 	'email' => 'Email',
 	'phone' => 'Nomor HP',
 	'password' => 'Password',
+	'passwordAgain' => 'Password (Lagi)',
 	'language' => 'Bahasa',
 	'fullName' => 'Nama Lengkap',
 	'activeEmail' => 'Email Aktif',

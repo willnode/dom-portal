@@ -26,7 +26,7 @@ class Validation
 	 * @var array
 	 */
 	public $templates = [
-		'list'   => 'CodeIgniter\Validation\Views\list',
+		'list'   => 'errors/list',
 		'single' => 'CodeIgniter\Validation\Views\single',
 	];
 

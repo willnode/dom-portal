@@ -6,6 +6,7 @@ use App\Models\LiquidRegistrar;
 use App\Models\Recaptha;
 use App\Models\VirtualMinShell;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use ErrorException;
 
 class Home extends BaseController
 {
@@ -121,7 +122,6 @@ class Home extends BaseController
 
 	public function verify()
 	{
-
 		if (!empty($_GET['code'])) {
 			$code = explode(':', base64_decode($_GET['code'], true));
 			if (count($code) == 2) {
@@ -133,7 +133,7 @@ class Home extends BaseController
 					$this->db->table('login')->update([
 						'email_verified' => date('Y-m-d H:i:s'),
 						'otp' => null,
-					], (array) $row);
+					], ['email' => $code[0]]);
 					$this->session->destroy();
 					return view('static/verified', [
 						'email' => $code[0],
@@ -165,8 +165,11 @@ class Home extends BaseController
 					return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
 				}
 			}
+			$m = lang('Interface.wrongLogin');
 		}
-		return view('static/login');
+		return view('static/login', [
+			'message' => $m ?? (($_GET['msg'] ?? '') === 'emailsent' ? lang('Interface.emailSent') : null)
+		]);
 	}
 
 	public function logout()
@@ -177,7 +180,6 @@ class Home extends BaseController
 
 	public function register()
 	{
-
 		if ($this->request->getMethod() === 'get') {
 			return view('static/register', [
 				'validation' => $this->validator,
@@ -202,20 +204,87 @@ class Home extends BaseController
 					$data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
 					$this->db->table('login')->insert($data);
 					$_POST['action'] = 'resend';
-					$re = $this->login();
-					try {
-						$u = new User();
-						$u->initController($this->request, $this->response, $this->logger);
-						$u->verify_email();
-					} finally {
-						return $re;
-					}
+					$u = new User();
+					$u->initController($this->request, $this->response, $this->logger);
+					return $u->verify_email();
 				}
 			}
 			return view('static/register', [
-				'validation' => $this->validator
+				'validation' => $this->validator,
+				'recapthaSite' => (new Recaptha())->recapthaSite,
 			]);
 		}
+	}
+
+	public function forgot()
+	{
+		if ($this->request->getMethod() === 'post' && $this->validate([
+			'email' => 'required|valid_email',
+			'g-recaptcha-response' => ENVIRONMENT === 'production' ? 'required' : 'permit_empty',
+		])) {
+			if (ENVIRONMENT !== 'production' || (new Recaptha())->verify($_POST['g-recaptcha-response'])) {
+				$data = fetchOne('login', ['email' => $_POST['email']]);
+				if ($data) {
+
+					if (!$data->otp) {
+						$data->otp = random_int(111111111, 999999999);
+						$this->db->table('login')->update([
+							'otp' => $data->otp
+						], [
+							'login_id' => $data->login_id
+						]);
+					}
+
+					$em = \Config\Services::email();
+					$em->setTo($data->email);
+					$em->setSubject('Reset Password Akun | DOM Cloud');
+					$em->setMessage(view('static/reset_email', [
+						'name' => $data->name,
+						'link' => base_url('forgot_reset?code=' . urlencode(base64_encode($data->email . ':' . $data->otp)))
+					]));
+					if (!$em->send()) {
+						log_message('critical', $em->printDebugger());
+						throw new ErrorException("Unable to send message");
+					}
+					$this->session->destroy();
+					return $this->response->redirect('/id/login?msg=emailsent');
+				}
+			}
+		}
+		return view('static/forgot', [
+			'recapthaSite' => (new Recaptha())->recapthaSite,
+			'message' => $m ?? null,
+		]);
+	}
+
+	public function forgot_reset()
+	{
+		if (!empty($_GET['code'])) {
+			$code = explode(':', base64_decode($_GET['code'], true));
+			if (count($code) == 2) {
+				$row = fetchOne('login', [
+					'email' => $code[0],
+					'otp' => $code[1],
+				]);
+				if ($row) {
+					if ($this->request->getMethod() === 'post' && $this->validate([
+						'password' => 'required|min_length[8]',
+						'passconf' => 'required|matches[password]',
+					])) {
+						$this->db->table('login')->update([
+							'password' => password_hash($_POST['password'], PASSWORD_BCRYPT),
+							'email_verified' => date('Y-m-d H:i:s'),
+							'otp' => null,
+						], ['email' => $code[0]]);
+						$_POST['email'] = $code[0];
+						return $this->login();
+					} else {
+						return view('static/forgot_reset');
+					}
+				}
+			}
+		}
+		throw new PageNotFoundException();
 	}
 
 	//--------------------------------------------------------------------
