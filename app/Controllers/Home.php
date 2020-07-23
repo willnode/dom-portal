@@ -18,8 +18,7 @@ class Home extends BaseController
 	{
 		if (
 			isset($_GET['id'], $_GET['challenge'], $_GET['secret']) &&
-			(ENVIRONMENT === 'development' || (
-				$_GET['secret'] == $this->request->config->paymentSecret &&
+			(ENVIRONMENT === 'development' || ($_GET['secret'] == $this->request->config->paymentSecret &&
 				isset($_POST['trx_id'], $_POST['sid'], $_POST['status'], $_POST['via']) &&
 				$_POST['status'] == 'berhasil' // iPaymu notification
 			))
@@ -39,19 +38,19 @@ class Home extends BaseController
 					'id_payment' => $_POST['trx_id'] ?? '-',
 					'id_purchase' => $data->purchase_id,
 					'name_purchase' => "Hosting $data->plan_alias $data->purchase_years Tahun" . ($data->purchase_liquid ? " dengan domain $data->domain_name" : ""),
-					'amount_purchase' => 'Rp '.number_format($data->purchase_price, 0, ',', '.'),
+					'amount_purchase' => 'Rp ' . number_format($data->purchase_price, 0, ',', '.'),
 					'time_purchase' => date('Y-m-d H:i:s'),
 					'via_purchase' => $_POST['via'] ?? '-',
 				];
 
-				log_message('notice', 'PURCHASE: '.json_encode($receipt));
+				log_message('notice', 'PURCHASE: ' . json_encode($receipt));
 
 				if ($data->purchase_liquid) {
 					$r = explode('|', $data->purchase_liquid);
 					$liquid = (new LiquidRegistrar());
 					$liquid->confirmFundDomain($r[0], [
 						'amount' => $data->purchase_years * $data->scheme_price,
-						'description' => "Funds for ".$data->domain_name,
+						'description' => "Funds for " . $data->domain_name,
 					]);
 					$liquid->confirmPurchaseDomain($r[0], [
 						'transaction_id' => $r[1],
@@ -134,7 +133,7 @@ class Home extends BaseController
 					$this->db->table('login')->update([
 						'email_verified' => date('Y-m-d H:i:s'),
 						'otp' => null,
-					], (array)$row);
+					], (array) $row);
 					$this->session->destroy();
 					return view('static/verified', [
 						'email' => $code[0],
@@ -203,8 +202,14 @@ class Home extends BaseController
 					$data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
 					$this->db->table('login')->insert($data);
 					$_POST['action'] = 'resend';
-					(new User())->verify_email();
-					return $this->login();
+					$re = $this->login();
+					try {
+						$u = new User();
+						$u->initController($this->request, $this->response, $this->logger);
+						$u->verify_email();
+					} finally {
+						return $re;
+					}
 				}
 			}
 			return view('static/register', [
