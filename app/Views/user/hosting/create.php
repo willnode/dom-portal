@@ -296,7 +296,7 @@
       if (unit == 0) {
         $('#outprice').text('Gratis');
         $('#outdomain').text('Gratis');
-        $('#outyear').html('3 Bulan');
+        $('#outyear').html('2 Bulan');
         $('#outtotal').text('Gratis');
         $('#outtip').text('-');
         $('#outbill').text('Gratis');

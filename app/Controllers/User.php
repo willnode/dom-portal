@@ -128,7 +128,7 @@ class User extends BaseController
 				} else {
 					// Free plan. Just create
 					$payment['purchase_status'] = 'active';
-					$payment['purchase_expired'] = $domain['domain_expired'] = date('Y-m-d H:i:s', strtotime("+3 months", \time()));
+					$payment['purchase_expired'] = $domain['domain_expired'] = date('Y-m-d H:i:s', strtotime("+2 months", \time()));
 					$domain['domain_name'] = $hosting['hosting_username'] . '.dom.my.id';
 					$domain['domain_scheme'] = 1;
 					(new VirtualMinShell())->createHosting(
@@ -217,7 +217,7 @@ class User extends BaseController
 					}
 				} else {
 					// Downgrade to free
-					$payment['purchase_expired'] = date('Y-m-d H:i:s', strtotime("+3 months", \time()));
+					$payment['purchase_expired'] = date('Y-m-d H:i:s', strtotime("+2 months", \time()));
 					$payment['purchase_status'] = 'active';
 					(new VirtualMinShell())->upgradeHosting(
 						$data->domain_name,
