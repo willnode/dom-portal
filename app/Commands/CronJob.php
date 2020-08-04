@@ -31,7 +31,7 @@ class CronJob extends BaseCommand
                 'hosting_slave' => $slave->slave_id
             ])->getResult();
             foreach ($hostings as $hosting) {
-                if ($domain = $domains[$hosting->domain_name]) {
+                if ($domain = ($domains[$hosting->domain_name] ?? '')) {
                     $db->table('hosting__stat')->replace([
                         'hosting_id' => $hosting->hosting_id,
                         'identifier' => $domain['ID'],
