@@ -125,6 +125,7 @@
                 <h6>Total Pembayaran</h6>
                 <div class="ml-auto" id="outtotal">-</div>
               </div>
+              <p><i><small>Perlu diingat anda hanya mendaftarkan domain. Apabila anda ingin mendaftarkan domain sekaligus hosting, anda dapat <a href="/user/hosting/create">melakukannya disini</a> </small></i></p>
               <input type="submit" id="outsubmit" disabled class="btn btn-primary" value="Bayar">
             </div>
           </div>

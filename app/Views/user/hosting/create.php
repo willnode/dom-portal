@@ -15,7 +15,7 @@
             <div class="card-body">
               <div class="mb-3">
                 <label class="form-label" for="username"><?= lang('Hosting.portalUsername') ?></label>
-                <input class="form-control" id="username" minlength="5" maxlength="32" name="username" placeholder="hanya alfanumerik" pattern="^[-\w]+$" oninput="recalculate()" required>
+                <input class="form-control" id="username" minlength="5" maxlength="32" name="username" placeholder="hanya huruf, digit dan strip" pattern="^[-a-zA-Z0-9]+$" oninput="recalculate()" required>
               </div>
               <div class="mb-3">
                 <label class="form-label" for="name"><?= lang('Hosting.portalPassword') ?></label>
@@ -101,7 +101,7 @@
                   <div class="mb-3">
                     <label class="form-label">Cari Domain</label>
                     <div class="input-group">
-                      <input name="buy_cname" id="buy_cname" class="form-control" pattern="^[-\w]+$" required oninput="recalculate()">
+                      <input name="buy_cname" id="buy_cname" class="form-control" pattern="^[-a-zA-Z0-9]+$" required oninput="recalculate()">
                       <select class="form-select" name="buy_scheme" id="buy_scheme" required style="max-width: 120px" onchange="recalculate()">
                         <?php foreach ($schemes as $s) : if ($s->scheme_price !== '0') : ?>
                             <option value="<?= $s->scheme_id ?>"><?= $s->scheme_alias ?></option>
@@ -137,7 +137,7 @@
               </div>
               <div id="dm-custom" class="d-none">
                 <div class="mb-3">
-                  <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="masukkan domain kustom" pattern="^[a-zA-Z0-9][a-zA-Z0-9_.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
+                  <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="masukkan domain kustom" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
                   <small class="form-text text-muted">
                     Anda perlu mengarahkan domain setelah ini.
                     <br><a href="https://dok.dom.my.id/domain" target="_blank" rel="noopener noreferrer">Pelajari lebih lanjut</a>.
