@@ -543,8 +543,18 @@ class User extends BaseController
 				$post['customer_id'] = $this->liquid->liquid_id;
 				// $post['ns'] = 'ns1.dom.my.id,ns2.dom.my.id';
 				$post['invoice_option'] = 'only_add';
-				log_message('notice', (new LiquidRegistrar())->issuePurchaseDomain($post));
-				return $this->syncDomain();
+				log_message('notice', $rrr = (new LiquidRegistrar())->issuePurchaseDomain($post));
+				if (isset($rrr->domain_id)) {
+					$domain = [
+						'domain_login' => $this->session->login_id,
+						'domain_name' => $post['domain_name'],
+						'domain_scheme' => $post['domain_scheme'],
+						'domain_liquid' => $rrr->domain_id,
+						'domain_expired' => date('Y-m-d H:i:s', strtotime("+$post[years] years", \time())),
+					];
+					$this->db->table('domain')->insert($domain);
+					return $this->syncDomain();
+				}
 			}
 		}
 

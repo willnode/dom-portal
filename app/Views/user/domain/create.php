@@ -18,15 +18,13 @@
                 <label>Cari Domain</label>
                 <div class="input-group">
                   <input name="domain_name" id="domain_name" class="form-control" pattern="^[-\w]+$" required oninput="updateStat()">
-                  <select class="form-control" name="domain_scheme" id="domain_scheme" required style="max-width: 120px" onchange="updateStat()">
+                  <select class="form-select" name="domain_scheme" id="domain_scheme" required style="max-width: 120px" onchange="updateStat()">
                     <?php foreach ($schemes as $s) : if ($s->scheme_price !== '0') : ?>
                         <option value="<?= $s->scheme_id ?>"><?= $s->scheme_alias ?></option>
                     <?php endif;
                     endforeach; ?>
                   </select>
-                  <div class="input-group-append">
-                    <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
-                  </div>
+                  <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
                 </div>
               </div>
               <div class="form-group">
@@ -46,11 +44,9 @@
               </div>
               <hr>
               <div class="form-group">
-                <label>Kontrak</label>
+                <label>Kontak</label>
                 <div class="input-group mb-2">
-                  <div class="input-group-prepend">
-                    <div class="input-group-text">Registrar</div>
-                  </div>
+                  <div class="input-group-text">Registrar</div>
                   <select name="registrant_contact_id" class="form-control" required>
                     <?php foreach ($contacts as $c) : ?>
                       <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
@@ -58,9 +54,7 @@
                   </select>
                 </div>
                 <div class="input-group mb-2">
-                  <div class="input-group-prepend">
-                    <div class="input-group-text">Billing</div>
-                  </div>
+                  <div class="input-group-text">Billing</div>
                   <select name="billing_contact_id" class="form-control" required>
                     <?php foreach ($contacts as $c) : ?>
                       <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
@@ -68,9 +62,7 @@
                   </select>
                 </div>
                 <div class="input-group mb-2">
-                  <div class="input-group-prepend">
-                    <div class="input-group-text">Admin</div>
-                  </div>
+                  <div class="input-group-text">Admin</div>
                   <select name="admin_contact_id" class="form-control" required>
                     <?php foreach ($contacts as $c) : ?>
                       <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
@@ -78,9 +70,7 @@
                   </select>
                 </div>
                 <div class="input-group mb-2">
-                  <div class="input-group-prepend">
-                    <div class="input-group-text">Tech</div>
-                  </div>
+                  <div class="input-group-text">Tech</div>
                   <select name="tech_contact_id" class="form-control" required>
                     <?php foreach ($contacts as $c) : ?>
                       <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
@@ -126,7 +116,7 @@
                 <div class="ml-auto" id="outtotal">-</div>
               </div>
               <p><i><small>Perlu diingat anda hanya mendaftarkan domain. Apabila anda ingin mendaftarkan domain sekaligus hosting, anda dapat <a href="/user/hosting/create">melakukannya disini</a> </small></i></p>
-              <input type="submit" id="outsubmit" disabled class="btn btn-primary" value="Bayar">
+              <input type="submit" id="outsubmit" disabled class="btn btn-primary btn-block" value="Pesan">
             </div>
           </div>
         </div>
