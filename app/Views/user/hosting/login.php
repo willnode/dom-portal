@@ -13,7 +13,17 @@
 			<input name="pass" value="<?= esc($pass, 'attr') ?>">
     </form>
     <script>
-      window.logger.submit();
+	if (!window.localStorage.getItem('ok_<?= $uri ?>')) {
+		// Avoid cookie bug
+		var w = window.open('<?= $uri ?>');
+		setTimeout(function() {
+			w.close();
+			window.localStorage.setItem('ok_<?= $uri ?>', "1");
+			window.logger.submit();
+		}, 1500);
+	} else {
+      	window.logger.submit();
+	}
     </script>
 	</div>
 </body>
