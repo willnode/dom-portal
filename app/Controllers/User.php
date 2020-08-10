@@ -26,7 +26,7 @@ class User extends BaseController
 			))->pretend(false)->send();
 			exit;
 		} else {
-			$this->request->setLocale($this->session->lang);
+			$this->request->setLocale($this->session->lang ?: 'id');
 		}
 	}
 

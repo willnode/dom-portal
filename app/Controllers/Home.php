@@ -188,8 +188,8 @@ class Home extends BaseController
 		} else {
 			if ($this->validate([
 				'name' => 'required|min_length[3]|max_length[255]',
-				'phone' => 'required|min_length[8]|max_length[16]',
-				'email' => 'required|valid_email',
+				'phone' => 'required|min_length[8]|max_length[16]|is_unique[login.phone]',
+				'email' => 'required|valid_email|is_unique[login.email]',
 				'password' => 'required|min_length[8]',
 				'passconf' => 'required|matches[password]',
 				'g-recaptcha-response' => ENVIRONMENT === 'production' ? 'required' : 'permit_empty',
@@ -201,6 +201,7 @@ class Home extends BaseController
 							['name', 'email', 'phone', 'password']
 						)
 					);
+					$data['lang'] = $this->request->getLocale();
 					$data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
 					$this->db->table('login')->insert($data);
 					$_POST['action'] = 'resend';
