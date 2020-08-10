@@ -39,7 +39,7 @@ class CronJob extends BaseCommand
                         'quota_server' => $domain['Server byte quota used'],
                         'quota_user' => $domain['User byte quota used'],
                         'quota_db' => $domain['Databases byte size'] ?? 0,
-                        'quota_net' => $domain['Bandwidth byte usage'],
+                        'quota_net' => $domain['Bandwidth byte usage'] ?? 0,
                         'features' => $domain['Features'],
                         'bandwidths' => json_encode($bandwidths[$hosting->domain_name] ?? null),
                         'disabled' => $domain['Disabled'] ?? null,
