@@ -45,15 +45,15 @@ class CronJob extends BaseCommand
                         'disabled' => $domain['Disabled'] ?? null,
                     ]);
                     if (!isset($domain['Disabled'])) {
-                        if ($domain['Server byte quota used'] > $hosting->plan_disk * 1024 * 1024) {
+                        if (($domain['Server byte quota used'] ?? 0) > $hosting->plan_disk * 1024 * 1024) {
                             // Disable
-                            (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Quota exceeded');
+                            (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Disk Quota exceeded');
                         }
-                        if ($domain['Bandwidth byte usage'] > $hosting->plan_net * 1024 * 1024 * 1024) {
+                        else if (($domain['Bandwidth byte usage'] ?? 0) > $hosting->plan_net * 1024 * 1024 * 1024) {
                             // Disable
                             (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Bandwidth exceeded');
                         }
-                        if (time() >= strtotime($hosting->purchase_expired)) {
+                        else if (time() >= strtotime($hosting->purchase_expired)) {
                             // Disable
                             (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Hosting expired');
                         }
@@ -63,8 +63,8 @@ class CronJob extends BaseCommand
                             (new VirtualMinShell())->deleteHosting($hosting->domain_name, $hosting->slave_alias);
                         } else {
                             if (time() < strtotime($hosting->purchase_expired)) {
-                                if ($domain['Bandwidth byte usage'] < $hosting->plan_net * 1024 * 1024 * 1024) {
-                                    if ($domain['Server byte quota used'] > $hosting->plan_disk * 1024 * 1024) {
+                                if (($domain['Bandwidth byte usage'] ?? 9999999999) < $hosting->plan_net * 1024 * 1024 * 1024) {
+                                    if (($domain['Server byte quota used'] ?? 9999999999) > $hosting->plan_disk * 1024 * 1024) {
                                         // Enable
                                         (new VirtualMinShell())->enableHosting($hosting->domain_name, $hosting->slave_alias);
                                     }
