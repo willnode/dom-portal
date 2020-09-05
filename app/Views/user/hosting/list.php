@@ -6,7 +6,7 @@
 <body>
   <?= view('user/navbar') ?>
 
-  <div class="container-fluid">
+  <div class="container mb-3">
     <div class="card">
       <div class="card-body">
         <?php if (($_GET['status'] ?? '') === 'return') : ?>

@@ -7,6 +7,9 @@
 	'profile' => 'Profil',
 	'hosting' => 'Hosting',
 	'domain' => 'Domain',
+	'email' => 'Email',
+	'marketplace' => 'Marketplace',
+	'reseller' => 'Reseller',
 	'scheme' => 'Paket',
 	'status' => 'Status',
 	'expiration' => 'Masa Tenggang',
@@ -22,7 +25,6 @@
 	'passwordNotice' => 'Anda tidak perlu mengingat password ini',
 
 	'name' => 'Nama',
-	'email' => 'Email',
 	'phone' => 'Nomor HP',
 	'password' => 'Password',
 	'passwordAgain' => 'Password (Lagi)',

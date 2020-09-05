@@ -16,6 +16,18 @@
         <li class="nav-item">
           <a class="nav-link <?= ($page ?? '') === 'domain' ? 'active' : '' ?>" href="/user/domain"><?= lang('Interface.domain') ?></a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link <?= ($page ?? '') === 'email' ? 'active' : '' ?>" href="/user/email"><?= lang('Interface.email') ?></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?= ($page ?? '') === 'reseller' ? 'active' : '' ?>" href="/user/reseller"><?= lang('Interface.reseller') ?></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?= ($page ?? '') === 'marketplace' ? 'active' : '' ?>" href="/user/marketplace"><?= lang('Interface.marketplace') ?></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <?= ($page ?? '') === 'status' ? 'active' : '' ?>" href="/user/status"><?= lang('Interface.status') ?></a>
+        </li>
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item">

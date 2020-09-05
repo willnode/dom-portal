@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\BannedNames;
 use App\Models\CountryCodes;
+use App\Models\LiquidModel;
 use App\Models\LiquidRegistrar;
 use App\Models\PaymentGate;
 use App\Models\VirtualMinShell;
@@ -572,6 +573,7 @@ class User extends BaseController
 			'list' => $this->db->table('domain')->where([
 				'domain_login' => $this->session->login_id
 			])->get()->getResult(),
+			'liquid' => new LiquidModel($this->liquid ?? '{}'),
 			'page' => 'domain',
 		]);
 	}
@@ -646,6 +648,13 @@ class User extends BaseController
 			'codes' => CountryCodes::$codes,
 		]);
 	}
+	protected function topupDomain()
+	{
+
+		return view('user/domain/topup', [
+			'data' => $this->liquid
+		]);
+	}
 	protected function syncDomain()
 	{
 		$liquid = new LiquidRegistrar();
@@ -694,6 +703,8 @@ class User extends BaseController
 				return $this->loginDomain();
 			} else if ($page == 'create') {
 				return $this->createDomain();
+			} else if ($page == 'topup') {
+				return $this->topupDomain();
 			} else {
 				$domain = fetchOne('domain', [
 					'domain_id' => $id,
@@ -714,6 +725,63 @@ class User extends BaseController
 			return $this->introDomain();
 		}
 	}
+
+	protected function introEmail()
+	{
+		return view('user/email/intro', [
+			'page' => 'email',
+			'data' => $_SESSION,
+		]);
+	}
+
+	public function email($page = 'list', $id = 0)
+	{
+
+		if (!$this->session->email_verified) {
+			return $this->verify_email();
+		}
+		return $this->introEmail();
+	}
+
+	protected function introReseller()
+	{
+		return view('user/reseller/intro', [
+			'page' => 'reseller',
+			'data' => $_SESSION,
+		]);
+	}
+
+	public function reseller($page = 'list', $id = 0)
+	{
+		if (!$this->session->email_verified) {
+			return $this->verify_email();
+		}
+		return $this->introReseller();
+	}
+
+	protected function introMarketplace()
+	{
+		return view('user/marketplace/intro', [
+			'page' => 'marketplace',
+			'data' => $_SESSION,
+		]);
+	}
+
+	public function marketplace($page = 'list', $id = 0)
+	{
+		if (!$this->session->email_verified) {
+			return $this->verify_email();
+		}
+		return $this->introMarketplace();
+	}
+
+	public function status()
+	{
+		return view('user/status', [
+			'page' => 'status',
+		]);
+	}
+
 	public function verify_email()
 	{
 		if ($this->request->getMethod() === 'post' && ($_POST['action'] === 'resend')) {

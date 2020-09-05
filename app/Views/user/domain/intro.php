@@ -90,7 +90,7 @@
             </div>
             <div class="mb-3">
               <label for="name">Negara</label>
-              <select class="form-control" name="country_code" required>
+              <select class="form-select" name="country_code" required>
                 <?php foreach ($codes as $code) : $c = strtolower($code['country']);
                   $l = $data['lang'] === 'en' ? 'us' : 'id' ?>
                   <option value="<?= $c ?>" <?= $l === $c ? 'selected' : '' ?>><?= $code['name'] ?></option>
