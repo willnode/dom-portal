@@ -14,7 +14,7 @@
           <div class="card">
             <div class="card-body">
               <h3 class="card-title">Data Domain</h3>
-              <div class="form-group">
+              <div class="mb-3">
                 <label>Cari Domain</label>
                 <div class="input-group">
                   <input name="domain_name" id="domain_name" class="form-control" pattern="^[-\w]+$" required oninput="updateStat()">
@@ -27,14 +27,14 @@
                   <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
                 </div>
               </div>
-              <div class="form-group">
+              <div class="mb-3">
                 <label>Durasi Tahun</label>
                 <div class="input-group">
                   <input name="years" class="form-control" type="number" min="1" max="5" value="1" required onchange="updateStat()">
                 </div>
               </div>
 
-              <div class="form-group row">
+              <div class="mb-3 row">
                 <div class="col-sm-10">Pasang Proteksi Privasi?</div>
                 <div class="col-sm-2">
                   <label class="form-check">
@@ -43,11 +43,11 @@
                 </div>
               </div>
               <hr>
-              <div class="form-group">
+              <div class="mb-3">
                 <label>Kontak</label>
                 <div class="input-group mb-2">
                   <div class="input-group-text">Registrar</div>
-                  <select name="registrant_contact_id" class="form-control" required>
+                  <select name="registrant_contact_id" class="form-select" required>
                     <?php foreach ($contacts as $c) : ?>
                       <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
                     <?php endforeach ?>
@@ -55,7 +55,7 @@
                 </div>
                 <div class="input-group mb-2">
                   <div class="input-group-text">Billing</div>
-                  <select name="billing_contact_id" class="form-control" required>
+                  <select name="billing_contact_id" class="form-select" required>
                     <?php foreach ($contacts as $c) : ?>
                       <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
                     <?php endforeach ?>
@@ -63,7 +63,7 @@
                 </div>
                 <div class="input-group mb-2">
                   <div class="input-group-text">Admin</div>
-                  <select name="admin_contact_id" class="form-control" required>
+                  <select name="admin_contact_id" class="form-select" required>
                     <?php foreach ($contacts as $c) : ?>
                       <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
                     <?php endforeach ?>
@@ -71,7 +71,7 @@
                 </div>
                 <div class="input-group mb-2">
                   <div class="input-group-text">Tech</div>
-                  <select name="tech_contact_id" class="form-control" required>
+                  <select name="tech_contact_id" class="form-select" required>
                     <?php foreach ($contacts as $c) : ?>
                       <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
                     <?php endforeach ?>

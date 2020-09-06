@@ -37,7 +37,10 @@
               </tbody>
             </table>
             <form method="post" class="d-flex">
-              <input type="submit" name="action" value="Sinkronkan Sekarang" class="btn btn-success my-2 ml-2 mr-auto">
+              <input type="hidden" name="action" value="sync">
+              <button type="submit" name="action" class="btn btn-success my-2 ml-2 mr-auto">
+                Sinkronkan Sekarang
+              </button>
               <a class="btn btn-primary m-2" href="/user/domain/topup">Topup</a>
               <a href="/user/domain/login" target="_blank" class="btn btn-primary m-2">Login Portal Domain</a>
             </form>
@@ -47,34 +50,64 @@
       <div class="col-md-6 mb-3">
         <div class="card">
           <div class="card-body">
+            <?php if (count($liquid->domains) > 0) : ?>
+            <h3>Daftar Domain Dibeli</h3>
             <table class="table table-striped">
               <thead>
                 <tr>
                   <th>Domain</th>
-                  <th>Akses Portal</th>
+                  <th>Status</th>
                   <th>Masa Tenggang</th>
                 </tr>
               </thead>
               <tbody>
-                <?php foreach ($list as $domain) : ?>
+                <?php foreach ($liquid->domains as $domain) : ?>
                   <tr>
                     <td>
                       <a href="/user/domain/detail/<?= $domain->domain_id ?>">
                         <?= $domain->domain_name ?>
                       </a>
                     </td>
-                    <td><?= $domain->domain_liquid ? 'Ya' : 'Tidak' ?></td>
-                    <td><?= ucfirst($domain->domain_expired) ?></td>
+                    <td><?= ucfirst($domain->order_status) ?></td>
+                    <td><?= $domain->expiry_date ?></td>
                   </tr>
                 <?php endforeach ?>
               </tbody>
             </table>
+            <hr>
+            <?php endif ?>
+            <?php if (count($liquid->pending_transactions) > 0) : ?>
+            <h3>Daftar Transaksi Pending</h3>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Domain</th>
+                  <th>Status</th>
+                  <th>Masa Tenggang</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($liquid->pending_transactions as $domain) : ?>
+                  <tr>
+                    <td>
+                      <a href="/user/domain/detail/<?= $domain->domain_id ?>">
+                        <?= $domain->domain_name ?>
+                      </a>
+                    </td>
+                    <td><?= ucfirst($domain->order_status) ?></td>
+                    <td><?= $domain->expiry_date ?></td>
+                  </tr>
+                <?php endforeach ?>
+              </tbody>
+            </table>
+            <hr>
+            <?php endif ?>
+            <a class="btn btn-success m-2" href="/user/domain/create">Order Domain Baru</a>
           </div>
         </div>
       </div>
     </div>
 
-    <a class="btn btn-success m-2" href="/user/domain/create">Order Baru</a>
   </div>
 
 </body>

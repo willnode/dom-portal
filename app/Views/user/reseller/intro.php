@@ -24,7 +24,6 @@
       <div class="col-md-6 mb-3">
         <div class="card">
           <div class="card-body">
-
             <h3>Data Pribadi</h3>
             <div class="mb-3">
               <label for="name">Pekerjaan</label>
