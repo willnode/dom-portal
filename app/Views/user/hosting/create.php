@@ -92,7 +92,7 @@
                   <input class="form-control" id="free_cname" value=".dom.my.id" disabled>
                   <small class="form-text text-muted">
                     Domain gratis hanya menyediakan fitur terbatas.
-                    <br><a href="https://dok.dom.my.id/domain" target="_blank" rel="noopener noreferrer">Pelajari lebih lanjut</a>.
+                    <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer">Pelajari lebih lanjut</a>.
                   </small>
                 </div>
               </div>
@@ -140,7 +140,7 @@
                   <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="masukkan domain kustom" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
                   <small class="form-text text-muted">
                     Anda perlu mengarahkan domain setelah ini.
-                    <br><a href="https://dok.dom.my.id/domain" target="_blank" rel="noopener noreferrer">Pelajari lebih lanjut</a>.
+                    <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer">Pelajari lebih lanjut</a>.
                   </small>
                 </div>
               </div>
@@ -270,7 +270,7 @@
       var form = window.upgrade;
       var dommod = form.domain_mode.value;
       var scheme = dommod === 'buy' && form.buy_scheme ? parseInt(schemes[form.buy_scheme.value].scheme_price) * 1000 : 0;
-      var unit = parseInt(plans[form.plan.value].plan_price) * 10000;
+      var unit = parseInt(plans[form.plan.value].plan_price) * 1000;
       var years = unit === 0 ? 0.25 : parseInt(form.years.value);
       var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
       // Alter UI

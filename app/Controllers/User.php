@@ -114,14 +114,14 @@ class User extends BaseController
 							$domain['domain_liquid'] = $rrr->domain_id;
 							$payment['purchase_liquid'] = $liq->liquid_id . '|' . $rrr->transaction_id;
 						} else if ($data['domain_mode'] === 'custom') {
-							$domain['domain_name'] = $hosting['custom_cname'];
+							$domain['domain_name'] = $_POST['custom_cname'];
 							$domprice = 0;
 						}
 						$payment['purchase_expired'] = $domain['domain_expired'] = date('Y-m-d H:i:s', strtotime("+$_POST[years] years", \time()));
 						$payment['purchase_status'] = 'pending';
 						$payment['purchase_years'] = $_POST['years'];
 						$payment['purchase_challenge'] = random_int(111111111, 999999999);
-						$payment['purchase_price'] = ($plan->plan_price * 10000 + $domprice) * $_POST['years'] + 5000;
+						$payment['purchase_price'] = ($plan->plan_price * 1000 + $domprice) * $_POST['years'] + 5000;
 					} else {
 						$this->request->setMethod('get');
 						return $this->createHosting();
@@ -198,13 +198,13 @@ class User extends BaseController
 						$post['years'] = $_POST['years'] ?? $data->purchase_years;
 						if ($post['mode'] === 'new') {
 							$payment['purchase_expired'] = date('Y-m-d H:i:s', strtotime("+$post[years] years", \time()));
-							$payment['purchase_price'] = $plan->plan_price * 10000 * $post['years'] + 5000;
+							$payment['purchase_price'] = $plan->plan_price * 1000 * $post['years'] + 5000;
 						} else if ($post['mode'] === 'extend') {
 							$payment['purchase_expired'] = date('Y-m-d H:i:s', strtotime("+$post[years] years", strtotime($data->purchase_expired)));
-							$payment['purchase_price'] = $plan->plan_price * 10000 * $post['years'] + 5000;
+							$payment['purchase_price'] = $plan->plan_price * 1000 * $post['years'] + 5000;
 						} else if ($post['mode'] === 'upgrade') {
 							$payment['purchase_expired'] = $data->purchase_expired;
-							$payment['purchase_price'] = ($plan->plan_price - $data->plan_price) * 10000 * $post['years'] + 5000;
+							$payment['purchase_price'] = ($plan->plan_price - $data->plan_price) * 1000 * $post['years'] + 5000;
 						}
 						$payment['purchase_years'] = $post['years'];
 						$payment['purchase_status'] = 'pending';
@@ -745,6 +745,25 @@ class User extends BaseController
 
 	protected function introReseller()
 	{
+		if ($this->request->getMethod() === 'post') {
+			if ($this->validate([
+				'reseller_job' => 'required',
+				'reseller_card_kind' => 'required|in_list[BNI,BRI,Mandiri,BTN]',
+				'reseller_card_number' => 'required|min_length[8]',
+				'reseller_card_as' => 'required',
+			])) {
+				$post = array_intersect_key(
+					$this->request->getPost(),
+					array_flip([
+						'reseller_job', 'reseller_card_kind',
+						'reseller_card_number', 'reseller_card_as',
+					])
+				);
+				$post['login_id'] = $this->session->login_id;
+				$post['reseller_code'] = 'R'.str_pad($this->session->login_id, 4).random_int(111, 999);
+				$this->db->table('reseller')->insert($post);
+			}
+		}
 		return view('user/reseller/intro', [
 			'page' => 'reseller',
 			'data' => $_SESSION,

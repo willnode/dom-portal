@@ -17,6 +17,7 @@
 		<pre><?= $link ?></pre>
 		<hr>
 		<footer>
+			<img src="<?= base_url('logo.svg')?>" alt="Logo" style="width: 80px; float: left; margin-right: 20px">
 			<p>DOM Cloud Hosting</p>
 			<p>https://dom.my.id</p>
 		</footer>

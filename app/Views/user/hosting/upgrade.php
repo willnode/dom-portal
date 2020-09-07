@@ -21,7 +21,7 @@
               <div class="radio">
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="new" onchange="syncPlans()" checked required class="mr-2">
+                    <input type="radio" name="mode" value="new" onchange="syncPlans()" required class="mr-2" <?= $data->plan_price != 0 ? 'disabled' : 'checked' ?>>
                     <b>Beli Baru</b>
                   </div>
                   <div class="pl-4">
@@ -37,12 +37,12 @@
                   <div class="pl-4">
                     Metode ini memperpanjang jangka waktu hosting.
                     Anda hanya bisa memperpanjang jangka waktu dalam jenis paket yang sama.
-                    <div class="form-check">
-                      <input class="form-check-input" checked type="checkbox" value="" id="flexCheckDefault">
+                    <!--div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
                       <label class="form-check-label" for="flexCheckDefault">
                         Juga perpanjang domain
                       </label>
-                    </div>
+                    </div-->
                   </div>
 
                 </label>
@@ -155,10 +155,10 @@
       var plan = window.upgrade.plan.value;
       var years = parseInt(window.upgrade.years.value);
       var oldyr = parseInt('<?= $data->purchase_years ?>');
-      var oldval = parseInt('<?= $data->plan_price ?>') * 10000;
+      var oldval = parseInt('<?= $data->plan_price ?>') * 1000;
       var oldexp = new Date('<?= $data->purchase_expired ?>');
       if (mode && plan) {
-        var unit = parseInt(plans[plan].plan_price) * 10000;
+        var unit = parseInt(plans[plan].plan_price) * 1000;
         window.upgrade.years.disabled = unit == 0 || mode == 'upgrade';
         if (unit == 0) years = 0.25;
         else if (mode === 'upgrade') window.upgrade.years.value = years = oldyr;

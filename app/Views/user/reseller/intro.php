@@ -34,7 +34,7 @@
               <label for="name">Nomor Rekening</label>
               <div class="row g-1">
                 <div class="col-3">
-                  <select class="form-select" name="country_code" required>
+                  <select class="form-select" name="reseller_card_kind" required>
                     <option value="BNI">BNI</option>
                     <option value="BRI">BRI</option>
                     <option value="Mandiri">Mandiri</option>
@@ -42,13 +42,13 @@
                   </select>
                 </div>
                 <div class="col-9">
-                  <input class="form-control" id="name" name="name" required>
+                  <input class="form-control" name="reseller_card_number" required>
                 </div>
               </div>
             </div>
             <div class="mb-3">
               <label for="name">Atas Nama Rekening</label>
-              <input class="form-control" id="name" name="name" required>
+              <input class="form-control" name="reseller_card_as" required>
             </div>
             <div class="form-check">
               <input class="form-check-input" required type="checkbox" value="" id="flexCheckDefault">
@@ -61,8 +61,6 @@
         </div>
       </div>
     </form>
-
-
   </div>
 </body>
 

@@ -50,7 +50,7 @@
             <div>Paket Terpilih</div>
             <div class="input-group mb-3">
               <input type="text" class="form-control" value="<?= $data->plan_alias ?>" readonly>
-              <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Ganti</a>
+              <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>" class="btn btn-outline-secondary">Upgrade</a>
             </div>
             <div>Tanggal Pembelian</div>
             <div class="input-group mb-3">

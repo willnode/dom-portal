@@ -8,7 +8,7 @@
 
   <div class="container">
     <div class="row">
-      <div class="col-md-6 mb-3">
+      <div class="col-lg-6 mb-3">
         <div class="card">
           <div class="card-body">
             <h2 class="mb-2">Biodata Domain</h2>
@@ -38,7 +38,7 @@
             </table>
             <form method="post" class="d-flex">
               <input type="hidden" name="action" value="sync">
-              <button type="submit" name="action" class="btn btn-success my-2 ml-2 mr-auto">
+              <button type="submit" class="btn btn-success my-2 ml-2 mr-auto">
                 Sinkronkan Sekarang
               </button>
               <a class="btn btn-primary m-2" href="/user/domain/topup">Topup</a>
@@ -47,7 +47,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-6 mb-3">
+      <div class="col-lg-6 mb-3">
         <div class="card">
           <div class="card-body">
             <?php if (count($liquid->domains) > 0) : ?>
