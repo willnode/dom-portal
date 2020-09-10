@@ -19,15 +19,15 @@
                   <td><?= $liquid->customer->customer_id ?></td>
                 </tr>
                 <tr>
-                  <td>Nama</td>
+                  <td><?= lang('Interface.name') ?></td>
                   <td><?= $liquid->customer->name ?></td>
                 </tr>
                 <tr>
-                  <td>Perusahaan</td>
+                  <td><?= lang('Interface.company') ?></td>
                   <td><?= $liquid->customer->company ?></td>
                 </tr>
                 <tr>
-                  <td>Kredit</td>
+                  <td><?= lang('Interface.credit') ?></td>
                   <td><?= $liquid->customer->total_receipts ?></td>
                 </tr>
                 <tr>

@@ -37,8 +37,7 @@
                 <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
               </div>
               <small class="form-text text-muted">
-                Password ini digunakan sebagai akun masuk Portal Domain. Harus berbeda dengan password portal sekarang.
-                Anda tidak perlu mengingat password ini karena akan disimpan untuk auto-login ke portal domain.
+              <?= lang('Interface.passwordNotice') ?>
               </small>
             </div>
             <div class="mb-3">
@@ -105,7 +104,7 @@
         </div>
         <div class="card my-2">
           <div class="card-body">
-            <input type="submit" class="btn-primary btn" value="Simpan">
+            <input type="submit" class="btn-primary btn" value="<?= lang('Interface.save') ?>">
           </div>
         </div>
       </div>

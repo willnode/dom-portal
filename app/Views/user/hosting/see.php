@@ -52,7 +52,7 @@
         <?php else : ?>
           <a href="?show=password" class="mt-3 btn btn-outline-warning float-right">Tampilkan Password</a>
         <?php endif ?>
-        <a href="/user/hosting/<?= $id ?>" class="mt-3 btn btn-secondary">Kembali</a>
+        <a href="/user/hosting/<?= $id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
       </div>
     </div>
   </div>

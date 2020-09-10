@@ -6,7 +6,7 @@
 <body>
   <?= view('user/navbar') ?>
   <div class="container-fluid">
-    <h1>Order Hosting Baru</h1>
+    <h1><?= lang('Hosting.newHost') ?></h1>
     <?= $validation ? $validation->listErrors() : '' ?>
     <form method="POST" name="upgrade">
       <div class="row">
@@ -67,7 +67,7 @@
                   <?php endforeach ?>
                 </select>
                 <small class="form-text text-muted">
-                  <a href="https://dom.my.id/price" target="_blank"><?= lang('Hosting.lookPacketDiff') ?></a>.
+                  <a href="https://domcloud.id/price" target="_blank"><?= lang('Hosting.lookPacketDiff') ?></a>.
                 </small>
               </div>
               <div class="mb-3 row align-items-center">
@@ -78,7 +78,7 @@
                   <input type="number" disabled class="form-control" name="years" value="1" min="1" max="5" onchange="recalculate()">
                 </div>
               </div>
-              <h3 class="card-title">Domain</h3>
+              <h3 class="card-title"><?= lang('Interface.domain') ?></h3>
               <div class="mb-3">
                 <label class="form-label" for="domain_mode"><?= lang('Hosting.selectDomainKind') ?></label>
                 <select name="domain_mode" id="domain_mode" disabled class="form-select" onchange="recalculate()" required>
@@ -91,7 +91,7 @@
                 <div class="mb-3">
                   <input class="form-control" id="free_cname" value=".dom.my.id" disabled>
                   <small class="form-text text-muted">
-                    Domain gratis hanya menyediakan fitur terbatas.
+                  <?= lang('Hosting.freeDomainHint') ?>
                     <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                   </small>
                 </div>
@@ -99,7 +99,7 @@
               <div id="dm-buy" class="d-none">
                 <?php if ($liquid) : ?>
                   <div class="mb-3">
-                    <label class="form-label">Cari Domain</label>
+                    <label class="form-label"><?= lang('Hosting.findDomain') ?></label>
                     <div class="input-group">
                       <input name="buy_cname" id="buy_cname" class="form-control" pattern="^[-a-zA-Z0-9]+$" required oninput="recalculate()">
                       <select class="form-select" name="buy_scheme" id="buy_scheme" required style="max-width: 120px" onchange="recalculate()">
@@ -111,26 +111,26 @@
                       <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
                     </div>
                     <small class="form-text text-muted">
-                      <a href="https://dom.my.id/domain" target="_blank">Lihat daftar top level domain tersedia</a>.
+                      <a href="https://dom.my.id/domain" target="_blank"><?= lang('Hosting.findAvailableGLTDs') ?></a>.
                     </small>
                   </div>
                   <p id="buy-status-prompt" class="alert alert-primary">
-                    Silahkan cek ketersediaan domain sebelum lanjut.
+                  <?= lang('Hosting.findReady') ?>
                   </p>
                   <p id="buy-status-available" class="alert alert-success d-none">
-                    Domain tersedia!
+                  <?= lang('Hosting.findAvailable') ?>
                   </p>
                   <p id="buy-status-loading" class="alert alert-warning d-none">
-                    Sedang mengecek...
+                  <?= lang('Hosting.findWait') ?>
                   </p>
                   <p id="buy-status-error" class="alert alert-danger d-none">
-                    Domain sedang tidak tersedia.
+                  <?= lang('Hosting.findUnavailable') ?>
                   </p>
                 <?php else : ?>
                   <p class="alert alert-danger">
                     <small>
-                      Kami tidak dapat memproses pembelian domain sebelum anda mengisi data yang kami butuhkan.
-                      <br><a href="/user/domain?then=reload" target="_blank">Isi sekarang</a>.
+                  <?= lang('Hosting.findNeedData') ?>
+                      <br><a href="/user/domain?then=reload" target="_blank"><?= lang('Hosting.findNeedDataAction') ?></a>.
                     </small>
                   </p>
                 <?php endif ?>
@@ -139,8 +139,8 @@
                 <div class="mb-3">
                   <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="masukkan domain kustom" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
                   <small class="form-text text-muted">
-                    Anda perlu mengarahkan domain setelah ini.
-                    <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer">Pelajari lebih lanjut</a>.
+                  <?= lang('Hosting.useExistingHint') ?>
+                    <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                   </small>
                 </div>
               </div>
@@ -232,11 +232,13 @@
     var plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.plan_id] = b, a), {});
     var schemes = JSON.parse(document.getElementById('schemes').innerHTML);
     schemes = schemes && schemes.reduce((a, b) => (a[b.scheme_id] = b, a), {});
-    var formatter = new Intl.NumberFormat('id-ID', {
+    var currency = '<?= lang('Interface.currency') ?>';
+    var digits = '<?= lang('Interface.currency') === 'USD' ? 2 : 0 ?>';
+    var formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
       style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-      minimumFractionDigits: 0,
+      currency: currency,
+      maximumFractionDigits: digits,
+      minimumFractionDigits: digits,
     });
     var activedomain = null;
 
@@ -271,7 +273,7 @@
       var dommod = form.domain_mode.value;
       var scheme = dommod === 'buy' && form.buy_scheme ? parseInt(schemes[form.buy_scheme.value].scheme_price) * 1000 : 0;
       var unit = parseInt(plans[form.plan.value].plan_price) * 1000;
-      var years = unit === 0 ? 0.25 : parseInt(form.years.value);
+      var years = unit === 0 ? 1 / 6 : parseInt(form.years.value);
       var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
       // Alter UI
       if (unit == 0) {
@@ -297,11 +299,16 @@
         const free = '<?= lang('Hosting.free')?>'
         $('#outprice').text(free);
         $('#outdomain').text(free);
-        $('#outyear').html('2 Bulan');
+        $('#outyear').html('2 <?= lang('Hosting.month')?>');
         $('#outtotal').text(free);
         $('#outtip').text('-');
         $('#outbill').text(free);
       } else {
+        if (currency === 'USD') {
+          unit /= 12500;
+          scheme /= 12500;
+          tip /= 12500;
+        }
         $('#outprice').text(formatter.format(unit));
         $('#outdomain').text(formatter.format(scheme));
         $('#outyear').html('&times; ' + years + ' <?= lang('Hosting.year')?>');

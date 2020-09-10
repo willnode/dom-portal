@@ -31,7 +31,7 @@
                 <option value="en" <?= $data->lang === 'en' ? 'selected' : '' ?>>English</option>
               </select>
               <?php if ($data->lang === 'en') : ?>
-                <p><small>The english translation currently is in progress and very limited.</small></p>
+                <p class="mt-2"><small><i> By using English language, all purchases will be translated to USD dollar with conversion rate 1&nbsp;USD = 12500&nbsp;IDR. Also, all future transaction will made through using international payment gate instead of local payment gate (Currently has to be done manually using support request).</i></small></p>
               <?php endif ?>
             </div>
             <p><input type="submit" class="btn btn-primary" value="<?= lang('Interface.saveProfile') ?>"></p>

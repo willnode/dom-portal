@@ -815,7 +815,7 @@ class User extends BaseController
 			}
 			$em = \Config\Services::email();
 			$em->setTo($data->email);
-			$em->setSubject('Verifikasi Email | DOM Cloud');
+			$em->setSubject(lang('Email.verifyTitle').' | DOM Cloud');
 			$em->setMessage(view('static/verify_email', [
 				'name' => $data->name,
 				'link' => base_url('verify?code=' . urlencode(base64_encode($data->email . ':' . $data->otp)))

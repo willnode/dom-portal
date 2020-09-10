@@ -1,5 +1,7 @@
 <?php return [
 	'code' => 'en',
+	'codeI8LN' => 'en-US',
+	'currency' => 'USD',
 	'appTitle' => 'DOM Cloud Hosting',
 	'login' => 'Sign In',
 	'register' => 'Register',
@@ -10,7 +12,7 @@
 	'email' => 'Email',
 	'marketplace' => 'Marketplace',
 	'reseller' => 'Reseller',
-	'scheme' => 'Scheme',
+	'scheme' => 'Plan',
 	'status' => 'Status',
 	'expiration' => 'Expiration',
 	'enterToPortal' => 'Enter to portal',
@@ -36,6 +38,8 @@
 	'password' => 'Password',
 	'passwordAgain' => 'Password (Again)',
 	'companyName' => 'Company Name',
+	'company' => 'Company',
+	'credit' => 'Credit',
 	'optional' => '(Optional)',
 	'language' => 'Language',
 	'fullName' => 'Full Name',
@@ -50,4 +54,12 @@
 	'editProfileMessage' => 'Fill the data below correctly. We use these information for administration purposes, for example when purchasing hosting.',
 	'saveProfile' => 'Save Profile',
 	'deleteAccount' => 'Delete Account',
+
+	'back' => 'Back',
+	'save' => 'Save',
+	'change' => 'Change',
+	'archives' => 'Archives',
+	'renew' => 'Renew',
+	'upgrade' => 'Upgrade',
+	'extend' => 'Extend',
 ];

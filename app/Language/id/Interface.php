@@ -1,5 +1,7 @@
 <?php return [
 	'code' => 'id',
+	'codeI8LN' => 'id-ID',
+	'currency' => 'IDR',
 	'appTitle' => 'DOM Cloud Hosting',
 	'login' => 'Masuk',
 	'register' => 'Daftar',
@@ -36,6 +38,8 @@
 	'password' => 'Password',
 	'passwordAgain' => 'Password (Lagi)',
 	'companyName' => 'Nama Bisnis / Perusahaan',
+	'company' => 'Perusahaan',
+	'credit' => 'Kredit',
 	'optional' => '(Opsional)',
 	'language' => 'Bahasa',
 	'fullName' => 'Nama Lengkap',
@@ -50,4 +54,12 @@
 	'editProfileMessage' => 'Isi data dibawah dengan benar. Kami menggunakan informasi berikut untuk keperluan administrasi, seperti pembelian hosting.',
 	'saveProfile' => 'Simpan Profil',
 	'deleteAccount' => 'Hapus Akun',
+
+	'back' => 'Kembali',
+	'save' => 'Simpan',
+	'change' => 'Ganti',
+	'archives' => 'Arsip',
+	'renew' => 'Perbarui',
+	'upgrade' => 'Upgrade',
+	'extend' => 'Perpanjang',
 ];

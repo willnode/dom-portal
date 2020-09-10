@@ -40,7 +40,7 @@
 		<hr>
 		<footer>
 			<p>DOM Cloud Hosting</p>
-			<p>https://dom.my.id</p>
+			<p>https://domcloud.id</p>
 		</footer>
 	</main>
 </body>
