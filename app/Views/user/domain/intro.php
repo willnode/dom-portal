@@ -11,27 +11,27 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
-            <h1 class="mb-3">Registrasi Akun Domain</h1>
-            <p>Sebelum anda dapat membeli domain, kami perlu memerlukan data berikut. Data berikut digunakan untuk keperluan administrasi domain, seperti WHOIS.</p>
+            <h1 class="mb-3"><?= lang('Domain.registerTitle') ?></h1>
+            <p><?= lang('Domain.registerHint') ?></p>
           </div>
         </div>
         <div class="card my-2">
           <div class="card-body">
-            <h3>Data Administrasi</h3>
+            <h3><?= lang('Domain.administrationData') ?></h3>
             <div class="mb-3">
-              <label for="name">Nama Lengkap</label>
+              <label for="name"><?= lang('Interface.fullName') ?></label>
               <input class="form-control" id="name" name="name" value="<?= esc($data['name'], 'attr') ?>" autocomplete="name" readonly required>
             </div>
             <div class="mb-3">
-              <label for="name">Nama Bisnis / Perusahaan</label>
+              <label for="company"><?= lang('Interface.companyName') ?></label>
               <input class="form-control" id="company" name="company" autocomplete="organization" required>
             </div>
             <div class="mb-3">
-              <label for="name">Email</label>
+              <label for="name"><?= lang('Interface.email') ?></label>
               <input class="form-control" id="email" name="email" autocomplete="email" value="<?= esc($data['email'], 'attr') ?>" readonly required>
             </div>
             <div class="mb-3">
-              <label for="name">Password</label>
+              <label for="name"><?= lang('Interface.password') ?></label>
               <div class="input-group">
                 <input class="form-control" id="password" oninput="this.type = 'password'" name="password" type="password" minlength="8" autocomplete="new-password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$">
                 <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
@@ -42,7 +42,7 @@
               </small>
             </div>
             <div class="mb-3">
-              <label for="name">Nomor Telepon</label>
+              <label for="name"><?= lang('Interface.phone') ?></label>
               <div class="input-group">
                 <div class="input-group-prepend">
                   <div class="input-group-text">+</div>
@@ -52,7 +52,7 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="name">Nomor Telepon Alternatif (opsional)</label>
+              <label for="name"><?= lang('Interface.phoneAlt') ?> <?= lang('Interface.optional') ?></label>
               <div class="input-group">
                 <div class="input-group-prepend">
                   <div class="input-group-text">+</div>
@@ -67,29 +67,29 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
-            <h3 class="mb-3">Data Alamat</h3>
+            <h3 class="mb-3"><?= lang('Domain.addressData') ?></h3>
             <div class="mb-3">
-              <label for="name">Alamat (Baris 1)</label>
+              <label for="address_line_1"><?= lang('Domain.address1') ?></label>
               <input class="form-control" autocomplete="address-level1" name="address_line_1" required>
             </div>
             <div class="mb-3">
-              <label for="name">Alamat (Baris 2, Opsional)</label>
+              <label for="address_line_2"><?= lang('Domain.address2') ?> <?= lang('Interface.optional') ?></label>
               <input class="form-control" autocomplete="address-level2" name="address_line_2">
             </div>
             <div class="mb-3">
-              <label for="name">Alamat (Baris 3, Opsional)</label>
+              <label for="address_line_3"><?= lang('Domain.address3') ?> <?= lang('Interface.optional') ?></label>
               <input class="form-control" autocomplete="address-level3" name="address_line_3">
             </div>
             <div class="mb-3">
-              <label for="name">Kota</label>
+              <label for="city"><?= lang('Domain.city') ?></label>
               <input class="form-control" autocomplete="address-level4" name="city" required>
             </div>
             <div class="mb-3">
-              <label for="name">Provinsi</label>
+              <label for="state"><?= lang('Domain.state') ?></label>
               <input class="form-control" name="state" required>
             </div>
             <div class="mb-3">
-              <label for="name">Negara</label>
+              <label for="country_code"><?= lang('Domain.country') ?></label>
               <select class="form-select" name="country_code" required>
                 <?php foreach ($codes as $code) : $c = strtolower($code['country']);
                   $l = $data['lang'] === 'en' ? 'us' : 'id' ?>
@@ -98,7 +98,7 @@
               </select>
             </div>
             <div class="mb-3">
-              <label for="name">Kode Zip</label>
+              <label for="zipcode"><?= lang('Domain.zipCode') ?></label>
               <input class="form-control" autocomplete="postal-code" name="zipcode" required minlength="4">
             </div>
           </div>

@@ -11,12 +11,11 @@
       <div class="card-body">
         <?php if (($_GET['status'] ?? '') === 'return') : ?>
           <div class="alert alert-primary">
-            Terimakasih. Apabila sistem kami sudah memverifikasi pembayaran anda,
-            email konfirmasi akan dikirim pada email anda.
+            <?= lang('Hosting.purchasedHint') ?>
           </div>
         <?php endif ?>
-        <a class="btn btn-primary my-2 float-sm-right" href="/user/hosting/create">Order Baru</a>
-        <h1 class="mb-4">Daftar Hosting</h1>
+        <a class="btn btn-primary my-2 float-sm-right" href="/user/hosting/create"><?= lang('Hosting.newOrder') ?></a>
+        <h1 class="mb-4"><?= lang('Hosting.listTitle') ?></h1>
         <hr>
         <div class="table-responsive">
           <table class="table table-striped">
@@ -40,7 +39,7 @@
               <?php if (count($list) === 0) : ?>
                 <tr>
                   <td colspan="4" class="p-2 text-center small text-muted">
-                    Belum ada hosting ditambahkan.
+                    <?= lang('Hosting.emptyList') ?>
                   </td>
                 </tr>
                 <?php endif ?>

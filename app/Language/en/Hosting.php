@@ -1,14 +1,15 @@
 <?php return [
-	'listTitle' => 'Hosting List',
+	'listTitle' => 'Hosts List',
 	'newOrder' => 'New Order',
 	'portalUsername' => 'Portal Username',
+	'portalUsernameHint' => 'Only alphanumeric and hyphen',
 	'portalPassword' => 'Portal Password',
 	'slaveServer' => 'Slave Server',
 	'chooseTemplate' => 'Choose Template',
-	'selectPacketType' => 'Select Scheme Type',
+	'selectPacketType' => 'Select host scheme',
 	'lookPacketDiff' => 'Find out scheme differences',
 	'yearDuration' => 'Duration in years',
-	'selectDomainKind' => 'Select Domain Kind',
+	'selectDomainKind' => 'Choose domain type',
 
 	'schemePrice' => 'Scheme Price',
 	'domainPrice' => 'Domain Price',
@@ -17,5 +18,16 @@
 	'transactionCost' => 'Transaction Cost',
 	'totalPayment' => 'Total Payment',
 	'expirationDate' => 'Expiration Date',
+	'scheme' => 'Scheme',
 	'orderNow' => 'Order Now',
+	'usage' => 'Usage',
+	'year' => 'Year(s)',
+	'free' => 'Free',
+
+
+	'purchasedHint' => 'Thank you. If our system has verified your payment, a confirmation email will be sent to your email.',
+	'emptyList' => 'No hosts added',
+	'useFreeDomain' => 'Use free domain',
+	'buyNewDomain' => 'Buy new domain',
+	'useExistingDomain' => 'Use existing domain',
 ];

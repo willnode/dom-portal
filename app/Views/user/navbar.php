@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light bg-light mb-4">
   <div class="container-fluid">
-    <a class="navbar-brand" href="https://dom.my.id">
+    <a class="navbar-brand" href="https://domcloud.id">
       <img src="/logo.svg" width="64px" height="60px" alt="" class="mr-2">
       <span class="d-none d-sm-inline">&nbsp; DOM Cloud Hosting</span>
     </a>

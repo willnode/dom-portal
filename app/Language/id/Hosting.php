@@ -2,6 +2,7 @@
 	'listTitle' => 'Daftar Hosting',
 	'newOrder' => 'Order Baru',
 	'portalUsername' => 'Username Portal',
+	'portalUsernameHint' => 'Hanya huruf, digit dan strip',
 	'portalPassword' => 'Password Portal',
 	'slaveServer' => 'Server Slave',
 	'chooseTemplate' => 'Pilih Template',
@@ -17,5 +18,15 @@
 	'transactionCost' => 'Biaya Transaksi',
 	'totalPayment' => 'Total Pembayaran',
 	'expirationDate' => 'Tanggal Kadaluarsa',
+	'scheme' => 'Paket',
 	'orderNow' => 'Order Sekarang',
+	'usage' => 'Penggunaan',
+	'year' => 'Tahun',
+	'free' => 'Gratis',
+
+	'purchasedHint' => 'Terimakasih. Apabila sistem kami sudah memverifikasi pembayaran anda, email konfirmasi akan dikirim pada email anda.',
+	'emptyList' => 'Belum ada hosting ditambahkan',
+	'useFreeDomain' => 'Gunakan domain gratis',
+	'buyNewDomain' => 'Beli domain baru',
+	'useExistingDomain' => 'Gunakan domain yang sudah ada',
 ];

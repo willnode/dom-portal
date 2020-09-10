@@ -7,7 +7,7 @@
 	<div class="row no-gutters" style="min-height: 100vh">
 		<div class="col-md-8 bg-primary text-white d-flex flex-column justify-content-center">
 			<div class="container">
-				<h1><a href="https://dom.my.id" style="color: white"><?= lang('Interface.appTitle') ?></a></h1>
+				<h1><a href="https://domcloud.id" style="color: white"><?= lang('Interface.appTitle') ?></a></h1>
 				<p><?= lang('Interface.enterToPortal') ?></p>
 			</div>
 		</div>

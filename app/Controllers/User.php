@@ -825,7 +825,7 @@ class User extends BaseController
 				throw new ErrorException("Unable to send message");
 			}
 			$this->session->destroy();
-			return $this->response->redirect('/id/login?msg=emailsent');
+			return $this->response->redirect("/$data->lang/login?msg=emailsent");
 		}
 		return view('user/veremail', [
 			'email' => $this->session->email,

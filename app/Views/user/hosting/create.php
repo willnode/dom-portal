@@ -15,7 +15,7 @@
             <div class="card-body">
               <div class="mb-3">
                 <label class="form-label" for="username"><?= lang('Hosting.portalUsername') ?></label>
-                <input class="form-control" id="username" minlength="5" maxlength="32" name="username" placeholder="hanya huruf, digit dan strip" pattern="^[-a-zA-Z0-9]+$" oninput="recalculate()" required>
+                <input class="form-control" id="username" minlength="5" maxlength="32" name="username" placeholder="<?= lang('Hosting.portalUsernameHint') ?>" pattern="^[a-zA-Z][-a-zA-Z0-9]+$" oninput="recalculate()" required>
               </div>
               <div class="mb-3">
                 <label class="form-label" for="name"><?= lang('Hosting.portalPassword') ?></label>
@@ -32,7 +32,7 @@
                 <select class="form-select" id="slave" name="slave" required>
                   <?php foreach ($slaves as $slave) : ?>
                     <label class="form-check">
-                      <option value="<?= $slave->slave_id ?>"><?= $slave->slave_alias . " (Penggunaan: " . ($slave->utilization * 100) . "%)" ?></option>
+                      <option value="<?= $slave->slave_id ?>"><?= $slave->slave_alias . " (".lang('Hosting.usage').": " . ($slave->utilization * 100) . "%)" ?></option>
                     </label>
                   <?php endforeach ?>
                 </select>
@@ -58,7 +58,7 @@
         <div class="col-lg-4">
           <div class="card my-2">
             <div class="card-body">
-              <h3 class="card-title">Paket</h3>
+              <h3 class="card-title"><?= lang('Hosting.scheme') ?></h3>
               <div class="mb-3">
                 <label class="form-label" for="plan"><?= lang('Hosting.selectPacketType') ?></label>
                 <select name="plan" id="plan" class="form-select" onchange="recalculate()" required>
@@ -82,9 +82,9 @@
               <div class="mb-3">
                 <label class="form-label" for="domain_mode"><?= lang('Hosting.selectDomainKind') ?></label>
                 <select name="domain_mode" id="domain_mode" disabled class="form-select" onchange="recalculate()" required>
-                  <option value="free" selected>Gunakan domain gratis</option>
-                  <option value="buy">Beli domain baru</option>
-                  <option value="custom">Gunakan yang sudah ada</option>
+                  <option value="free" selected><?= lang('Hosting.useFreeDomain') ?></option>
+                  <option value="buy"><?= lang('Hosting.buyNewDomain') ?></option>
+                  <option value="custom"><?= lang('Hosting.useExistingDomain') ?></option>
                 </select>
               </div>
               <div id="dm-free">
@@ -92,7 +92,7 @@
                   <input class="form-control" id="free_cname" value=".dom.my.id" disabled>
                   <small class="form-text text-muted">
                     Domain gratis hanya menyediakan fitur terbatas.
-                    <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer">Pelajari lebih lanjut</a>.
+                    <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                   </small>
                 </div>
               </div>
@@ -294,16 +294,17 @@
 
       // Show values
       if (unit == 0) {
-        $('#outprice').text('Gratis');
-        $('#outdomain').text('Gratis');
+        const free = '<?= lang('Hosting.free')?>'
+        $('#outprice').text(free);
+        $('#outdomain').text(free);
         $('#outyear').html('2 Bulan');
-        $('#outtotal').text('Gratis');
+        $('#outtotal').text(free);
         $('#outtip').text('-');
-        $('#outbill').text('Gratis');
+        $('#outbill').text(free);
       } else {
         $('#outprice').text(formatter.format(unit));
         $('#outdomain').text(formatter.format(scheme));
-        $('#outyear').html('&times; ' + years + ' Tahun');
+        $('#outyear').html('&times; ' + years + ' <?= lang('Hosting.year')?>');
         $('#outtotal').text(formatter.format((unit + scheme) * years));
         $('#outtip').text(formatter.format(tip));
         $('#outbill').text(formatter.format((unit + scheme) * years + tip));

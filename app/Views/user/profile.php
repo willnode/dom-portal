@@ -22,7 +22,7 @@
             </div>
             <div class="mb-3">
               <label for="phone"><?= lang('Interface.phone') ?></label>
-              <input class="form-control" id="phone" maxlength="16" name="phone" pattern="(\+|08)\d{8,16}" placeholder="08xxx untuk nomor lokal atau sertakan kode internasional" required value="<?= esc($data->phone, 'attr') ?>">
+              <input class="form-control" id="phone" maxlength="16" name="phone" pattern="(\+|08)\d{8,16}" placeholder="<?= lang('Interface.phoneHint') ?>" required value="<?= esc($data->phone, 'attr') ?>">
             </div>
             <div class="mb-3">
               <label for="lang"><?= lang('Interface.language') ?></label>
