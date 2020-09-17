@@ -49,10 +49,10 @@ class CronJob extends BaseCommand
                             // Disable
                             (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Disk Quota exceeded');
                         }
-                        else if (($domain['Bandwidth byte usage'] ?? 0) > $hosting->plan_net * 1024 * 1024 * 1024) {
-                            // Disable
-                            (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Bandwidth exceeded');
-                        }
+                        // else if (($domain['Bandwidth byte usage'] ?? 0) > $hosting->plan_net * 1024 * 1024 * 1024) {
+                        //     // Disable
+                        //     (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Bandwidth exceeded');
+                        // }
                         else if (time() >= strtotime($hosting->purchase_expired)) {
                             // Disable
                             (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Hosting expired');
