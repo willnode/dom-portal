@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Libraries;
 
 use Config\Services;
 
@@ -25,8 +25,6 @@ class Recaptha
 			'secret' => $this->recapthaSecret,
 			'response' => $response,
 		]);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
 		// execute!
 		$response = curl_exec($ch);

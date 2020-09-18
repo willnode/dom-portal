@@ -30,6 +30,7 @@
 	'emailSent' => 'The email for verification has been sent, please check your inbox before login.',
 	'learnMore' => 'Learn more',
 	'passwordNotice' => 'You don\'t need to remember this password',
+	'thanksForVerify' => 'Thank you, your email has been verified',
 
 	'name' => 'Name',
 	'phone' => 'Phone Number',

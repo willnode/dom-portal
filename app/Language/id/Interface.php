@@ -30,6 +30,7 @@
 	'emailSent' => 'Email untuk verifikasi telah dikirim, mohon cek inbox anda sebelum masuk.',
 	'learnMore' => 'Pelajari lebih lanjut',
 	'passwordNotice' => 'Anda tidak perlu mengingat password ini',
+	'thanksForVerify' => 'Terima Kasih, email kamu sudah diverifikasi',
 
 	'name' => 'Nama',
 	'phone' => 'Nomor HP',

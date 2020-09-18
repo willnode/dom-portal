@@ -7,6 +7,7 @@ use App\Models\CountryCodes;
 use App\Models\LiquidModel;
 use App\Models\LiquidRegistrar;
 use App\Models\PaymentGate;
+use App\Models\SendGridEmail;
 use App\Models\VirtualMinShell;
 use CodeIgniter\Email\Email as EmailEmail;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -461,7 +462,7 @@ class User extends BaseController
 		} else if ($page === 'create') {
 			return $this->createHosting();
 		} else {
-			$data = $this->db->table('hosting__display')->where([
+			$data = $this->db->table('hosting')->where([
 				'hosting_id' => $id,
 				'hosting_login' => $this->session->login_id
 			])->get()->getRow();
@@ -760,7 +761,7 @@ class User extends BaseController
 					])
 				);
 				$post['login_id'] = $this->session->login_id;
-				$post['reseller_code'] = 'R'.str_pad($this->session->login_id, 4).random_int(111, 999);
+				$post['reseller_code'] = 'R' . str_pad($this->session->login_id, 4) . random_int(111, 999);
 				$this->db->table('reseller')->insert($post);
 			}
 		}
@@ -813,17 +814,19 @@ class User extends BaseController
 					'login_id' => $data->login_id
 				]);
 			}
-			$em = \Config\Services::email();
-			$em->setTo($data->email);
-			$em->setSubject(lang('Email.verifyTitle').' | DOM Cloud');
-			$em->setMessage(view('static/verify_email', [
-				'name' => $data->name,
-				'link' => base_url('verify?code=' . urlencode(base64_encode($data->email . ':' . $data->otp)))
-			]));
-			if (!$em->send()) {
-				log_message('critical', $em->printDebugger());
-				throw new ErrorException("Unable to send message");
-			}
+			$em = new SendGridEmail();
+			$em->send('verify_email', 'billing', [[
+				'to' => [
+					[
+						'email' => $data->email,
+						'name' => $data->name,
+					]
+				],
+				'dynamic_template_data' => [
+					'name' => $data->name,
+					'verify_url' => base_url('verify?code=' . urlencode(base64_encode($data->email . ':' . $data->otp))),
+				]
+			]]);
 			$this->session->destroy();
 			return $this->response->redirect("/$data->lang/login?msg=emailsent");
 		}

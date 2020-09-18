@@ -134,6 +134,7 @@ class Home extends BaseController
 						'email_verified' => date('Y-m-d H:i:s'),
 						'otp' => null,
 					], ['email' => $code[0]]);
+					$this->request->setLocale($row->lang ?: 'id');
 					$this->session->destroy();
 					return view('static/verified', [
 						'email' => $code[0],

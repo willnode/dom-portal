@@ -18,6 +18,25 @@ class App extends BaseConfig
 	public $liquidCustomer;
 	public $liquidID;
 	public $liquidKey;
+	public $sendGridFromName;
+	public $sendGridFromEmail;
+	public $sendGridSecret;
+	public $sendGridTemplates = [
+		'verify_email' => [ 'id' => '', 'en' => '' ], // verify_url
+		'purchase_hosting_receipt' => [ 'id' => '', 'en' => '' ],
+		'notify_updates' => [ 'id' => '', 'en' => '' ],
+		'warn_bandwidth' => [ 'id' => '', 'en' => '' ],
+		'warn_disk' => [ 'id' => '', 'en' => '' ],
+		'warn_expiry' => [ 'id' => '', 'en' => '' ],
+		'disabled_bandwidth' => [ 'id' => '', 'en' => '' ],
+		'disabled_disk' => [ 'id' => '', 'en' => '' ],
+		'disabled_expiry' => [ 'id' => '', 'en' => '' ],
+	];
+	public $sendGridAsms = [
+		'billing' => '',
+		'depletion' => '',
+		'features' => '',
+	];
 
 	/*
 	|--------------------------------------------------------------------------
@@ -113,7 +132,7 @@ class App extends BaseConfig
 	| dates with the date helper, and can be retrieved through app_timezone()
 	|
 	*/
-	public $appTimezone = 'Asia/Jakarta';
+	public $appTimezone = 'UTC';
 
 	/*
 	|--------------------------------------------------------------------------

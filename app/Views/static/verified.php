@@ -5,9 +5,9 @@
 
 <body>
 
-	<div class="container">
-		<h1>Terima Kasih, email kamu sudah diverifikasi</h1>
-		<a class="btn btn-primary" href="<?= href('login') ?>">Kembali ke Portal</a>
+	<div class="container my-5 text-center">
+		<h1><?=lang('Interface.thanksForVerify')?></h1>
+		<a class="btn btn-primary" href="<?= href('login') ?>"><?=lang('Interface.back')?></a>
 	</div>
 
 </body>
