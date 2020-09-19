@@ -28,29 +28,22 @@
                 </small>
               </div>
               <div class="mb-3">
-                <label class="form-label" for="slave"><?= lang('Hosting.slaveServer') ?></label>
-                <select class="form-select" id="slave" name="slave" required>
-                  <?php foreach ($slaves as $slave) : ?>
+                <label class="form-label" for="server"><?= lang('Hosting.slaveServer') ?></label>
+                <select class="form-select" id="server" name="server" required>
+                  <?php foreach ($servers as $server) : ?>
                     <label class="form-check">
-                      <option value="<?= $slave->slave_id ?>"><?= $slave->slave_alias . " (".lang('Hosting.usage').": " . ($slave->utilization * 100) . "%)" ?></option>
+                      <option value="<?= $server->id ?>"><?= $server->alias ?></option>
                     </label>
                   <?php endforeach ?>
                 </select>
               </div>
               <div class="mb-3">
                 <label class="form-label" for="template"><?= lang('Hosting.chooseTemplate') ?></label>
-                <select name="template" class="form-select" required>
-                  <?php $tt = "Default" ?>
-                  <optgroup label="Default">
-                    <?php foreach ($templates as $t) : ?>
-                      <?php if ($t->template_category !== $tt) : $tt = $t->template_category ?>
-                  </optgroup>
-                  <optgroup label="<?= $tt ?>">
-                  <?php endif ?>
-                  <option value="<?= $t->template_id ?>"><?= $t->template_name ?></option>
-                <?php endforeach ?>
-                  </optgroup>
-                </select>
+                <input type="text" name="template" class="form-control" list="quickTemplates">
+                <datalist id="quickTemplates">
+                    <option value="https://id.wordpress.org/latest-id_ID.zip">WordPress</option>
+                </datalist>
+                <small>Opsional, harus berisi alamat URL ke file ZIP</small>
               </div>
             </div>
           </div>
@@ -63,21 +56,31 @@
                 <label class="form-label" for="plan"><?= lang('Hosting.selectPacketType') ?></label>
                 <select name="plan" id="plan" class="form-select" onchange="recalculate()" required>
                   <?php foreach ($plans as $plan) : ?>
-                    <option value="<?= $plan->plan_id ?>"><?= ucfirst($plan->plan_alias) ?></option>
+                    <option value="<?= $plan->id ?>"><?= ucfirst($plan->alias) ?></option>
                   <?php endforeach ?>
                 </select>
-                <small class="form-text text-muted">
-                  <a href="https://domcloud.id/price" target="_blank"><?= lang('Hosting.lookPacketDiff') ?></a>.
-                </small>
               </div>
               <div class="mb-3 row align-items-center">
                 <div class="col">
                   <label for="years"><?= lang('Hosting.yearDuration') ?></label>
                 </div>
                 <div class="col">
-                  <input type="number" disabled class="form-control" name="years" value="1" min="1" max="5" onchange="recalculate()">
+                  <input type="number" disabled class="form-control" id="years" name="years" value="1" min="1" max="5" onchange="recalculate()">
                 </div>
               </div>
+              <div class="mb-3 row align-items-center">
+                <div class="col">
+                  <label for="addons">Data Add-ons (GB)</label>
+                </div>
+                <div class="col">
+                  <input type="number" disabled class="form-control" name="addons" name="addons" value="0" min="0" max="1000" onchange="recalculate()">
+                </div>
+              </div>
+              <p>
+                <small class="form-text text-muted">
+                  <a href="https://domcloud.id/price" target="_blank"><?= lang('Hosting.lookPacketDiff') ?></a>.
+                </small>
+              </p>
               <h3 class="card-title"><?= lang('Interface.domain') ?></h3>
               <div class="mb-3">
                 <label class="form-label" for="domain_mode"><?= lang('Hosting.selectDomainKind') ?></label>
@@ -91,7 +94,7 @@
                 <div class="mb-3">
                   <input class="form-control" id="free_cname" value=".dom.my.id" disabled>
                   <small class="form-text text-muted">
-                  <?= lang('Hosting.freeDomainHint') ?>
+                    <?= lang('Hosting.freeDomainHint') ?>
                     <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                   </small>
                 </div>
@@ -103,8 +106,8 @@
                     <div class="input-group">
                       <input name="buy_cname" id="buy_cname" class="form-control" pattern="^[-a-zA-Z0-9]+$" required oninput="recalculate()">
                       <select class="form-select" name="buy_scheme" id="buy_scheme" required style="max-width: 120px" onchange="recalculate()">
-                        <?php foreach ($schemes as $s) : if ($s->scheme_price !== '0') : ?>
-                            <option value="<?= $s->scheme_id ?>"><?= $s->scheme_alias ?></option>
+                        <?php foreach ($schemes as $s) : if ($s->price_idr) : ?>
+                            <option value="<?= $s->id ?>"><?= $s->alias ?></option>
                         <?php endif;
                         endforeach; ?>
                       </select>
@@ -115,21 +118,21 @@
                     </small>
                   </div>
                   <p id="buy-status-prompt" class="alert alert-primary">
-                  <?= lang('Hosting.findReady') ?>
+                    <?= lang('Hosting.findReady') ?>
                   </p>
                   <p id="buy-status-available" class="alert alert-success d-none">
-                  <?= lang('Hosting.findAvailable') ?>
+                    <?= lang('Hosting.findAvailable') ?>
                   </p>
                   <p id="buy-status-loading" class="alert alert-warning d-none">
-                  <?= lang('Hosting.findWait') ?>
+                    <?= lang('Hosting.findWait') ?>
                   </p>
                   <p id="buy-status-error" class="alert alert-danger d-none">
-                  <?= lang('Hosting.findUnavailable') ?>
+                    <?= lang('Hosting.findUnavailable') ?>
                   </p>
                 <?php else : ?>
                   <p class="alert alert-danger">
                     <small>
-                  <?= lang('Hosting.findNeedData') ?>
+                      <?= lang('Hosting.findNeedData') ?>
                       <br><a href="/user/domain?then=reload" target="_blank"><?= lang('Hosting.findNeedDataAction') ?></a>.
                     </small>
                   </p>
@@ -139,7 +142,7 @@
                 <div class="mb-3">
                   <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="masukkan domain kustom" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
                   <small class="form-text text-muted">
-                  <?= lang('Hosting.useExistingHint') ?>
+                    <?= lang('Hosting.useExistingHint') ?>
                     <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                   </small>
                 </div>
@@ -159,13 +162,8 @@
                 <div class="ml-auto" id="outdomain">-</div>
               </div>
               <div class="d-flex">
-                <h6><?= lang('Hosting.hostingDuration') ?></h6>
-                <div class="ml-auto" id="outyear">-</div>
-              </div>
-              <hr>
-              <div class="d-flex">
-                <h6><?= lang('Hosting.hostingCost') ?></h6>
-                <div class="ml-auto" id="outtotal">-</div>
+                <h6>Harga Add-ons</h6>
+                <div class="ml-auto" id="outaddons">-</div>
               </div>
               <div class="d-flex">
                 <h6><?= lang('Hosting.transactionCost') ?></h6>
@@ -179,6 +177,21 @@
               <div class="d-flex">
                 <h6><?= lang('Hosting.expirationDate') ?></h6>
                 <div class="ml-auto" id="outexp">-</div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col">
+                  <h6>Disk Space</h6>
+                  <div class="ml-auto" id="specdisk">- MiB</div>
+                </div>
+                <div class="col">
+                  <h6>Bandwidth</h6>
+                  <div class="ml-auto" id="specbwt">- GiB</div>
+                </div>
+                <div class="col">
+                  <h6>Add-ons</h6>
+                  <div class="ml-auto" id="specbwb">- GiB</div>
+                </div>
               </div>
               <input type="submit" value="<?= lang('Hosting.orderNow') ?>" class="form-control btn-lg btn btn-primary mt-3">
             </div>
@@ -229,11 +242,11 @@
     <?= $liquid ? json_encode($schemes) : 'null' ?>
   </script>
   <script>
-    var plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.plan_id] = b, a), {});
+    var plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.id] = b, a), {});
     var schemes = JSON.parse(document.getElementById('schemes').innerHTML);
-    schemes = schemes && schemes.reduce((a, b) => (a[b.scheme_id] = b, a), {});
+    schemes = schemes && schemes.reduce((a, b) => (a[b.id] = b, a), {});
     var currency = '<?= lang('Interface.currency') ?>';
-    var digits = '<?= lang('Interface.currency') === 'USD' ? 2 : 0 ?>';
+    var digits = '<?= lang('Interface.currency') === 'usd' ? 2 : 0 ?>';
     var formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
       style: 'currency',
       currency: currency,
@@ -268,13 +281,28 @@
 
     function recalculate() {
       // Get values
-      var tip = 5000;
+      var tip = {
+        'usd': 0.4,
+        'idr': 5000
+      } [currency];
+      var bww = {
+        'usd': 0.32,
+        'idr': 4000
+      } [currency];
       var form = window.upgrade;
       var dommod = form.domain_mode.value;
-      var scheme = dommod === 'buy' && form.buy_scheme ? parseInt(schemes[form.buy_scheme.value].scheme_price) * 1000 : 0;
-      var unit = parseInt(plans[form.plan.value].plan_price) * 1000;
+      var scheme = 0;
+      var unit = parseInt(plans[form.plan.value]['price_' + currency]);
       var years = unit === 0 ? 1 / 6 : parseInt(form.years.value);
+      var addons = unit === 0 ? 0 : parseInt(form.addons.value);
       var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
+      // Domain Calc
+      if (dommod === 'buy' && form.buy_scheme) {
+        scheme = parseInt(schemes[form.buy_scheme.value]['price_' + currency]);
+        if (years > 1) {
+          scheme += parseInt(schemes[form.buy_scheme.value]['renew_' + currency]) * (years - 1)
+        }
+      }
       // Alter UI
       if (unit == 0) {
         dommod = form.domain_mode.value = 'free';
@@ -288,6 +316,7 @@
       form.free_cname.value = form.username.value + '.dom.my.id';
       form.domain_mode.disabled = unit === 0;
       form.years.disabled = unit === 0;
+      form.addons.disabled = unit === 0;
       form.custom_cname.disabled = dommod !== 'custom';
       if (form.buy_cname) {
         form.buy_cname.disabled = dommod !== 'buy';
@@ -296,26 +325,22 @@
 
       // Show values
       if (unit == 0) {
-        const free = '<?= lang('Hosting.free')?>'
-        $('#outprice').text(free);
-        $('#outdomain').text(free);
-        $('#outyear').html('2 <?= lang('Hosting.month')?>');
-        $('#outtotal').text(free);
+        const free = '<?= lang('Hosting.free') ?>'
+        $('#outprice').text('-');
+        $('#outdomain').text('-');
+        $('#outaddons').html('-');
         $('#outtip').text('-');
         $('#outbill').text(free);
       } else {
-        if (currency === 'USD') {
-          unit /= 12500;
-          scheme /= 12500;
-          tip /= 12500;
-        }
-        $('#outprice').text(formatter.format(unit));
+        $('#outprice').text(formatter.format(unit * years));
         $('#outdomain').text(formatter.format(scheme));
-        $('#outyear').html('&times; ' + years + ' <?= lang('Hosting.year')?>');
-        $('#outtotal').text(formatter.format((unit + scheme) * years));
+        $('#outaddons').html(formatter.format(addons * bww));
         $('#outtip').text(formatter.format(tip));
-        $('#outbill').text(formatter.format((unit + scheme) * years + tip));
+        $('#outbill').text(formatter.format(unit * years + addons * bww + scheme + tip));
       }
+      $('#specdisk').text(plans[form.plan.value]['disk'] + ' MiB');
+      $('#specbwt').text(plans[form.plan.value]['net'] * Math.max(years, 1) + ' GiB');
+      $('#specbwb').text(plans[form.plan.value]['net'] / 12 * Math.floor(years) + addons + ' GiB');
 
       $('#outexp').text(exp.toISOString().substr(0, 10));
     }

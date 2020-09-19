@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Models\VirtualMinShell;
+use App\Libraries\VirtualMinShell;
 use CodeIgniter\CLI\BaseCommand;
 use Config\Database;
 

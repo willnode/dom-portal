@@ -5,16 +5,16 @@ namespace App\Entities;
 use CodeIgniter\Entity;
 
 /**
- * @property int id
- * @property int login_id
- * @property string password
+ * @property int $id
+ * @property int $login_id
+ * @property string $password
  * @property mixed[] cache_customer
  * @property mixed[] cache_contacts
  * @property mixed[] cache_domains
  * @property mixed[] pending_transactions
  * @property mixed[] default_contacts
- * @property Time created_at
- * @property Time updated_at
+ * @property Time $created_at
+ * @property Time $updated_at
  */
 class Liquid extends Entity
 {

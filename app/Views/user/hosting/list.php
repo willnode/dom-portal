@@ -30,10 +30,10 @@
             <tbody>
               <?php foreach ($list as $host) : ?>
                 <tr>
-                  <td><a href="/user/hosting/detail/<?= $host->hosting_id ?>"><?= $host->domain_name ?></a></td>
-                  <td><?= $host->plan_alias ?></td>
-                  <td><?= ucfirst($host->purchase_status) ?></td>
-                  <td><?= ucfirst($host->purchase_expired) ?></td>
+                  <td><a href="/user/hosting/detail/<?= $host->id ?>"><?= $host->domain ?></a></td>
+                  <td><?= $host->plan->alias ?></td>
+                  <td><?= ucfirst($host->status) ?></td>
+                  <td><?= $host->expiry_at->humanize() ?> &mdash; <?= $host->expiry_at->toDateString() ?></td>
                 </tr>
               <?php endforeach ?>
               <?php if (count($list) === 0) : ?>

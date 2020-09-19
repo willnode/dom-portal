@@ -5,12 +5,12 @@ namespace App\Entities;
 use CodeIgniter\Entity;
 
 /**
- * @property int id
- * @property string alias
- * @property int price_idr
- * @property int renew_idr
- * @property int price_usd
- * @property int renew_usd
+ * @property int $id
+ * @property string $alias
+ * @property int $price_idr
+ * @property int $renew_idr
+ * @property int $price_usd
+ * @property int $renew_usd
  */
 class Scheme extends Entity
 {

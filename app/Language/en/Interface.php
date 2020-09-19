@@ -1,7 +1,7 @@
 <?php return [
 	'code' => 'en',
 	'codeI8LN' => 'en-US',
-	'currency' => 'USD',
+	'currency' => 'usd',
 	'appTitle' => 'DOM Cloud Hosting',
 	'login' => 'Sign In',
 	'register' => 'Register',

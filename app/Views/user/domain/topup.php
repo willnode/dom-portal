@@ -47,7 +47,7 @@
     <script>
       var formatter = new Intl.NumberFormat('id-ID', {
         style: 'currency',
-        currency: 'IDR',
+        currency: 'idr',
         maximumFractionDigits: 0,
         minimumFractionDigits: 0,
       });

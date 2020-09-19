@@ -10,7 +10,7 @@ class VirtualMinShell
 
 	protected function execute($cmd, $title = '')
 	{
-		if (ENVIRONMENT === 'production' || $title === NULL) {
+		if (/*ENVIRONMENT === 'production'*/ true|| $title === NULL) {
 			set_time_limit(300);
 			$username = Services::request()->config->sudoWebminUser;
 			$password = Services::request()->config->sudoWebminPass;
@@ -48,14 +48,14 @@ class VirtualMinShell
 			if ($privilenge >= $level) {
 				$flags .= $flag;
 			}
+			$epassword = urlencode($password);
+			$cmd = "program=create-domain&user=$username&pass=$epassword" .
+			"&email=$email&domain=$domain&plan=$plan&limits-from-plan=$flags";
+			$this->execute($this->wrapWget($cmd, $slave), " Create Hosting for $domain ");
 		}
 		if ($template) {
-			$flags .= "&template=$template";
+			(new TemplateDeployer())->deploy("sv01.dom.my.id", $domain, $username, $password, $template);
 		}
-		$password = urlencode($password);
-		$cmd = "program=create-domain&user=$username&pass=$password" .
-			"&email=$email&domain=$domain&plan=$plan&limits-from-plan=$flags";
-		$this->execute($this->wrapWget($cmd, $slave), " Create Hosting for $domain ");
 	}
 	public function upgradeHosting($domain, $slave, $oldprivilenge, $newplan, $newprivilenge)
 	{

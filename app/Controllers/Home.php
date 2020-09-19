@@ -2,9 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Models\LiquidRegistrar;
-use App\Models\Recaptha;
-use App\Models\VirtualMinShell;
+use App\Libraries\LiquidRegistrar;
+use App\Libraries\Recaptha;
+use App\Libraries\VirtualMinShell;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use ErrorException;
 
@@ -160,9 +160,7 @@ class Home extends BaseController
 					$_POST['password'],
 					$login->password
 				)) {
-					foreach ($login as $key => $value) {
-						$this->session->set($key, $value);
-					}
+					$this->session->set('login', $login->id);
 					return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
 				}
 			}

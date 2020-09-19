@@ -8,7 +8,7 @@
 
   <div class="container">
     <h1><?= lang('Hosting.upgradeHost') ?></h1>
-    <?php if ($data->purchase_status === 'pending') : ?>
+    <?php if ($current && $current->status === 'pending') : ?>
       <div class="alert alert-danger">
         Anda tidak dapat melakukan upgrade apabila masih ada transaksi belum selesai.
       </div>
@@ -21,7 +21,7 @@
               <div class="radio">
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="new" onchange="syncPlans()" required class="mr-2" <?= $data->plan_price != 0 ? 'disabled' : 'checked' ?>>
+                    <input type="radio" name="mode" value="new" onchange="syncPlans()" required class="mr-2" <?= $current ? 'disabled' : 'checked' ?>>
                     <b><?= lang('Interface.renew') ?></b>
                   </div>
                   <div class="pl-4">
@@ -30,7 +30,7 @@
                 </label>
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="extend" onchange="syncPlans()" class="mr-2" <?= $data->plan_price == 0 ? 'disabled' : '' ?>>
+                    <input type="radio" name="mode" value="extend" onchange="syncPlans()" class="mr-2" <?= !$current ? 'disabled' : '' ?>>
                     <b><?= lang('Interface.extend') ?></b>
                   </div>
                   <div class="pl-4">
@@ -40,7 +40,7 @@
                 </label>
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="upgrade" onchange="syncPlans()" class="mr-2" <?= $data->plan_price == 0 ? 'disabled' : '' ?>>
+                    <input type="radio" name="mode" value="upgrade" onchange="syncPlans()" class="mr-2" <?= !$current ? 'disabled' : '' ?>>
                     <b><?= lang('Interface.upgrade') ?></b>
                   </div>
                   <div class="pl-4">
@@ -58,8 +58,8 @@
               <?php foreach ($plans as $plan) : ?>
                 <div class="radio">
                   <label>
-                    <input type="radio" name="plan" id="plan<?= $plan->plan_id ?>" class="mr-2" value="<?= $plan->plan_id ?>" required onchange="recalculate()">
-                    <?= $plan->plan_alias ?>
+                    <input type="radio" name="plan" id="plan<?= $plan->id ?>" class="mr-2" value="<?= $plan->id ?>" required onchange="recalculate()">
+                    <?= $plan->alias ?>
                   </label>
                 </div>
               <?php endforeach ?>
@@ -108,7 +108,7 @@
         </div>
       </form>
     <?php endif ?>
-    <a href="/user/hosting/detail/<?= $data->hosting_id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
+    <a href="/user/hosting/detail/<?= $data->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
 
   </div>
 
@@ -153,7 +153,7 @@
         if (unit == 0) years = 1 / 6;
         else if (mode === 'upgrade') window.upgrade.years.value = years = oldyr;
         var currency = '<?= lang('Interface.currency') ?>';
-        var digits = '<?= lang('Interface.currency') === 'USD' ? 2 : 0 ?>';
+        var digits = '<?= lang('Interface.currency') === 'usd' ? 2 : 0 ?>';
         var formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
           style: 'currency',
           currency: currency,
@@ -165,7 +165,7 @@
         var tip = 5000;
         var exp = mode === 'new' ? new Date(Date.now() + 1000 * 86400 * 365 * years) : (
           mode === 'extend' ? new Date(Number(oldexp) + 1000 * 86400 * 365 * years) : oldexp);
-        if (currency === 'USD') {
+        if (currency === 'usd') {
           unit /= 12500;
           tip /= 12500;
           cashback /= 12500;

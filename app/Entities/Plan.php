@@ -5,15 +5,15 @@ namespace App\Entities;
 use CodeIgniter\Entity;
 
 /**
- * @property int id
- * @property string alias
- * @property int price_idr
- * @property int price_usd
- * @property int disk
- * @property int net
- * @property int dbs
- * @property int subservs
- * @property int features
+ * @property int $id
+ * @property string $alias
+ * @property int $price_idr
+ * @property int $price_usd
+ * @property int $disk
+ * @property int $net
+ * @property int $dbs
+ * @property int $subservs
+ * @property int $features
  */
 class Plan extends Entity
 {

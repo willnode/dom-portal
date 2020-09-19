@@ -158,7 +158,7 @@
         var priv = window.upgrade.purchase_privacy_protection.checked ? 50 * 1000 : 0;
         var formatter = new Intl.NumberFormat('id-ID', {
           style: 'currency',
-          currency: 'IDR',
+          currency: 'idr',
           maximumFractionDigits: 0,
           minimumFractionDigits: 0,
         });

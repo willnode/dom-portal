@@ -1,14 +1,23 @@
-<?php namespace App\Models;
+<?php
 
+namespace App\Models;
+
+use App\Entities\Host;
 use CodeIgniter\Model;
 
-class HostingModel extends Model
+class HostModel extends Model
 {
     protected $table         = 'hosts';
     protected $allowedFields = [
-        'login_id', 'username', 'domain', 'password', 'liquid_id', 'scheme_id', 'slave_id', 'plan_id', 'backup_bw', 'notification', 'expiry_at'
+        'login_id', 'username', 'domain', 'password', 'liquid_id', 'scheme_id', 'server_id', 'plan_id', 'addons', 'notification', 'expiry_at', 'status'
     ];
     protected $primaryKey = 'id';
     protected $returnType = 'App\Entities\Host';
     protected $useTimestamps = true;
+
+    public function atLogin($id)
+    {
+        $this->builder()->where('login_id', $id);
+        return $this;
+    }
 }

@@ -13,23 +13,23 @@
           <div class="card-body">
             <div><?= lang('Hosting.usernameHost') ?></div>
             <div class="input-group mb-3">
-              <input type="text" class="form-control" value="<?= $data->hosting_username ?>" readonly>
-              <a href="/user/hosting/rename/<?= $data->hosting_id ?>" class="btn btn-outline-secondary"><?= lang('Interface.change') ?></a>
+              <input type="text" class="form-control" value="<?= $data->username ?>" readonly>
+              <a href="/user/hosting/rename/<?= $data->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.change') ?></a>
             </div>
             <div><?= lang('Hosting.domainHost') ?></div>
             <div class="input-group mb-3">
-              <input value="<?= $data->domain_name ?>" type="text" class="form-control" readonly>
-              <a href="/user/hosting/cname/<?= $data->hosting_id ?>" class="btn btn-outline-secondary"><?= lang('Interface.change') ?></a>
+              <input value="<?= $data->domain ?>" type="text" class="form-control" readonly>
+              <a href="/user/hosting/cname/<?= $data->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.change') ?></a>
             </div>
             <div><?= lang('Hosting.slaveID') ?> / <?= lang('Hosting.IPAddress') ?></div>
             <div class="input-group mb-3">
-              <input value="<?= $data->slave_alias . ' / ' . $data->slave_ip ?>" type="text" class="form-control" readonly>
-              <a href="/user/hosting/login/<?= $data->hosting_id ?>" target="_blank" class="btn btn-outline-secondary"><?= lang('Hosting.openPortal') ?></a>
+              <input value="<?= $data->server->alias . ' / ' . $data->server->ip ?>" type="text" class="form-control" readonly>
+              <a href="/user/hosting/login/<?= $data->id ?>" target="_blank" class="btn btn-outline-secondary"><?= lang('Hosting.openPortal') ?></a>
             </div>
             <div><?= lang('Hosting.administrativeOption') ?></div>
             <div class="btn-group d-flex justify-content-end mt-2">
-              <a href="/user/hosting/see/<?= $data->hosting_id ?>" class="btn btn-outline-primary"><?= lang('Hosting.manageHostLogin') ?></a>
-              <a href="/user/hosting/delete/<?= $data->hosting_id ?>" class="btn btn-outline-danger"><?= lang('Hosting.deleteHost') ?></a>
+              <a href="/user/hosting/see/<?= $data->id ?>" class="btn btn-outline-primary"><?= lang('Hosting.manageHostLogin') ?></a>
+              <a href="/user/hosting/delete/<?= $data->id ?>" class="btn btn-outline-danger"><?= lang('Hosting.deleteHost') ?></a>
             </div>
           </div>
         </div>
@@ -39,27 +39,27 @@
           <div class="card-body">
             <div><?= lang('Hosting.hostStatus') ?></div>
             <div class="input-group mb-3">
-              <h3><?= ucfirst($data->purchase_status) ?></h3>
-              <?php if ($data->purchase_status === 'pending') : ?>
-                <a href="/user/hosting/invoices/<?= $data->hosting_id ?>" class="ml-auto btn btn-primary"><?= lang('Hosting.finishPayment') ?></a>
-              <?php elseif ($data->purchase_status === 'active') : ?>
-                <a href="http://<?= $data->domain_name ?>" target="_blank" rel="noopener noreferrer" class="ml-auto btn btn-primary"><?= lang('Hosting.openWebsite') ?></a>
+              <h3><?= ucfirst($data->status) ?></h3>
+              <?php if ($data->status === 'pending') : ?>
+                <a href="/user/hosting/invoices/<?= $data->id ?>" class="ml-auto btn btn-primary"><?= lang('Hosting.finishPayment') ?></a>
+              <?php elseif ($data->status === 'active') : ?>
+                <a href="http://<?= $data->domain ?>" target="_blank" rel="noopener noreferrer" class="ml-auto btn btn-primary"><?= lang('Hosting.openWebsite') ?></a>
               <?php endif ?>
             </div>
             <div><?= lang('Hosting.activeScheme') ?></div>
             <div class="input-group mb-3">
-              <input type="text" class="form-control" value="<?= $data->plan_alias ?>" readonly>
-              <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>" class="btn btn-outline-secondary"><?= lang('Interface.upgrade') ?></a>
+              <input type="text" class="form-control" value="<?= $data->plan->alias ?>" readonly>
+              <a href="/user/hosting/upgrade/<?= $data->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.upgrade') ?></a>
             </div>
             <div><?= lang('Hosting.purchaseDate') ?></div>
             <div class="input-group mb-3">
-              <input type="text" class="form-control" value="<?= $data->purchase_invoiced ?>" readonly>
-              <a href="/user/hosting/invoices/<?= $data->hosting_id ?>" class="btn btn-outline-secondary"><?= lang('Interface.archives') ?></a>
+              <input type="text" class="form-control" value="<?= $data->created_at ?>" readonly>
+              <a href="/user/hosting/invoices/<?= $data->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.archives') ?></a>
             </div>
             <div><?= lang('Hosting.expiryDate') ?></div>
             <div class="input-group mb-3">
-              <input type="text" class="form-control" value="<?= $data->purchase_expired ?>" readonly>
-              <a href="/user/hosting/upgrade/<?= $data->hosting_id ?>#extend" class="btn btn-outline-secondary"><?= lang('Interface.extend') ?></a>
+              <input type="text" class="form-control" value="<?= $data->expiry_at ?>" readonly>
+              <a href="/user/hosting/upgrade/<?= $data->id ?>#extend" class="btn btn-outline-secondary"><?= lang('Interface.extend') ?></a>
             </div>
           </div>
         </div>

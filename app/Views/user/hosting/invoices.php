@@ -13,9 +13,9 @@
           <div class="card-body">
             <div><?= lang('Hosting.statusInvoice') ?></div>
             <div class="input-group mb-3">
-              <h3><?= ucfirst($data->purchase_status) ?></h3>
+              <h3><?= ucfirst($data->status) ?></h3>
             </div>
-            <?php if ($data->purchase_status === 'pending') : ?>
+            <?php if ($current && $current->status === 'pending') : ?>
               <?php if (lang('Interface.code') == 'en') : ?>
                 <p><i>Please <a href="https://api.whatsapp.com/send?phone=6289514631927&text=Hello,+I+want+to+proceed+my+purchase+with+ID+<?=$data->purchase_id?>">request support</a>  to finish payment.</i></p>
               <?php else : ?>
@@ -25,17 +25,17 @@
               </form>
               <?php endif ?>
               <p>
-                <?php $money = floatval($data->purchase_price) / (lang('Interface.code') == 'en' ? 12500 : 1) ?>
+                <?php $money = floatval($current->metadata->${'price_'.lang('Interface.currency')}) ?>
                 <?php $money = lang('Interface.code') == 'en' ? number_format($money, 2) :  number_format($money, 0, ',', '.')?>
-                <?php if ($data->purchase_liquid) : ?>
+                <?php if ($current->liquid) : ?>
                 <?= lang('Hosting.formatInvoiceAlt', [
-                  "<b>$data->plan_alias</b>",
+                  "<b>$current->plan</b>",
                   "<b>$money</b>",
-                  "<b>$data->domain_name</b>",
+                  "<b>$data->domain</b>",
                 ]); ?>
                 <?php else : ?>
                   <?= lang('Hosting.formatInvoice', [
-                  "<b>$data->plan_alias</b>",
+                  "<b>$current->plan</b>",
                   "<b>$money</b>",
                 ]); ?>
                 <?php endif ?>
@@ -55,12 +55,12 @@
         <div class="card">
           <div class="card-body">
             <h3>Arsip Langganan</h3>
-            <?php foreach ($purchases as $item) : ?>
+            <?php foreach ($history as $item) : ?>
               <div class="card">
                 <div class="card-body">
                   <div class="d-flex">
-                    <div><b><?= $item->purchase_invoiced ?></b></div>
-                    <div class="ml-auto"><?= ucfirst($item->purchase_status) ?></div>
+                    <div><b><?= $item->metadata->_invoiced ?></b></div>
+                    <div class="ml-auto"><?= ucfirst($item->status) ?></div>
                   </div>
                 </div>
               </div>

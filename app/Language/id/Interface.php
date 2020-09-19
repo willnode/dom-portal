@@ -1,7 +1,7 @@
 <?php return [
 	'code' => 'id',
 	'codeI8LN' => 'id-ID',
-	'currency' => 'IDR',
+	'currency' => 'idr',
 	'appTitle' => 'DOM Cloud Hosting',
 	'login' => 'Masuk',
 	'register' => 'Daftar',
