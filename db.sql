@@ -184,9 +184,35 @@ CREATE TABLE IF NOT EXISTS `servers__stat` (
 
 -- Dumping structure for table dbdom.templates
 CREATE TABLE IF NOT EXISTS `templates` (
-  `id` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
-  `metadata` mediumtext CHARACTER SET utf8mb4 NOT NULL,
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `metadata` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table dbdom.templates__index
+CREATE TABLE IF NOT EXISTS `templates__index` (
+  `domain` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `match` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `priority` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '100',
+  `target` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`domain`,`match`),
+  KEY `domain` (`domain`),
+  KEY `templates__index_ibfk_1` (`target`),
+  CONSTRAINT `templates__index_ibfk_1` FOREIGN KEY (`target`) REFERENCES `templates` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table dbdom.templates__repos
+CREATE TABLE IF NOT EXISTS `templates__repos` (
+  `type` enum('github') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `repo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `target` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  PRIMARY KEY (`type`,`repo`),
+  KEY `FK_templates__repos_templates` (`target`),
+  CONSTRAINT `FK_templates__repos_templates` FOREIGN KEY (`target`) REFERENCES `templates` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.

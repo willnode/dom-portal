@@ -7,7 +7,7 @@
 	<?= view('user/navbar') ?>
 	<div class="container">
 		<h1 class="mb-3">Menghapus Hosting</h1>
-		<?php if ($data->plan_price == 0) : ?>
+		<?php if ($data->plan_id == 1) : ?>
 			<div class="card">
 				<div class="card-body">
 					<div class="alert alert-danger">
@@ -26,7 +26,7 @@
 				Anda tidak dapat menghapus hosting ini sebelum merubah paket menjadi Gratis.
 			</div>
 		<?php endif ?>
-		<a href="/user/hosting/detail/<?= $data->hosting_id ?>" class="mt-3 btn btn-secondary">Kembali</a>
+		<a href="/user/hosting/detail/<?= $data->id ?>" class="mt-3 btn btn-secondary">Kembali</a>
 	</div>
 
 </body>
