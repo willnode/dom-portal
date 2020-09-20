@@ -53,8 +53,8 @@
           </div>
         </div>
       </div>
-      <?php if ($stat) : ?>
-        <div class="col-lg-8">
+      <div class="col-lg-8">
+        <?php if ($stat) : ?>
           <div class="card">
             <div class="card-body">
               <div class="row g-0 mb-3">
@@ -113,10 +113,10 @@
                   <div>Sisa Add-Ons</div>
                 </div>
               </div>
-              <div>
+              <div class="mb-3">
                 <canvas id="canvas"></canvas>
               </div>
-              <div class="row g-0 mb-3 text-muted">
+              <div class="row g-0 text-muted">
                 <div class="col-6">
                   <small> Paket <?= $plan->alias ?>, <?= format_bytes($plan->disk_bytes) ?> disk space, <?= format_bytes($plan->net_monthly_bytes) ?> data bulanan.</small>
                 </div>
@@ -126,14 +126,14 @@
               </div>
             </div>
           </div>
-        </div>
-      <?php else : ?>
-        <div class="card">
-          <div class="card-body">
-            <p class="text-center text-muted">Data penggunaan hosting akan muncul disini. Tunggulah satu jam kemudian agar datanya muncul.</p>
+        <?php else : ?>
+          <div class="card">
+            <div class="card-body">
+              <p class="text-center text-muted">Data penggunaan hosting akan muncul disini. Tunggulah satu jam kemudian agar datanya muncul.</p>
+            </div>
           </div>
-        </div>
-      <?php endif ?>
+        <?php endif ?>
+      </div>
     </div>
     <div class="d-flex mb-3">
       <a href="/user/hosting" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
@@ -150,12 +150,12 @@
       if (ctx) {
         var data = JSON.parse($('#bandwidths').html());
         window.myBar = new Chart(ctx.getContext('2d'), {
-          type: 'bar',
+          type: 'line',
           data: {
-            labels: Object.keys(data).map(x => x.substr(8, 2)),
+            labels: Object.keys(data).map(x => x.substring(5, 10)),
             datasets: [{
               label: 'Bandwidth (MB)',
-              backgroundColor: 'rgba(255,0,0,0.5)',
+              backgroundColor: 'rgba(255,0,0,0.4)',
               borderColor: 'red',
               borderWidth: 1,
               data: Object.values(data).map(x => Math.floor(x / 1024 / 1024 * 10) / 10)
