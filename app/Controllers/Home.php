@@ -88,7 +88,7 @@ class Home extends BaseController
 						// Re-enable and upgrade
 						(new VirtualMinShell())->enableHosting(
 							$host->domain,
-							$host->server->alias,
+							$host->server->alias
 						);
 						(new VirtualMinShell())->upgradeHosting(
 							$host->domain,
