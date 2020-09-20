@@ -58,7 +58,7 @@ class CronJob extends BaseCommand
                     if (!$stat) {
                         $stat = new HostStat($newStat);
                     } else {
-                        if ($stat->quota_net < $newStat['quota_net']) {
+                        if ($stat->quota_net > $newStat['quota_net']) {
                             // Roll over time
                             log_message('notice', 'ROLLOVER ' . $newStat['domain'] . ': ' . json_encode([$stat->quota_net, $newStat['quota_net']]));
                             $host->addons = max(0, $host->addons - (($newStat['quota_net'] / 1024 / 1024) - ($plan->net * 1024 / 12)));

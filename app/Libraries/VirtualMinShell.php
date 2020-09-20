@@ -54,7 +54,7 @@ class VirtualMinShell
 			$this->execute($this->wrapWget($cmd, $slave), " Create Hosting for $domain ");
 		}
 		if ($template) {
-			(new TemplateDeployer())->deploy("sv01.dom.my.id", $domain, $username, $password, $template);
+			(new TemplateDeployer())->deploy($slave, $domain, $username, $password, $template);
 		}
 	}
 	public function upgradeHosting($domain, $slave, $oldprivilenge, $newplan, $newprivilenge)
@@ -120,6 +120,18 @@ class VirtualMinShell
 		$bw_bytes = floor($bw_mb) * 1024 * 1024;
 		$cmd = "program=modify-domain&domain=$domain&bw=$bw_bytes";
 		$this->execute($this->wrapWget($cmd, $slave), " Adjust Bandwidth $domain to $bw_bytes bytes ");
+	}
+	public function createDatabase($name, $type, $domain, $slave)
+	{
+		$name = urlencode($name);
+		$cmd = "program=create_database&domain=$domain&name=$name&type=$type";
+		$this->execute($this->wrapWget($cmd, $slave), " Create database $domain named $name ");
+	}
+	public function modifyWebHome($home, $domain, $slave)
+	{
+		$home = urlencode($home);
+		$cmd = "program=modify_web&domain=$domain&document-dir=$home";
+		$this->execute($this->wrapWget($cmd, $slave), " Set home $domain named $home ");
 	}
 	public function listDomainsInfo($slave)
 	{
