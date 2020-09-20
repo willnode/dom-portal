@@ -190,7 +190,7 @@ class User extends BaseController
 			'plans' => (new PlanModel())->find(),
 			'servers' => (new ServerModel())->find(),
 			'schemes' => (new SchemeModel())->find(),
-			'liquid' => fetchOne('liquid', ['login_id' => $this->login->id]),
+			'liquid' => (new LiquidModel())->atLogin($this->login->id),
 			'validation' => $this->validator,
 		]);
 	}
@@ -296,7 +296,9 @@ class User extends BaseController
 		}
 		return view('user/hosting/upgrade', [
 			'data' => $data,
-			'current' => $data->purchase,
+			'purchase' => $data->purchase,
+			'liquid' => (new LiquidModel())->atLogin($this->login->id),
+			'schemes' => (new SchemeModel())->find(),
 			'plans' => (new PlanModel())->find(),
 		]);
 	}
@@ -514,11 +516,12 @@ class User extends BaseController
 	{
 		if (!empty($_GET['name']) && !empty($_GET['scheme'])) {
 			$name = $_GET['name'];
-			$scheme = fetchOne('schemes', ['scheme_id' => $_GET['scheme']]);
-			if (strlen($name) > 512 || strpos($name, '.') !== false || !$scheme || $scheme->scheme_price == 0) {
+			/** @var Scheme */
+			$scheme = (new SchemeModel())->find($_GET['scheme']);
+			if (strlen($name) > 512 || strpos($name, '.') !== false || !$scheme || $scheme->{'price_'.lang('Interface.currency')} == 0) {
 				return $this->response->setJSON(['status' => 'invalid']);
 			}
-			$domain = $name . $scheme->scheme_alias;
+			$domain = $name . $scheme->alias;
 			$response = (new LiquidRegistrar())->isDomainAvailable($domain);
 			// possible values: error, regthroughothers, available
 			$status = 'error';
@@ -542,7 +545,7 @@ class User extends BaseController
 		if ($this->request->getMethod() === 'post') {
 			if ($this->validate([
 				'domain_name' => 'required|regex_match[/^[-\w]+$/]',
-				'domain_scheme' => 'required|is_not_unique[schemes.scheme_id]',
+				'domain_scheme' => 'required|is_not_unique[schemes.id]',
 				'years' => 'required|greater_than[0]|less_than[6]',
 				'registrant_contact_id' => 'required|integer',
 				'billing_contact_id' => 'required|integer',
@@ -557,7 +560,7 @@ class User extends BaseController
 						'purchase_privacy_protection'
 					])
 				);
-				$scheme = fetchOne('schemes', ['scheme_id' => $post['domain_scheme']]);
+				$scheme = (new SchemeModel())->find($post['domain_scheme']);
 				if ($scheme->scheme_price == 0) return;
 				$post['domain_name'] .= $scheme->scheme_alias;
 				unset($post['domain_scheme']);

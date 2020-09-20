@@ -13,6 +13,7 @@
 
 	'schemePrice' => 'Plan Price',
 	'domainPrice' => 'Domain Price',
+	'addonsPrice' => 'Add-ons Price',
 	'hostingDuration' => 'Host Duration',
 	'hostingCost' => 'Host Cost',
 	'oldHosting' => 'Old Host',

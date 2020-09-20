@@ -98,7 +98,7 @@ class VirtualMinShell
 	public function resetHosting($domain, $slave, $newpw)
 	{
 		$cmd = "program=modify-domain&domain=$domain&pass=$newpw";
-		$this->execute($this->wrapWget($cmd, $slave));
+		$this->execute($this->wrapWget($cmd, $slave), "Reset Host Password");
 	}
 	public function enableHosting($domain, $slave)
 	{
@@ -114,6 +114,12 @@ class VirtualMinShell
 	{
 		$cmd = "program=delete-domain&domain=$domain";
 		$this->execute($this->wrapWget($cmd, $slave), " Delete Hosting for $domain ");
+	}
+	public function adjustBandwidthHosting($bw_mb, $domain, $slave)
+	{
+		$bw_bytes = floor($bw_mb) * 1024 * 1024;
+		$cmd = "program=modify-domain&domain=$domain&bw=$bw_bytes";
+		$this->execute($this->wrapWget($cmd, $slave), " Adjust Bandwidth $domain to $bw_bytes bytes ");
 	}
 	public function listDomainsInfo($slave)
 	{

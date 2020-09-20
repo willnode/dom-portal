@@ -13,6 +13,7 @@
 
 	'schemePrice' => 'Harga Paket',
 	'domainPrice' => 'Harga Domain',
+	'addonsPrice' => 'Harga Add-ons',
 	'hostingDuration' => 'Masa Hosting',
 	'hostingCost' => 'Biaya Hosting',
 	'oldHosting' => 'Hosting Lama',
@@ -64,6 +65,7 @@
 	'renewHint' => 'Metode ini mengganti pembelian paket sebelumnya. Anda bebas memilih jenis paket yang ingin diterapkan.',
 	'extendHint' => 'Metode ini memperpanjang jangka waktu hosting. Anda hanya bisa memperpanjang jangka waktu dalam jenis paket yang sama.',
 	'upgradeHint' => 'Metode ini menggabungkan paket sebelumnya (tidak menambah jangka waktu hosting). Anda hanya bisa memilih paket yang lebih tinggi dengan manfaat mendapatkan potongan sesuai dengan pembelian sebelumnya.',
+	'topupHint' => 'Metode ini hanya menambah data add-ons dari pembelian paket sebelumnya.',
 	'manageInvoice' => 'Kelola Langganan',
 	'statusInvoice' => 'Status Langganan Saat Ini',
 	'cancelInvoice' => 'Batalkan Pembayaran',

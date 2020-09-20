@@ -63,4 +63,5 @@
 	'renew' => 'Perbarui',
 	'upgrade' => 'Upgrade',
 	'extend' => 'Perpanjang',
+	'topup' => 'Topup',
 ];

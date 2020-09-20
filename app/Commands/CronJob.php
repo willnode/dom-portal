@@ -62,6 +62,11 @@ class CronJob extends BaseCommand
                             // Roll over time
                             log_message('notice', 'ROLLOVER ' . $newStat['domain'] . ': ' . json_encode([$stat->quota_net, $newStat['quota_net']]));
                             $host->addons = max(0, $host->addons - (($newStat['quota_net'] / 1024 / 1024) - ($plan->net * 1024 / 12)));
+                            (new VirtualMinShell())->adjustBandwidthHosting(
+                                ($host->addons + ($plan->net * 1024 / 12)),
+                                $host->domain,
+                                $server->alias,
+                            );
                             (new HostModel())->save($host);
                         }
                         $stat->fill($newStat);

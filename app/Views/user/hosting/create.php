@@ -8,7 +8,7 @@
   <div class="container-fluid">
     <h1><?= lang('Hosting.newHost') ?></h1>
     <?= $validation ? $validation->listErrors() : '' ?>
-    <form method="POST" name="upgrade">
+    <form method="POST" name="box">
       <div class="row">
         <div class="col-lg-4">
           <div class="card my-2">
@@ -162,7 +162,7 @@
                 <div class="ml-auto" id="outdomain">-</div>
               </div>
               <div class="d-flex">
-                <h6>Harga Add-ons</h6>
+                <h6><?= lang('Hosting.addonsPrice') ?></h6>
                 <div class="ml-auto" id="outaddons">-</div>
               </div>
               <div class="d-flex">
@@ -242,22 +242,21 @@
     <?= $liquid ? json_encode($schemes) : 'null' ?>
   </script>
   <script>
-    var plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.id] = b, a), {});
-    var schemes = JSON.parse(document.getElementById('schemes').innerHTML);
-    schemes = schemes && schemes.reduce((a, b) => (a[b.id] = b, a), {});
-    var currency = '<?= lang('Interface.currency') ?>';
-    var digits = '<?= lang('Interface.currency') === 'usd' ? 2 : 0 ?>';
-    var formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
+    const plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.id] = b, a), {});
+    const schemes = (x => x && x.reduce((a, b) => (a[b.id] = b, a), {}))(JSON.parse(document.getElementById('schemes').innerHTML));
+    const currency = '<?= lang('Interface.currency') ?>';
+    const digits = '<?= lang('Interface.currency') === 'usd' ? 2 : 0 ?>';
+    const formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
       style: 'currency',
       currency: currency,
       maximumFractionDigits: digits,
       minimumFractionDigits: digits,
     });
-    var activedomain = null;
 
+    let activedomain = null;
     function checkDomain() {
-      var name = window.upgrade.buy_cname;
-      var scheme = window.upgrade.buy_scheme;
+      const name = window.box.buy_cname;
+      const scheme = window.box.buy_scheme;
       if (name.reportValidity && !name.reportValidity()) {
         return;
       }
@@ -289,14 +288,14 @@
         'usd': 0.32,
         'idr': 4000
       } [currency];
-      var form = window.upgrade;
+      var form = window.box;
       var dommod = form.domain_mode.value;
-      var scheme = 0;
       var unit = parseInt(plans[form.plan.value]['price_' + currency]);
-      var years = unit === 0 ? 1 / 6 : parseInt(form.years.value);
-      var addons = unit === 0 ? 0 : parseInt(form.addons.value);
+      var years = unit === 0 ? 1 / 6 : Math.min(5, parseInt(form.years.value));
+      var addons = unit === 0 ? 0 : Math.min(1000, parseInt(form.addons.value));
       var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
       // Domain Calc
+      var scheme = 0;
       if (dommod === 'buy' && form.buy_scheme) {
         scheme = parseInt(schemes[form.buy_scheme.value]['price_' + currency]);
         if (years > 1) {
@@ -307,8 +306,6 @@
       if (unit == 0) {
         dommod = form.domain_mode.value = 'free';
         scheme = 0;
-      } else if (form.custom_cname.value.endsWith('dom.my.id')) {
-        form.custom_cname.value = '';
       }
       $('#dm-free').toggleClass('d-none', dommod !== 'free');
       $('#dm-buy').toggleClass('d-none', dommod !== 'buy');

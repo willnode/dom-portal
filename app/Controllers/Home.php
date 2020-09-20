@@ -106,11 +106,18 @@ class Home extends BaseController
 				}
 				if ($metadata->addons) {
 					$host->addons += $metadata->addons * 1024;
+					// Add more bandwidth
+					(new VirtualMinShell())->adjustBandwidthHosting(
+						($host->addons + ($plan->net * 1024 / 12)),
+						$host->domain,
+						$host->server->alias,
+					);
 					// Re-enable (in case disabled by bandwidth)
 					(new VirtualMinShell())->enableHosting(
 						$host->domain,
 						$host->server->alias,
 					);
+
 				}
 				(new HostModel())->save($host);
 				$data->metadata = $metadata;

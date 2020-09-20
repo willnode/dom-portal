@@ -23,7 +23,7 @@ use CodeIgniter\I18n\Time;
  * @property int $server_id
  * @property int $plan_id
  * @property int $addons
- * @property int $notification Notification
+ * @property int $notification Notification Flag 1=about expire, 2=rollover mode, 4=disabled
  * @property Scheme $scheme
  * @property Plan $plan
  * @property Server $server
