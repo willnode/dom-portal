@@ -81,7 +81,7 @@
                   <div>Database</div>
                 </div>
                 <div class="col text-muted">
-                  <div class="h3 font-weight-normal m-0"><?= format_bytes(-$stat->disk_bytes + $stat->quota_server) ?></div>
+                  <div class="h3 font-weight-normal m-0"><?= format_bytes($plan->disk_bytes - $stat->quota_server) ?></div>
                   <div>Kosong</div>
                 </div>
               </div>
@@ -91,16 +91,16 @@
                 </div>
                 <div class="col-12 col-lg-9">
                   <div class="progress justify-content-end my-3">
-                    <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: <?= 100 * $stat->quota_net / ($data->addons_bytes + $plan->net_monthly_bytes) ?>%"></div>
-                    <div class="progress-bar bg-primary" role="progressbar" style="width: <?= 100 * max(0, $plan->net_monthly_bytes - $stat->quota_net) / ($data->addons_bytes + $plan->net_monthly_bytes) ?>%"></div>
-                    <div class="progress-bar bg-success" role="progressbar" style="width: <?= 100 * min(max(0, $plan->net_monthly_bytes + $data->addons_bytes - $stat->quota_net), $data->addons_bytes) / ($data->addons_bytes + $plan->net_monthly_bytes) ?>%"></div>
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: <?= 100 * $stat->quota_net / ($data->addons_bytes + $plan->net_monthly_bytes) ?>%"></div>
+                    <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * max(0, $plan->net_monthly_bytes - $stat->quota_net) / ($data->addons_bytes + $plan->net_monthly_bytes) ?>%"></div>
+                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: <?= 100 * min(max(0, $plan->net_monthly_bytes + $data->addons_bytes - $stat->quota_net), $data->addons_bytes) / ($data->addons_bytes + $plan->net_monthly_bytes) ?>%"></div>
                   </div>
                 </div>
                 <div class="col">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($data->addons_bytes + $plan->net_monthly_bytes) ?></div>
                   <div class="text-black">Total</div>
                 </div>
-                <div class="col text-secondary">
+                <div class="col text-danger">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($stat->quota_net) ?></div>
                   <div>Digunakan</div>
                 </div>
@@ -150,7 +150,7 @@
       if (ctx) {
         var data = JSON.parse($('#bandwidths').html());
         window.myBar = new Chart(ctx.getContext('2d'), {
-          type: 'line',
+          type: 'bar',
           data: {
             labels: Object.keys(data).map(x => x.substring(5, 10)),
             datasets: [{
