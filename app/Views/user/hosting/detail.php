@@ -24,7 +24,7 @@
             <div><?= lang('Hosting.slaveID') ?> / <?= lang('Hosting.IPAddress') ?></div>
             <div class="input-group mb-3">
               <input value="<?= $data->server->alias . ' / ' . $data->server->ip ?>" type="text" class="form-control" readonly>
-              <a href="/user/hosting/login/<?= $data->id ?>" target="_blank" class="btn btn-outline-secondary"><?= lang('Hosting.openPortal') ?></a>
+              <a href="/user/hosting/see/<?= $data->id ?>" class="btn btn-outline-secondary"><?= lang('Hosting.openPortal') ?></a>
             </div>
             <div><?= lang('Hosting.administrativeOption') ?></div>
             <div class="btn-group d-flex justify-content-end mt-2">

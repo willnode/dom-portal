@@ -325,7 +325,9 @@ class User extends BaseController
 			'slave' => $data->server->alias,
 			'user' => $data->username,
 			'pass' => $shown ? esc($data->password) :
-				'&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;',
+			'&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;',
+			'rawuser' => $data->username,
+			'rawpass' => $data->password,
 			'shown' => $shown,
 		]);
 	}
@@ -440,35 +442,19 @@ class User extends BaseController
 			'history' => $history,
 		]);
 	}
+	/** @param Host $data */
 	protected function deleteHosting($data)
 	{
-		if ($this->request->getMethod() === 'post' && $data->plan_price == 0 && ($_POST['wordpass'] ?? '') === $data->username) {
+		if ($this->request->getMethod() === 'post' && $data->plan_id == 1 && ($_POST['wordpass'] ?? '') === $data->username) {
 			// Handle domain
-			if ($data->domain_scheme == 1) {
+			if ($data->scheme_id == 1) {
 				// Remove domain
 				(new VirtualMinShell)->removeFromServerDNS(
-					$data->domain_name
+					$data->domain
 				);
-				$this->db->table('domain')->delete([
-					'domain_id' => $data->domain_id,
-				]);
-			} else if ($data->domain_scheme) {
-				// Set NULL
-				$this->db->table('hosting')->update([
-					'domain' => null,
-				], [
-					'id' => $data->id,
-				]);
-			} else {
-				// Self registering, just delete
-				$this->db->table('domain')->delete([
-					'domain_id' => $data->domain_id,
-				]);
 			}
-			(new VirtualMinShell())->deleteHosting($data->domain_name, $data->slave_alias);
-			$this->db->table('hosting')->delete([
-				'id' => $data->id,
-			]);
+			(new VirtualMinShell())->deleteHosting($data->domain, $data->server->alias);
+			(new HostModel())->delete($data->id);
 			log_message('notice', VirtualMinShell::$output);
 			return $this->response->redirect('/user/hosting/');
 		}

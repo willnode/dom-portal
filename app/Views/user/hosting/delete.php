@@ -14,7 +14,7 @@
 						PERHATIAN! Penghapusan hosting bersifat permanen dan
 						kami tidak dapat mengembalikan aksi tersebut.
 					</div>
-					<p>Mohon ketik username hosting untuk menyetujui penghapusan hosting "<?= $data->hosting_username ?>".</p>
+					<p>Mohon ketik username hosting untuk menyetujui penghapusan hosting "<?= $data->username ?>".</p>
 					<form method="POST">
 						<input type="text" name="wordpass" class="form-control" required>
 						<input type="submit" value="Hapus Hosting" class="mt-2 form-control btn btn-danger">
