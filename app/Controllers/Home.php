@@ -82,7 +82,7 @@ class Home extends BaseController
 							$host->server->alias,
 							$plan->alias,
 							$plan->features,
-							$metadata->template,
+							$metadata->template
 						);
 					} else {
 						// Re-enable and upgrade
@@ -110,26 +110,24 @@ class Home extends BaseController
 					(new VirtualMinShell())->adjustBandwidthHosting(
 						($host->addons + ($plan->net * 1024 / 12)),
 						$host->domain,
-						$host->server->alias,
+						$host->server->alias
 					);
 					// Re-enable (in case disabled by bandwidth)
 					(new VirtualMinShell())->enableHosting(
 						$host->domain,
-						$host->server->alias,
+						$host->server->alias
 					);
-
 				}
 				(new HostModel())->save($host);
 				$data->metadata = $metadata;
-				(new PurchaseModel())->save($data);
-				{
+				(new PurchaseModel())->save($data); {
 					// Email
 					$desc = ($metadata->liquid ? lang('Hosting.formatInvoiceAlt', [
 						$metadata->plan,
 						$data->domain,
-					  ]) : lang('Hosting.formatInvoice', [
+					]) : lang('Hosting.formatInvoice', [
 						$metadata->plan,
-					  ]));
+					]));
 
 					(new SendGridEmail())->send('receipt_email', 'billing', [[
 						'to' => [[

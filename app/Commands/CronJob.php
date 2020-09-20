@@ -65,7 +65,7 @@ class CronJob extends BaseCommand
                             (new VirtualMinShell())->adjustBandwidthHosting(
                                 ($host->addons + ($plan->net * 1024 / 12)),
                                 $host->domain,
-                                $server->alias,
+                                $server->alias
                             );
                             (new HostModel())->save($host);
                         }
