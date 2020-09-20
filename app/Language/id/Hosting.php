@@ -27,7 +27,7 @@
 	'year' => 'Tahun',
 	'free' => 'Gratis',
 
-	'newHost' => 'New Host',
+	'newHost' => 'Hosting Baru',
 	'purchasedHint' => 'Terimakasih. Apabila sistem kami sudah memverifikasi pembayaran anda, email konfirmasi akan dikirim pada email anda.',
 	'emptyList' => 'Belum ada hosting ditambahkan',
 	'useFreeDomain' => 'Gunakan domain gratis',

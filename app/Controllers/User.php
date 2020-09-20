@@ -307,6 +307,8 @@ class User extends BaseController
 	{
 		return view('user/hosting/detail', [
 			'data' => $data,
+			'plan' => $data->plan,
+			'stat' => $data->stat,
 		]);
 	}
 	protected function loginHosting($data)

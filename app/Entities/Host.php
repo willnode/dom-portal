@@ -91,4 +91,9 @@ class Host extends Entity
     {
         return (new LoginModel())->find($this->attributes['login_id']);
     }
+
+    public function getAddonsBytes()
+    {
+        return $this->addons * 1024 * 1024;
+    }
 }

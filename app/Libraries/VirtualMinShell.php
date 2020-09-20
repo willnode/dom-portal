@@ -124,13 +124,13 @@ class VirtualMinShell
 	public function createDatabase($name, $type, $domain, $slave)
 	{
 		$name = urlencode($name);
-		$cmd = "program=create_database&domain=$domain&name=$name&type=$type";
+		$cmd = "program=create-database&domain=$domain&name=$name&type=$type";
 		$this->execute($this->wrapWget($cmd, $slave), " Create database $domain named $name ");
 	}
 	public function modifyWebHome($home, $domain, $slave)
 	{
 		$home = urlencode($home);
-		$cmd = "program=modify_web&domain=$domain&document-dir=$home";
+		$cmd = "program=modify-web&domain=$domain&document-dir=$home";
 		$this->execute($this->wrapWget($cmd, $slave), " Set home $domain named $home ");
 	}
 	public function listDomainsInfo($slave)

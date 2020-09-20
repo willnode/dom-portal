@@ -34,3 +34,17 @@ function format_money($money)
 	$money = floatval($money);
 	return lang('Interface.code') == 'en' ? number_format($money, 2) . ' US$' : 'Rp ' . number_format($money, 0, ',', '.');
 }
+
+function format_bytes($bytes, $precision = 1) {
+    $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB');
+
+    $bytes = max($bytes, 0);
+    $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+    $pow = min($pow, count($units) - 1);
+
+    // Uncomment one of the following alternatives
+    $bytes /= pow(1024, $pow);
+    // $bytes /= (1 << (10 * $pow));
+
+    return number_format($bytes, $precision) . ' ' . $units[$pow];
+}

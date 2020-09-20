@@ -28,4 +28,14 @@ class Plan extends Entity
         'subservs' => 'integer',
         'features' => 'integer',
     ];
+
+    public function getDiskBytes()
+    {
+        return $this->attributes['disk'] * 1024 * 1024;
+    }
+
+    public function getNetMonthlyBytes()
+    {
+        return $this->net * 1024 * 1024 * 1024 / 12;
+    }
 }
