@@ -2,9 +2,17 @@
 
 namespace App\Controllers;
 
+use App\Entities\Plan;
+use App\Entities\Purchase;
+use App\Entities\Scheme;
 use App\Libraries\LiquidRegistrar;
 use App\Libraries\Recaptha;
+use App\Libraries\SendGridEmail;
 use App\Libraries\VirtualMinShell;
+use App\Models\HostModel;
+use App\Models\PlanModel;
+use App\Models\PurchaseModel;
+use App\Models\SchemeModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use ErrorException;
 
@@ -19,102 +27,119 @@ class Home extends BaseController
 	{
 		if (
 			isset($_GET['id'], $_GET['challenge'], $_GET['secret']) &&
-			(ENVIRONMENT === 'development' || ($_GET['secret'] == $this->request->config->paymentSecret &&
+			($_GET['secret'] == $this->request->config->paymentSecret &&
 				isset($_POST['trx_id'], $_POST['sid'], $_POST['status'], $_POST['via']) &&
 				$_POST['status'] == 'berhasil' // iPaymu notification
-			))
+			)
 		) {
-			$data = $this->db->table('hosting__display')->where([
-				'purchase_id' => $_GET['id'],
-				'purchase_challenge' => $_GET['challenge']
-			])->get()->getRow();
-			if ($data) {
+			/** @var Purchase */
+			$data = (new PurchaseModel())->find($_GET['id']);
+			if ($data && $data->metadata->_challenge == $_GET['challenge']) {
+
 				// At this point we process the purchase
 				// In case anything fails, at least we have record it.
 
-				$login = fetchOne('login', ['login_id' => $data->hosting_login]);
+				$data->status = 'active';
+				$host = $data->host;
+				$login = $host->login;
+				$metadata = $data->metadata;
+				$metadata->_id = $_POST['trx_id'];
+				$metadata->_invoiced = date('Y-m-d H:i:s');
+				$metadata->_via = $_POST['via'];
+				$metadata->_challenge = null;
 
-				$receipt = [
-					'name' => $login->name,
-					'id_payment' => $_POST['trx_id'] ?? '-',
-					'id_purchase' => $data->purchase_id,
-					'name_purchase' => "Hosting $data->plan_alias $data->purchase_years Tahun" . ($data->purchase_liquid ? " dengan domain $data->domain_name" : ""),
-					'amount_purchase' => 'Rp ' . number_format($data->purchase_price, 0, ',', '.'),
-					'time_purchase' => date('Y-m-d H:i:s'),
-					'via_purchase' => $_POST['via'] ?? '-',
-				];
+				log_message('notice', 'PURCHASE: ' . json_encode($metadata));
 
-				log_message('notice', 'PURCHASE: ' . json_encode($receipt));
-
-				if ($data->purchase_liquid) {
-					$r = explode('|', $data->purchase_liquid);
+				if ($metadata->liquid) {
+					$r = explode('|', $metadata->liquid);
+					/** @var Scheme */
+					$scheme = (new SchemeModel())->find($r[2]);
 					$liquid = (new LiquidRegistrar());
 					$liquid->confirmFundDomain($r[0], [
-						'amount' => $data->purchase_years * $data->scheme_price,
+						'amount' => ($metadata->years - 1) * $scheme->renew_idr + $scheme->price_idr,
 						'description' => "Funds for " . $data->domain_name,
 					]);
 					$liquid->confirmPurchaseDomain($r[0], [
 						'transaction_id' => $r[1],
 					]);
 					$this->db->table('liquid')->update([
-						'liquid_cache_domains' => json_encode($liquid->getListOfDomains($r[0])),
-						'liquid_pending_transactions' => json_encode($liquid->getPendingTransactions($r[0])),
+						'cache_domains' => json_encode($liquid->getListOfDomains($r[0])),
+						'pending_transactions' => json_encode($liquid->getPendingTransactions($r[0])),
 					], [
-						'liquid_id' => $r[0],
+						'id' => $r[0],
 					]);
 				}
-				if ($this->db->table('purchase')->update([
-					'purchase_status' => 'active',
-					'purchase_invoiced' => date('Y-m-d H:i:s'),
-					'purchase_challenge' => null,
-					'purchase_template' => null,
-				], ['purchase_id' => $data->purchase_id])) {
-					$old =  $this->db->table('purchase')->getWhere([
-						'purchase_active' => 2,
-						'purchase_hosting' => $data->hosting_id,
-					])->getRow();
-					if ($old) {
-						$this->db->table('purchase')->update([
-							'purchase_active' => 0,
-							'purchase_status' => 'expired',
-						], [
-							'purchase_id' => $old->purchase_id,
-						]);
-						(new VirtualMinShell())->enableHosting(
-							$data->domain_name,
-							$data->slave_alias
-						);
-						(new VirtualMinShell())->upgradeHosting(
-							$data->domain_name,
-							$data->slave_alias,
-							$this->db->table('plans')->getWhere([
-								'plan_id' => $old->purchase_plan
-							])->getRow()->plan_features,
-							$data->plan_alias,
-							$data->plan_features
+				if ($metadata->plan) {
+					/** @var Plan */
+					$plan = (new PlanModel())->find($metadata->plan);
+					if ($host->status === 'pending') {
+						// First time creation
+						(new VirtualMinShell())->createHosting(
+							$host->username,
+							$host->password,
+							$login->email,
+							$host->domain,
+							$host->server->alias,
+							$plan->alias,
+							$plan->features,
+							$metadata->template,
 						);
 					} else {
-						(new VirtualMinShell())->createHosting(
-							$data->hosting_username,
-							$data->hosting_password,
-							$login->email,
-							$data->domain_name,
-							$data->slave_alias,
-							$data->plan_alias,
-							$data->plan_features,
-							$data->purchase_template
+						// Re-enable and upgrade
+						(new VirtualMinShell())->enableHosting(
+							$host->domain,
+							$host->server->alias,
+						);
+						(new VirtualMinShell())->upgradeHosting(
+							$host->domain,
+							$host->server->alias,
+							$host->plan->alias,
+							$host->plan->plan_features,
+							$plan->alias,
+							$plan->features
 						);
 					}
-					log_message('notice', VirtualMinShell::$output);
-					$em = \Config\Services::email();
-					$em->setTo($login->email);
-					$em->setSubject('Pembayaran | DOM Cloud');
-					$em->setMessage(view('static/receipt_email', $receipt));
-					if (!$em->send()) {
-						log_message('critical', $em->printDebugger());
-					}
-					return 'OK';
+					$host->expiry_at = $metadata->expiration;
+					$host->plan = $metadata->plan;
+					$host->status = 'active';
+					$host->addons += $plan->net * 1024 / 12;
 				}
+				if ($metadata->addons) {
+					$host->addons += $metadata->addons * 1024;
+					// Re-enable (in case disabled by bandwidth)
+					(new VirtualMinShell())->enableHosting(
+						$host->domain,
+						$host->server->alias,
+					);
+				}
+				(new HostModel())->save($host);
+				$data->metadata = $metadata;
+				(new PurchaseModel())->save($data);
+				{
+					// Email
+					$desc = ($metadata->liquid ? lang('Hosting.formatInvoiceAlt', [
+						$metadata->plan,
+						$data->domain,
+					  ]) : lang('Hosting.formatInvoice', [
+						$metadata->plan,
+					  ]));
+
+					(new SendGridEmail())->send('receipt_email', 'billing', [[
+						'to' => [[
+							'email' => $login->email,
+							'name' => $login->name,
+						]],
+						'dynamic_template_data' => [
+							'name' => $login->name,
+							'price' => format_money($metadata->price),
+							'description' => $desc,
+							'id' => $metadata->_id,
+							'timestamp' => $metadata->_invoiced,
+							'via' => $metadata->_via,
+						]
+					]]);
+				}
+				return "OK";
 			}
 		}
 		throw new PageNotFoundException();

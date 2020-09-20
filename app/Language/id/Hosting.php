@@ -69,5 +69,7 @@
 	'cancelInvoice' => 'Batalkan Pembayaran',
 	'cancelInvoiceHint' => 'Apabila anda ingin mengganti jenis paket, anda harus membatalkan pembayaran ini terlebih dahulu.',
 	'cancelInvoceConfirm' => 'Yakin ingin membatalkan pembayaran? Hosting anda akan kembali menggunakan status langganan lama. Apabila ini adalah langganan pertama maka hosting ini akan dihapus secara otomatis.',
-	'formatInvoice' => 'Pembayaran Hosting Paket {0} seharga Rp. {1}',
+	'formatInvoice' => 'Pembayaran Hosting Paket {0}',
+	'formatInvoiceAlt' => 'Pembayaran Hosting Paket {0} dengan domain {1}',
+	'formatInvoiceSum' => ' seharga {1} ',
 ];

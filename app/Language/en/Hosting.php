@@ -69,6 +69,7 @@
 	'cancelInvoice' => 'Cancel Invoice',
 	'cancelInvoiceHint' => 'If you want to change the plan, you must first cancel this payment.',
 	'cancelInvoceConfirm' => 'Are you sure you want to cancel your payment? This host will return to using the old subscription status. If this is your first subscription then this host will be removed automatically.',
-	'formatInvoice' => 'Payment for {0} Plan Host for {1} US$',
-	'formatInvoiceAlt' => 'Payment for {0} Plan Host with domain {2} for {1} US$ ',
+	'formatInvoice' => 'Payment for {0} Plan Host',
+	'formatInvoiceAlt' => 'Payment for {0} Plan Host with domain {1}',
+	'formatInvoiceSum' => ' for {1} ',
 ];

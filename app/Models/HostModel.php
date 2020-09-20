@@ -20,4 +20,10 @@ class HostModel extends Model
         $this->builder()->where('login_id', $id);
         return $this;
     }
+
+    public function atServer($id)
+    {
+        $this->builder()->where('server_id', $id);
+        return $this;
+    }
 }

@@ -17,12 +17,20 @@ use Config\Services;
  * @link: https://codeigniter4.github.io/CodeIgniter4/
  */
 
-function href($url) {
-	 $req = Services::request();
-	 return base_url($req->getLocale().'/'.$url);
+function href($url)
+{
+	$req = Services::request();
+	return base_url($req->getLocale() . '/' . $url);
 }
 
-function fetchOne($table, $where) {
+function fetchOne($table, $where)
+{
 	$db = Database::connect();
 	return $db->table($table)->where($where)->get()->getRow();
+}
+
+function format_money($money)
+{
+	$money = floatval($money);
+	return lang('Interface.code') == 'en' ? number_format($money, 2) . ' US$' : 'Rp ' . number_format($money, 0, ',', '.');
 }

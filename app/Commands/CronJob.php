@@ -2,9 +2,17 @@
 
 namespace App\Commands;
 
+use App\Entities\Host;
+use App\Entities\HostStat;
+use App\Entities\Server;
 use App\Libraries\VirtualMinShell;
+use App\Models\HostModel;
+use App\Models\HostStatModel;
+use App\Models\ServerModel;
 use CodeIgniter\CLI\BaseCommand;
+use CodeIgniter\CLI\CLI;
 use Config\Database;
+use HashContext;
 
 class CronJob extends BaseCommand
 {
@@ -24,16 +32,19 @@ class CronJob extends BaseCommand
 			Deleting users who not reactivating within two weeks
         */
         $db = Database::connect();
-        foreach ($db->table('slaves')->get()->getResult() as $slave) {
-            $domains = (new VirtualMinShell())->listDomainsInfo($slave->slave_alias);
-            $bandwidths = (new VirtualMinShell())->listBandwidthInfo($slave->slave_alias);
-            $hostings = $db->table('hosting__display')->getWhere([
-                'hosting_slave' => $slave->slave_id
-            ])->getResult();
-            foreach ($hostings as $hosting) {
-                if ($domain = ($domains[$hosting->domain_name] ?? '')) {
-                    $db->table('hosting__stat')->replace([
-                        'hosting_id' => $hosting->hosting_id,
+        /** @var Server */
+        foreach ((new ServerModel())->find() as $server) {
+            $domains = (new VirtualMinShell())->listDomainsInfo($server->alias);
+            $bandwidths = (new VirtualMinShell())->listBandwidthInfo($server->alias);
+            /** @var Host[] */
+            $hosts = (new HostModel())->atServer($server->id)->find();
+            foreach ($hosts as $host) {
+                if ($domain = ($domains[$host->domain] ?? '')) {
+                    $stat = $host->stat;
+                    $plan = $host->plan;
+                    $newStat = [
+                        'host_id' => $host->id,
+                        'domain' => $host->domain,
                         'identifier' => $domain['ID'],
                         'password' => $domain['Password'],
                         'quota_server' => $domain['Server byte quota used'],
@@ -41,34 +52,44 @@ class CronJob extends BaseCommand
                         'quota_db' => $domain['Databases byte size'] ?? 0,
                         'quota_net' => $domain['Bandwidth byte usage'] ?? 0,
                         'features' => $domain['Features'],
-                        'bandwidths' => json_encode($bandwidths[$hosting->domain_name] ?? null),
+                        'bandwidths' => json_encode($bandwidths[$host->domain] ?? null),
                         'disabled' => $domain['Disabled'] ?? null,
-                    ]);
-                    if (!isset($domain['Disabled'])) {
-                        if (($domain['Server byte quota used'] ?? 0) > $hosting->plan_disk * 1024 * 1024) {
-                            // Disable
-                            (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Disk Quota exceeded');
+                    ];
+                    if (!$stat) {
+                        $stat = new HostStat($newStat);
+                    } else {
+                        if ($stat->quota_net < $newStat['quota_net']) {
+                            // Roll over time
+                            log_message('notice', 'ROLLOVER ' . $newStat['domain'] . ': ' . json_encode([$stat->quota_net, $newStat['quota_net']]));
+                            $host->addons = max(0, $host->addons - (($newStat['quota_net'] / 1024 / 1024) - ($plan->net * 1024 / 12)));
+                            (new HostModel())->save($host);
                         }
-                        // else if (($domain['Bandwidth byte usage'] ?? 0) > $hosting->plan_net * 1024 * 1024 * 1024) {
-                        //     // Disable
-                        //     (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Bandwidth exceeded');
-                        // }
-                        else if (time() >= strtotime($hosting->purchase_expired)) {
+                        $stat->fill($newStat);
+                    }
+                    (new HostStatModel())->replace($stat->toRawArray());
+                    $expired = time() >= strtotime($host->expiry_at->getTimestamp());
+                    $overDisk = ($domain['Server byte quota used'] ?? 0) > $plan->disk * 1024 * 1024;
+                    $overBw = ($domain['Bandwidth byte usage'] ?? 0) > $plan->net * 1024 * 1024 * 1024 / 12 + $host->addons * 1024 * 1024;
+                    if (!empty($domain['Disabled'])) {
+                        if ($overDisk) {
                             // Disable
-                            (new VirtualMinShell())->disableHosting($hosting->domain_name, $hosting->slave_alias, 'Hosting expired');
+                            (new VirtualMinShell())->disableHosting($host->domain, $server->alias, 'Running out Disk Space');
+                        } else if ($overBw) {
+                            // Disable
+                            (new VirtualMinShell())->disableHosting($host->domain, $server->alias, 'Running out Bandwidth');
+                        } else if ($expired) {
+                            // Disable
+                            (new VirtualMinShell())->disableHosting($host->domain, $server->alias, 'host expired');
                         }
                     } else {
-                        if (strtotime('-2 weeks', time()) >= strtotime($hosting->purchase_expired)) {
+                        if (strtotime('-2 weeks', time()) >= strtotime($host->expiry_at)) {
                             // Delete
-                            (new VirtualMinShell())->deleteHosting($hosting->domain_name, $hosting->slave_alias);
+                            (new VirtualMinShell())->deleteHosting($host->domain, $server->alias);
+                            // TODO: Deleted email
                         } else {
-                            if (time() < strtotime($hosting->purchase_expired)) {
-                                if (($domain['Bandwidth byte usage'] ?? 9999999999) < $hosting->plan_net * 1024 * 1024 * 1024) {
-                                    if (($domain['Server byte quota used'] ?? 9999999999) > $hosting->plan_disk * 1024 * 1024) {
-                                        // Enable
-                                        (new VirtualMinShell())->enableHosting($hosting->domain_name, $hosting->slave_alias);
-                                    }
-                                }
+                            if (!($expired || $overDisk || $overBw)) {
+                                // Enable
+                                (new VirtualMinShell())->enableHosting($host->domain, $server->alias);
                             }
                         }
                     }

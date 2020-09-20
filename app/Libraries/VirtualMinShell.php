@@ -34,7 +34,7 @@ class VirtualMinShell
 	protected function wrapWget($params, $slave_dn)
 	{
 		$port = Services::request()->config->sudoWebminPort;
-		return "https://$slave_dn.dom.my.id:$port/virtual-server/remote.cgi?$params";
+		return "https://$slave_dn.domcloud.id:$port/virtual-server/remote.cgi?$params";
 	}
 	protected $featureFlags = [
 		"&dir=&webmin=&web=&mysql=&unix=",

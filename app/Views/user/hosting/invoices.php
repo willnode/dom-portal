@@ -17,31 +17,24 @@
             </div>
             <?php if ($current && $current->status === 'pending') : ?>
               <?php if (lang('Interface.code') == 'en') : ?>
-                <p><i>Please <a href="https://api.whatsapp.com/send?phone=6289514631927&text=Hello,+I+want+to+proceed+my+purchase+with+ID+<?=$data->purchase_id?>">request support</a>  to finish payment.</i></p>
+                <p><i>Please <a href="https://api.whatsapp.com/send?phone=6289514631927&text=Hello,+I+want+to+proceed+my+purchase+with+ID+<?= $data->purchase_id ?>">request support</a> to finish payment.</i></p>
               <?php else : ?>
                 <form method="post" class="my-2">
-                <input type="hidden" name="action" value="pay">
-                <input type="submit" class="btn btn-primary" value="<?= lang('Hosting.finishPayment') ?>">
-              </form>
+                  <input type="hidden" name="action" value="pay">
+                  <input type="submit" class="btn btn-primary" value="<?= lang('Hosting.finishPayment') ?>">
+                </form>
               <?php endif ?>
               <p>
-                <?php $money = floatval($current->metadata->${'price_'.lang('Interface.currency')}) ?>
-                <?php $money = lang('Interface.code') == 'en' ? number_format($money, 2) :  number_format($money, 0, ',', '.')?>
-                <?php if ($current->liquid) : ?>
-                <?= lang('Hosting.formatInvoiceAlt', [
+                <?php $money = format_money($current->metadata->price) ?>
+                <?php ($current->liquid ? lang('Hosting.formatInvoiceAlt', [
                   "<b>$current->plan</b>",
-                  "<b>$money</b>",
                   "<b>$data->domain</b>",
-                ]); ?>
-                <?php else : ?>
-                  <?= lang('Hosting.formatInvoice', [
+                ]) : lang('Hosting.formatInvoice', [
                   "<b>$current->plan</b>",
-                  "<b>$money</b>",
-                ]); ?>
-                <?php endif ?>
+                ])) . lang("Hosting.formatInvoiceSum", ["<b>$money</b>"]) ?>
               </p>
               <p>
-              <?= lang('Hosting.cancelInvoiceHint') ?>
+                <?= lang('Hosting.cancelInvoiceHint') ?>
               </p>
               <form method="post" class="my-2">
                 <input type="hidden" name="action" value="cancel">
@@ -59,7 +52,7 @@
               <div class="card">
                 <div class="card-body">
                   <div class="d-flex">
-                    <div><b><?= $item->metadata->_invoiced ?></b></div>
+                    <div><b><?= $item->metadata->_issued ?> | Rp. <?= $item->metadata->price ?></b></div>
                     <div class="ml-auto"><?= ucfirst($item->status) ?></div>
                   </div>
                 </div>

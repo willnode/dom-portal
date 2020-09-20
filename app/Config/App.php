@@ -23,7 +23,7 @@ class App extends BaseConfig
 	public $sendGridSecret;
 	public $sendGridTemplates = [
 		'verify_email' => [ 'id' => '', 'en' => '' ], // verify_url
-		'purchase_hosting_receipt' => [ 'id' => '', 'en' => '' ],
+		'receipt_email' => [ 'id' => '', 'en' => '' ],
 		'notify_updates' => [ 'id' => '', 'en' => '' ],
 		'warn_bandwidth' => [ 'id' => '', 'en' => '' ],
 		'warn_disk' => [ 'id' => '', 'en' => '' ],

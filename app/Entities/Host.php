@@ -3,13 +3,16 @@
 namespace App\Entities;
 
 use App\Models\HostStatModel;
+use App\Models\LoginModel;
 use App\Models\PlanModel;
 use App\Models\PurchaseModel;
 use App\Models\SchemeModel;
 use App\Models\ServerModel;
 use CodeIgniter\Entity;
+use CodeIgniter\I18n\Time;
 
 /**
+ * @property int $id
  * @property int $login_id
  * @property string $username
  * @property string $domain
@@ -20,11 +23,12 @@ use CodeIgniter\Entity;
  * @property int $server_id
  * @property int $plan_id
  * @property int $addons
- * @property int $notification
+ * @property int $notification Notification
  * @property Scheme $scheme
  * @property Plan $plan
  * @property Server $server
- * @property HostStat $stat
+ * @property HostStat|null $stat
+ * @property Login $login
  * @property Time $created_at
  * @property Time $updated_at
  * @property Time $expiry_at
@@ -38,6 +42,7 @@ class Host extends Entity
     ];
 
     protected $casts = [
+        'id' => 'integer',
         'login_id' => 'integer',
         'username' => 'string',
         'domain' => 'string',
@@ -79,5 +84,11 @@ class Host extends Entity
     public function getPurchase()
     {
         return (new PurchaseModel())->atHost($this->attributes['id'])->descending()->findAll(1)[0] ?? null;
+    }
+
+    /** @return Login|null */
+    public function getLogin()
+    {
+        return (new LoginModel())->find($this->attributes['login_id']);
     }
 }
