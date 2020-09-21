@@ -50,7 +50,7 @@
           <tbody>${result.map(x => `<tr>
           <td>${x.host}</td>
           <td>${x.type}</td>
-          <td>${x.ip || x.target}</td>
+          <td>${x.ip || x.target || x.txt}</td>
           </tr>`).join('')}</tbody>
           `)
           }

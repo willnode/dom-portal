@@ -16,6 +16,7 @@
             <p>Memeriksa website <b><?= $host->domain ?></b>...</p>
             <ul>
               <li>Website Online? <span id="check-0">...</span></li>
+              <li>Website Bisa Diverifikasi? <span id="check-1">...</span></li>
               <li>HTTPS Aktif? <span id="check-2">...</span></li>
               <li>HTTPS Redirect? <span id="check-3">...</span></li>
             </ul>
@@ -35,12 +36,15 @@
                 <p><a href="https://panduan.domcloud.id/manage-domain.html" target="_blank" rel="noopener noreferrer">Panduan Mengatur Domain</a></p>
               </div>
               <div class="mb-3" id="tip-0-1">
-                <h6>✔ Website anda aktif (1/3)</h6>
+                <h6>✔ Website anda aktif (1/4)</h6>
               </div>
               <div class="mb-3" id="tip-1-0">
                 <h4>❔ Website anda tidak memasang folder .well-known</h4>
                 <p>Folder kosong ini harusnya ada di root server agar Let's Encrypt dapat memverifikasi SSL website anda.</p>
                 <p><a href="https://panduan.domcloud.id/install-ssl.html" target="_blank" rel="noopener noreferrer">Panduan Mengatur SSL</a></p>
+              </div>
+              <div class="mb-3" id="tip-1-1">
+                <h6>✔ Website anda dapat diverifikasi (2/4)</h6>
               </div>
               <div class="mb-3" id="tip-2-0">
                 <h4>⚠ Website anda tidak mendukung HTTPS</h4>
@@ -48,7 +52,7 @@
                 <p><a href="https://panduan.domcloud.id/install-ssl.html" target="_blank" rel="noopener noreferrer">Panduan Mengatur SSL</a></p>
               </div>
               <div class="mb-3" id="tip-2-1">
-                <h6>✔ Website anda mendukung HTTPS (2/3)</h6>
+                <h6>✔ Website anda mendukung HTTPS (3/4)</h6>
               </div>
               <div class="mb-3" id="tip-3-0">
                 <h4>ℹ Website anda tidak mengalihkan trafik ke HTTPS</h4>
@@ -56,7 +60,7 @@
                 <p><a href="https://panduan.domcloud.id/install-ssl.html" target="_blank" rel="noopener noreferrer">Panduan Mengatur Redirect SSL</a></p>
               </div>
               <div class="mb-3" id="tip-3-1">
-                <h6>✔ Website anda mengalihkan trafik ke HTTPS (3/3)</h6>
+                <h6>✔ Website anda mengalihkan trafik ke HTTPS (4/4)</h6>
               </div>
             </div>
           </div>
