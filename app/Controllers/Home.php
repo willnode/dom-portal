@@ -171,7 +171,7 @@ class Home extends BaseController
 				]);
 				if ($row) {
 					$this->db->table('login')->update([
-						'email_verified' => date('Y-m-d H:i:s'),
+						'email_verified_at' => date('Y-m-d H:i:s'),
 						'otp' => null,
 					], ['email' => $code[0]]);
 					$this->request->setLocale($row->lang ?: 'id');
@@ -311,7 +311,7 @@ class Home extends BaseController
 					])) {
 						$this->db->table('login')->update([
 							'password' => password_hash($_POST['password'], PASSWORD_BCRYPT),
-							'email_verified' => date('Y-m-d H:i:s'),
+							'email_verified_at' => date('Y-m-d H:i:s'),
 							'otp' => null,
 						], ['email' => $code[0]]);
 						$_POST['email'] = $code[0];

@@ -755,7 +755,7 @@ class User extends BaseController
 		}
 		return view('user/profile', [
 			'data' => $this->login,
-			'email_verified' => $this->login->email_verified_at,
+			'email_verified_at' => $this->login->email_verified_at,
 			'page' => 'profile',
 		]);
 	}
