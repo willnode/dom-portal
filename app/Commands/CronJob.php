@@ -101,12 +101,14 @@ class CronJob extends BaseCommand
                     }
                 }
             }
-            (new ServerStatModel())->replace((new ServerStat([
+            $data = (new ServerStat([
                 'server_id' => $server->id,
                 // php_yaml can't handle 64 bit ints properly
                 'metadata' => spyc_load((new VirtualMinShell())->listSystemInfo($server->alias)),
                 'updated_at' => date('Y-m-d H:i:s'),
-            ]))->toRawArray());
+            ]))->toRawArray();
+            log_message('notice', json_encode($data));
+            (new ServerStatModel())->replace($data);
         }
     }
 }
