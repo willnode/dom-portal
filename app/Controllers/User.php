@@ -710,11 +710,7 @@ class User extends BaseController
 			$data = $this->login;
 			if (!$data->otp) {
 				$data->otp = random_int(111111111, 999999999);
-				$this->db->table('login')->update([
-					'otp' => $data->otp
-				], [
-					'login_id' => $data->login_id
-				]);
+				(new LoginModel())->save($data);
 			}
 			(new SendGridEmail())->send('verify_email', 'billing', [[
 				'to' => [[
@@ -730,7 +726,7 @@ class User extends BaseController
 			return $this->response->redirect("/$data->lang/login?msg=emailsent");
 		}
 		return view('user/veremail', [
-			'email' => $this->session->email,
+			'email' => $this->login->email,
 		]);
 	}
 	public function profile()

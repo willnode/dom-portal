@@ -221,7 +221,7 @@ class Home extends BaseController
 	{
 		if ($this->request->getMethod() === 'get') {
 			return view('static/register', [
-				'validation' => $this->validator,
+				'errors' => $this->session->errors,
 				'recapthaSite' => (new Recaptha())->recapthaSite,
 			]);
 		} else {
@@ -250,10 +250,7 @@ class Home extends BaseController
 					return $u->verify_email();
 				}
 			}
-			return view('static/register', [
-				'validation' => $this->validator,
-				'recapthaSite' => (new Recaptha())->recapthaSite,
-			]);
+			return redirect()->back()->withInput()->with('errors', $this->validator->listErrors());
 		}
 	}
 
