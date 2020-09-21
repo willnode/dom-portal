@@ -12,7 +12,7 @@ use CodeIgniter\Entity;
  * @property mixed[] $contacts
  * @property mixed[] $domains
  * @property mixed[] $pending_transactions
- * @property mixed[] $default_contacts
+ * @property mixed $default_contacts
  * @property Time $created_at
  * @property Time $updated_at
  */

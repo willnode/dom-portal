@@ -10,6 +10,7 @@ use App\Libraries\Recaptha;
 use App\Libraries\SendGridEmail;
 use App\Libraries\VirtualMinShell;
 use App\Models\HostModel;
+use App\Models\LiquidModel;
 use App\Models\PlanModel;
 use App\Models\PurchaseModel;
 use App\Models\SchemeModel;
@@ -50,24 +51,29 @@ class Home extends BaseController
 
 				log_message('notice', 'PURCHASE: ' . json_encode($metadata));
 
-				if ($metadata->liquid) {
-					$r = explode('|', $metadata->liquid);
+				if ($metadata->liquid && $metadata->scheme) {
 					/** @var Scheme */
-					$scheme = (new SchemeModel())->find($r[2]);
-					$liquid = (new LiquidRegistrar());
-					$liquid->confirmFundDomain($r[0], [
-						'amount' => ($metadata->years - 1) * $scheme->renew_idr + $scheme->price_idr,
-						'description' => "Funds for " . $data->domain_name,
+					$scheme = (new SchemeModel())->find($metadata->scheme);
+					$liquid = (new LiquidModel())->atLogin($login->id);
+					$registrar = new LiquidRegistrar();
+					$registrar->confirmFundDomain($liquid->id, [
+						'amount' => ($metadata->years - 1) * $scheme->renew_idr +
+							($host->scheme_id ? $scheme->renew_idr : $scheme->price_idr),
+						'description' => "Funds for " . ($metadata->domain ?? $host->domain),
 					]);
-					$liquid->confirmPurchaseDomain($r[0], [
-						'transaction_id' => $r[1],
+					$registrar->confirmPurchaseDomain($liquid->id, [
+						'transaction_id' => $metadata->liquid,
 					]);
 					$this->db->table('liquid')->update([
-						'cache_domains' => json_encode($liquid->getListOfDomains($r[0])),
-						'pending_transactions' => json_encode($liquid->getPendingTransactions($r[0])),
+						'cache_domains' => json_encode($registrar->getListOfDomains($liquid->id)),
+						'pending_transactions' => json_encode($registrar->getPendingTransactions($liquid->id)),
 					], [
-						'id' => $r[0],
+						'id' => $liquid->id,
 					]);
+					// Save
+					if ($metadata->domain)
+						$host->domain = $metadata->domain;
+					$host->scheme_id = $metadata->scheme;
 				}
 				if ($metadata->plan) {
 					/** @var Plan */
@@ -112,15 +118,19 @@ class Home extends BaseController
 						$host->domain,
 						$host->server->alias
 					);
-					// Re-enable (in case disabled by bandwidth)
-					(new VirtualMinShell())->enableHosting(
-						$host->domain,
-						$host->server->alias
-					);
+					if (!$metadata->plan) {
+						// Re-enable (in case disabled by bandwidth)
+						(new VirtualMinShell())->enableHosting(
+							$host->domain,
+							$host->server->alias
+						);
+					}
 				}
-				(new HostModel())->save($host);
 				$data->metadata = $metadata;
-				(new PurchaseModel())->save($data); {
+				(new PurchaseModel())->save($data);
+				if ($host->hasChanged()) {
+					(new HostModel())->save($host);
+				} {
 					// Email
 					$desc = ($metadata->liquid ? lang('Hosting.formatInvoiceAlt', [
 						$metadata->plan,

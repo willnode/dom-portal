@@ -9,6 +9,7 @@ use CodeIgniter\Entity;
  * @property string $alias
  * @property int $price_idr
  * @property int $price_usd
+ * @property int $price_local
  * @property int $disk
  * @property int $net
  * @property int $dbs
@@ -32,6 +33,11 @@ class Plan extends Entity
     public function getDiskBytes()
     {
         return $this->attributes['disk'] * 1024 * 1024;
+    }
+
+    public function getPriceLocal()
+    {
+        return $this->attributes['price_'.lang('Interface.currency')];
     }
 
     public function getNetMonthlyBytes()

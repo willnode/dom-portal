@@ -7,14 +7,14 @@
 	<?= view('user/navbar') ?>
 	<div class="container">
 		<h1 class="mb-3">Menghapus Hosting</h1>
-		<?php if ($data->plan_id == 1) : ?>
+		<?php if ($host->plan_id === 1) : ?>
 			<div class="card">
 				<div class="card-body">
 					<div class="alert alert-danger">
 						PERHATIAN! Penghapusan hosting bersifat permanen dan
 						kami tidak dapat mengembalikan aksi tersebut.
 					</div>
-					<p>Mohon ketik username hosting untuk menyetujui penghapusan hosting "<?= $data->username ?>".</p>
+					<p>Mohon ketik username hosting untuk menyetujui penghapusan hosting "<?= $host->username ?>".</p>
 					<form method="POST">
 						<input type="text" name="wordpass" class="form-control" required>
 						<input type="submit" value="Hapus Hosting" class="mt-2 form-control btn btn-danger">
@@ -23,10 +23,10 @@
 			</div>
 		<?php else : ?>
 			<div class="alert alert-danger">
-				Anda tidak dapat menghapus hosting ini sebelum merubah paket menjadi Gratis.
+				Anda tidak dapat menghapus hosting ini selama masa belum menyentuh masa tanggung.
 			</div>
 		<?php endif ?>
-		<a href="/user/hosting/detail/<?= $data->id ?>" class="mt-3 btn btn-secondary">Kembali</a>
+		<a href="/user/hosting/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary">Kembali</a>
 	</div>
 
 </body>

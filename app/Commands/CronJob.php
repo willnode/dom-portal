@@ -12,9 +12,6 @@ use App\Models\HostStatModel;
 use App\Models\ServerModel;
 use App\Models\ServerStatModel;
 use CodeIgniter\CLI\BaseCommand;
-use CodeIgniter\CLI\CLI;
-use Config\Database;
-use HashContext;
 
 require_once "spyc.php";
 

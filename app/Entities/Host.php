@@ -27,6 +27,7 @@ use CodeIgniter\I18n\Time;
  * @property Scheme $scheme
  * @property Plan $plan
  * @property Server $server
+ * @property Purchase $purchase
  * @property HostStat|null $stat
  * @property Login $login
  * @property Time $created_at
