@@ -5,7 +5,7 @@
 
 <body>
 	<?= view('user/navbar') ?>
-	<div class="container">
+	<div class="container text-center" style="max-width: 576px;">
 		<h1 class="mb-3">Menghapus Hosting</h1>
 		<?php if ($host->plan_id === 1) : ?>
 			<div class="card">
@@ -14,7 +14,8 @@
 						PERHATIAN! Penghapusan hosting bersifat permanen dan
 						kami tidak dapat mengembalikan aksi tersebut.
 					</div>
-					<p>Mohon ketik username hosting untuk menyetujui penghapusan hosting "<?= $host->username ?>".</p>
+					<p>Mohon ketik username hosting untuk menyetujui penghapusan hosting.</p>
+					<p>"<?= $host->username ?>"</p>
 					<form method="POST">
 						<input type="text" name="wordpass" class="form-control" required>
 						<input type="submit" value="Hapus Hosting" class="mt-2 form-control btn btn-danger">

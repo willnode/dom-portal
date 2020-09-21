@@ -25,6 +25,7 @@ use App\Models\PurchaseModel;
 use App\Models\SchemeModel;
 use App\Models\ServerModel;
 use App\Models\ServerStatModel;
+use CodeIgniter\CLI\CLI;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Config\Services;
 
@@ -306,11 +307,54 @@ class User extends BaseController
 			'id' => $host->id,
 			'slave' => $host->server->alias,
 			'user' => $host->username,
-			'pass' => $shown ? esc($host->password) :
-				'&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;&bullet;',
+			'pass' => $shown ? esc($host->password) : str_repeat('&bullet;', 8),
 			'rawuser' => $host->username,
 			'rawpass' => $host->password,
 			'shown' => $shown,
+		]);
+	}
+
+	/** @param Host $host */
+	protected function dnsHosting($host)
+	{
+		if ($this->request->getMethod() === 'post') {
+			$domain = $host->domain;
+			if (!empty($_POST['sub'])) {
+				$domain = $_POST['sub'] . '.' . $host->domain;
+			}
+			$heads = dns_get_record($domain, DNS_A | DNS_TXT | DNS_CNAME | DNS_MX | DNS_NS);
+			return $this->response->setJSON($heads);
+		}
+		return view('user/hosting/dns', [
+			'host' => $host
+		]);
+	}
+	/** @param Host $host */
+	protected function sslHosting($host)
+	{
+		if ($this->request->getMethod() === 'post') {
+			$t = [0, 0, 0, 0];
+			$domain = $host->domain;
+			$heads = @get_headers("http://$domain/");
+			// CLI::write(json_encode($heads));
+			if ($heads) {
+				$t[0] = 1;
+				if (array_search("Location: https://$domain/", $heads)) {
+					$t[3] = 1;
+				}
+				$heads = @get_headers("https://$domain/");
+				if ($heads) {
+					$t[2] = 1;
+				}
+				$heads = @get_headers(($t[3] ? "https:" : "http:") . "//$domain/.well-known/");
+				if ($heads && strpos($heads[0], "403 Forbidden") !== false) {
+					$t[1] = $t[3] ? $t[2] : 1;
+				}
+			}
+			return $this->response->setJSON($t);
+		}
+		return view('user/hosting/ssl', [
+			'host' => $host
 		]);
 	}
 	/** @param Host $host */
@@ -465,6 +509,10 @@ class User extends BaseController
 					return $this->cnameHosting($host);
 				} else if ($page === 'see') {
 					return $this->seeHosting($host);
+				} else if ($page === 'ssl') {
+					return $this->sslHosting($host);
+				} else if ($page === 'dns') {
+					return $this->dnsHosting($host);
 				} else if ($page === 'upgrade') {
 					return $this->upgradeHosting($host);
 				} else if ($page === 'invoices') {

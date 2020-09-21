@@ -135,7 +135,7 @@ class VirtualMinShell
 	}
 	public function listDomainsInfo($slave)
 	{
-		$cmd = "program=list-domains&multiline=";
+		$cmd = "program=list-domains&multiline=&toplevel=";
 		$data = $this->execute($this->wrapWget($cmd, $slave), NULL);
 
 		$data = explode("\n", $data);

@@ -6,7 +6,14 @@
 <body>
   <?= view('user/navbar') ?>
   <div class="container">
-    <h1 class="mb-3"><?= lang('Hosting.manageHost') ?></h1>
+    <h1 class="mb-3 d-flex">
+      <div><?= lang('Hosting.manageHost') ?></div>
+
+      <a href="/user/hosting/see/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success ml-auto">Cek Login</a>
+      <a href="/user/hosting/dns/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek DNS</a>
+      <a href="/user/hosting/ssl/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek HTTPS</a>
+      <a href="/user/hosting/upgrade/<?= $host->id ?>" class="mt-3 btn btn-primary">Upgrade</a>
+  </h1>
     <div class="row">
       <div class="col-lg-4">
         <div class="card">
@@ -137,7 +144,7 @@
     </div>
     <div class="d-flex mb-3">
       <a href="/user/hosting" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
-      <a href="/user/hosting/delete/<?= $host->id ?>" class="mt-3 btn btn-danger ml-auto"><?= lang('Hosting.deleteHost') ?></a>
+      <a href="/user/hosting/delete/<?= $host->id ?>" class="mt-3 ml-auto btn btn-danger"><?= lang('Hosting.deleteHost') ?></a>
     </div>
   </div>
   <script id="bandwidths" type="application/json">
