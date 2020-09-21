@@ -1,5 +1,6 @@
 <?php
 
+use CodeIgniter\CLI\CLI;
 use Config\Database;
 use Config\Services;
 
@@ -48,3 +49,7 @@ function format_bytes($bytes, $precision = 1) {
 
     return number_format($bytes, $precision) . ' ' . $units[$pow];
 }
+function tag_callback($value, $tag, $flags) {
+    CLI::write(json_encode(func_get_args())); // debugging
+    return "Hello {$value}";
+  }

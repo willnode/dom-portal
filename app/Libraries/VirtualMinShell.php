@@ -191,6 +191,7 @@ class VirtualMinShell
 	{
 		$cmd = "program=info";
 		$data = $this->execute($this->wrapWget($cmd, $slave), NULL);
+		$data = str_replace('*', '-', $data);
 		return $data;
 	}
 }

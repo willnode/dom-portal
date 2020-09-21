@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `hosts` (
   KEY `FK_hosting_slaves` (`server_id`) USING BTREE,
   CONSTRAINT `FK_hosting_login` FOREIGN KEY (`login_id`) REFERENCES `login` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_hosting_slaves` FOREIGN KEY (`server_id`) REFERENCES `servers` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4;
 
 -- Data exporting was unselected.
 
@@ -160,20 +160,7 @@ CREATE TABLE IF NOT EXISTS `servers` (
 -- Dumping structure for table dbdom.servers__stat
 CREATE TABLE IF NOT EXISTS `servers__stat` (
   `server_id` int(11) NOT NULL,
-  `cpu_avg` float(12,2) DEFAULT NULL,
-  `ram_used` bigint(20) DEFAULT NULL,
-  `ram_cache` bigint(20) DEFAULT NULL,
-  `ram_total` bigint(20) DEFAULT NULL,
-  `swap_used` bigint(20) DEFAULT NULL,
-  `swap_total` bigint(20) DEFAULT NULL,
-  `disk_free` bigint(20) DEFAULT NULL,
-  `disk_total` bigint(20) DEFAULT NULL,
-  `httpd` int(11) DEFAULT NULL,
-  `fpm` int(11) DEFAULT NULL,
-  `bind` int(11) DEFAULT NULL,
-  `sshd` int(11) DEFAULT NULL,
-  `mysqld` int(11) DEFAULT NULL,
-  `postgres` int(11) DEFAULT NULL,
+  `metadata` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`server_id`) USING BTREE,

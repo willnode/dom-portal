@@ -2,6 +2,7 @@
 
 namespace App\Entities;
 
+use App\Models\ServerStatModel;
 use CodeIgniter\Entity;
 
 /**
@@ -12,6 +13,7 @@ use CodeIgniter\Entity;
  * @property int $scheme_id
  * @property int $capacity
  * @property int $public
+ * @property ServerStat $stat
  */
 class Server extends Entity
 {
@@ -23,4 +25,9 @@ class Server extends Entity
         'capacity' => 'integer',
         'public' => 'integer',
     ];
+
+    public function getStat()
+    {
+        return (new ServerStatModel())->find($this->attributes['id']);
+    }
 }

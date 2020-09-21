@@ -2,11 +2,11 @@
 
 use CodeIgniter\Model;
 
-class HostStatModel extends Model
+class ServerStatModel extends Model
 {
     protected $table         = 'servers__stat';
     protected $allowedFields = [
-        'server_id', 'cpu_avg', 'ram_used', 'ram_cache', 'ram_total', 'swap_used', 'swap_total', 'disk_free', 'disk_total', 'httpd', 'fpm', 'bind', 'sshd', 'mysqld', 'postgres',
+        'server_id', 'metadata', 'updated_at'
     ];
     protected $primaryKey = 'server_id';
     protected $returnType = 'App\Entities\ServerStat';

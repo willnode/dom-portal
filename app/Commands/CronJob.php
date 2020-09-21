@@ -5,14 +5,18 @@ namespace App\Commands;
 use App\Entities\Host;
 use App\Entities\HostStat;
 use App\Entities\Server;
+use App\Entities\ServerStat;
 use App\Libraries\VirtualMinShell;
 use App\Models\HostModel;
 use App\Models\HostStatModel;
 use App\Models\ServerModel;
+use App\Models\ServerStatModel;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use Config\Database;
 use HashContext;
+
+require_once "spyc.php";
 
 class CronJob extends BaseCommand
 {
@@ -31,7 +35,6 @@ class CronJob extends BaseCommand
 			Disabling users who meets the expiration date
 			Deleting users who not reactivating within two weeks
         */
-        $db = Database::connect();
         /** @var Server */
         foreach ((new ServerModel())->find() as $server) {
             $domains = (new VirtualMinShell())->listDomainsInfo($server->alias);
@@ -54,6 +57,7 @@ class CronJob extends BaseCommand
                         'features' => $domain['Features'],
                         'bandwidths' => json_encode($bandwidths[$host->domain] ?? null),
                         'disabled' => $domain['Disabled'] ?? null,
+                        'updated_at' => date('Y-m-d H:i:s'),
                     ];
                     if (!$stat) {
                         $stat = new HostStat($newStat);
@@ -100,6 +104,12 @@ class CronJob extends BaseCommand
                     }
                 }
             }
+            (new ServerStatModel())->replace((new ServerStat([
+                'server_id' => $server->id,
+                // php_yaml can't handle 64 bit ints properly
+                'metadata' => spyc_load((new VirtualMinShell())->listSystemInfo($server->alias)),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]))->toRawArray());
         }
     }
 }

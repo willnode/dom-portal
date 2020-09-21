@@ -9,6 +9,8 @@ use App\Entities\Plan;
 use App\Entities\Purchase;
 use App\Entities\PurchaseMetadata;
 use App\Entities\Scheme;
+use App\Entities\Server;
+use App\Entities\ServerStat;
 use App\Libraries\BannedNames;
 use App\Libraries\CountryCodes;
 use App\Libraries\LiquidRegistrar;
@@ -22,6 +24,7 @@ use App\Models\PlanModel;
 use App\Models\PurchaseModel;
 use App\Models\SchemeModel;
 use App\Models\ServerModel;
+use App\Models\ServerStatModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Config\Services;
 
@@ -710,8 +713,18 @@ class User extends BaseController
 
 	public function status()
 	{
+		$id = $_GET['server'] ?? null;
+		$servers = (new ServerModel())->findAll();
+		/** @var Server */
+		if ($id === null || !($server = (new ServerModel())->find($id))) {
+			return $this->response->redirect('?server='.$servers[0]->id);
+		}
 		return view('user/status', [
 			'page' => 'status',
+			'server' => $server,
+			'servers' => $servers,
+			'stat' => $server->stat->metadata,
+			'stat_update' => $server->stat->updated_at,
 		]);
 	}
 

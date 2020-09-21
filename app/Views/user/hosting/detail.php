@@ -121,7 +121,7 @@
                   <small> Paket <?= $plan->alias ?>, <?= format_bytes($plan->disk_bytes) ?> disk space, <?= format_bytes($plan->net_monthly_bytes) ?> data bulanan.</small>
                 </div>
                 <div class="col-6 text-right">
-                  <small>Terakhir update <?= $stat->updated_at ?></small>
+                  <small>Terakhir update <?= $stat->updated_at ?> UTC</small>
                 </div>
               </div>
             </div>
