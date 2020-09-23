@@ -42,8 +42,10 @@ class User extends BaseController
 		parent::initController($request, $response, $logger);
 
 		if (!$this->session->get('login') || (!($this->login = (new LoginModel())->find($this->session->login)))) {
+			$path = Services::request()->detectPath('REQUEST_URI');
+			$query = Services::request()->detectPath('QUERY_STRING');
 			Services::response()->redirect(href(
-				'login?r=' . Services::request()->detectPath()
+				'login?r=' . urlencode($path.($query ? '?'.$query : ''))
 			))->pretend(false)->send();
 			exit;
 		} else {

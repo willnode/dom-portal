@@ -22,8 +22,9 @@
 				<input type="text" name="email" placeholder="<?= lang('Interface.email') ?>" class="form-control mb-2">
 				<input type="password" name="password" autocomplete="current-password" placeholder="<?= lang('Interface.password') ?>" class="form-control mb-2">
 				<input type="submit" value="<?= lang('Interface.login') ?>" class="btn-primary btn mb-4">
-				<p><a href="<?= href('register') ?>" class="btn btn-link"><?= lang('Interface.registerPrompt') ?></a>
-				<a href="<?= href('forgot') ?>" class="btn btn-link"><?= lang('Interface.forgotPrompt') ?></a></p>
+				<?php $r = urlencode( \Config\Services::request()->getGet('r')) ?>
+				<p><a href="<?= href('register' . ($r ? '?r=' . $r : '')) ?>" class="btn btn-link"><?= lang('Interface.registerPrompt') ?></a>
+					<a href="<?= href('forgot') ?>" class="btn btn-link"><?= lang('Interface.forgotPrompt') ?></a></p>
 			</form>
 		</div>
 	</div>

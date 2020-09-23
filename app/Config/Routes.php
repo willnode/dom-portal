@@ -33,7 +33,7 @@ $routes->setAutoRoute(true);
 $routes->get('/', 'Home::index');
 $routes->add('/notify', 'Home::notify');
 $routes->get('/verify', 'Home::verify');
-$routes->get('/import', 'Home::import');
+$routes->get('/start', 'Home::import');
 $routes->add('/forgot_reset', 'Home::forgot_reset');
 $routes->add('/{locale}/login', 'Home::login');
 $routes->add('/{locale}/register', 'Home::register');
