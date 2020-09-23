@@ -41,7 +41,7 @@
                 <div class="d-flex mb-2">
                   <label class="form-label" for="template"><?= lang('Hosting.template') ?></label>
                   <button type="button" class="ml-auto btn btn-sm btn-primary" data-toggle="modal" data-target="#templateModal">
-                  <?= lang('Hosting.chooseTemplate') ?>
+                    <?= lang('Hosting.chooseTemplate') ?>
                   </button>
                 </div>
                 <textarea name="template" class="form-control font-monospace text-nowrap" placeholder="Config File" rows=7></textarea>
@@ -218,9 +218,7 @@
           <div class="row g-2" style="color: white; fill: white">
             <?php foreach ($templates as $t) : ?>
               <div class="col-md-6 my-1">
-                <div class="btn btn-block btn-dark text-center" style="background-color: <?=$t->color?>;"
-                onclick="submitT(this)" data-dismiss="modal"
-                data-template="<?= base64_encode($t->template) ?>">
+                <div class="btn btn-block btn-dark text-center" style="background-color: <?= $t->color ?>;" onclick="submitT(this)" data-dismiss="modal" data-template="<?= base64_encode($t->template) ?>">
                   <div class="w-50 mx-auto my-2"><?= $t->logo ?></div>
                   <p class="mb-0"><?= $t->name ?></p>
                 </div>
@@ -270,6 +268,11 @@
       }).join('');
 
       return password;
+    }
+
+    var fromTag = new URLSearchParams(location.search).get('from');
+    if (fromTag && (''+fromTag).startsWith('http')) {
+      fetch(fromTag).then(x => x.text().then(y => window.box.template.value = y));
     }
   </script>
   <script id="plans" type="application/json">

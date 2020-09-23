@@ -28,7 +28,6 @@ use App\Models\SchemeModel;
 use App\Models\ServerModel;
 use App\Models\ServerStatModel;
 use App\Models\TemplatesModel;
-use CodeIgniter\CLI\CLI;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Config\Services;
 

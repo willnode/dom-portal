@@ -13,6 +13,7 @@ use App\Libraries\VirtualMinShell;
 use App\Models\HostDeploysModel;
 use App\Models\HostModel;
 use App\Models\LiquidModel;
+use App\Models\LoginModel;
 use App\Models\PlanModel;
 use App\Models\PurchaseModel;
 use App\Models\SchemeModel;
@@ -219,8 +220,16 @@ class Home extends BaseController
 		]);
 	}
 
+	public function import()
+	{
+		return $this->response->redirect('/user/hosting/create?from=' . urlencode($this->request->getGet('from')));
+	}
+
 	public function logout()
 	{
+		if ($this->session->login) {
+			$this->request->setLocale((new LoginModel())->find($this->session->login)->lang);
+		}
 		$this->session->destroy();
 		return $this->response->redirect(href('login'));
 	}
