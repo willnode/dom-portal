@@ -1,9 +1,13 @@
 # DOM Cloud Portal Manager
 
-This is the server code that runs on [portal.dom.my.id](https://portal.dom.my.id). Open sourced for educational and research purposes. Things that may interests you is how we handle payments and server creations.
+This is the actual server code that runs on [portal.domcloud.id](https://portal.domcloud.id). Open sourced because I want to transparent and clear about how your data will be handled and what or how limitations applies for you.
 
-Third party stuffs you need to know before running this code: CodeIgniter4, Virtualmin CLI, iPaymu API, Google Recaptha and any features of PHP that we use in the code.
+DOM Cloud runs above Azure VM. So it's a hosting business that runs a top of another host service. Why it's exist? Because I get tired of host solutions these days. I want something easy to deploy like Heroku or Docker, but don't want to mess with immutability and no-SQL stuffs that really only benefit when you get like, millions of traffic (which ofcourse, never happen to me).
 
-The usage of this code is governed by [GNU AFFERO GENERAL PUBLIC LICENSE v3](LICENSE). Please note that server specific environment variables is git ignored, you need to configure it on your own to make some features works.
+Any way, in DOM Cloud, you can deploy anything there... WordPress, Laravel, Django, Rails, Express, whatever. It's mutable, you can edit the server file after you deploy them with [templates](domcloud/dom-templates). Edit files using FTP, run commands SSH, use MySQL or Postgres database, or just using Webmin portal. All common hosting tools is there. And best of all, it's start **free**, for real.
 
-If you found any security vulnerability in the software or in any DOM Cloud services, DO NOT open issues, instead please kindly [contact me](mailto:willnode@wellosoft.net).
+But I'm sorry, of course we have to pay the Azure VM. It's definitely not something cheap so I have to limit on resources that you use. For Freedom plan, you get 200 MB storage and 6 GB yearly bandwidth. Not something huge but I think it mostly enough for everyone, I mean, to get people learn more easily in web development. Of course you can increase the limit if you put money on us, but trust me, the pricing will be reasonable, or close to what Azure bills for me. You can see [the pricing details here](https://domcloud.id/en/price).
+
+Two things that may interest you here, is how [we limit you](app/Commands/CronJob.php) and [how we deploy stuff](app/Libraries/TemplateDeployer.php). This portal also need more improvements in localization and UX, honestly.
+
+If you found any security vulnerability in the software or in any DOM Cloud services, kindly [contact me](mailto:willnode@wellosoft.net) first so I can patch the actual server before getting the exploit details visible.
