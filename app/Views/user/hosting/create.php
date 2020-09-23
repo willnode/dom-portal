@@ -38,12 +38,13 @@
                 </select>
               </div>
               <div class="mb-3">
-                <label class="form-label" for="template"><?= lang('Hosting.chooseTemplate') ?></label>
-                <input type="text" name="template" class="form-control" list="quickTemplates">
-                <datalist id="quickTemplates">
-                    <option value="https://id.wordpress.org/latest-id_ID.zip">WordPress</option>
-                </datalist>
-                <small>Opsional, harus berisi alamat URL ke file ZIP</small>
+                <div class="d-flex mb-2">
+                  <label class="form-label" for="template"><?= lang('Hosting.template') ?></label>
+                  <button type="button" class="ml-auto btn btn-sm btn-primary" data-toggle="modal" data-target="#templateModal">
+                  <?= lang('Hosting.chooseTemplate') ?>
+                  </button>
+                </div>
+                <textarea name="template" class="form-control font-monospace text-nowrap" placeholder="Config File" rows=7></textarea>
               </div>
             </div>
           </div>
@@ -193,7 +194,7 @@
                   <div class="ml-auto" id="specbwb">- GiB</div>
                 </div>
               </div>
-              <input type="submit" value="<?= lang('Hosting.orderNow') ?>" class="form-control btn-lg btn btn-primary mt-3">
+              <input type="submit" id="submitBtn" value="<?= lang('Hosting.orderNow') ?>" class="form-control btn-lg btn btn-primary mt-3">
             </div>
           </div>
         </div>
@@ -202,7 +203,43 @@
     </form>
   </div>
 
+
+  <!-- Modal Template -->
+  <div class="modal fade" id="templateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Pilih Template</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-2" style="color: white; fill: white">
+            <?php foreach ($templates as $t) : ?>
+              <div class="col-md-6 my-1">
+                <div class="btn btn-block btn-dark text-center" style="background-color: <?=$t->color?>;"
+                onclick="submitT(this)" data-dismiss="modal"
+                data-template="<?= base64_encode($t->template) ?>">
+                  <div class="w-50 mx-auto my-2"><?= $t->logo ?></div>
+                  <p class="mb-0"><?= $t->name ?></p>
+                </div>
+              </div>
+            <?php endforeach ?>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Kembali</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    function submitT(t) {
+      window.box.template.value = atob($(t).data('template'));
+    }
+
     function useRandPass() {
       document.getElementById('password').value = genRandPass(12);
       document.getElementById('password').type = 'text';
@@ -214,7 +251,7 @@
       var keyListLower = "abcdefghijklmnopqrstuvwxyz",
         keyListUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         keyListInt = "123456789",
-        keyListSpec = "!@#_",
+        keyListSpec = "+()@_",
         password = '';
       var len = Math.ceil(pLength / 3) - 1;
       var lenSpec = pLength - 3 * len;
@@ -252,8 +289,11 @@
       maximumFractionDigits: digits,
       minimumFractionDigits: digits,
     });
-
+    window.box.onsubmit = (e) => {
+      $('#submitBtn').prop('disabled', true).val('⏳ Memproses...');
+    }
     let activedomain = null;
+
     function checkDomain() {
       const name = window.box.buy_cname;
       const scheme = window.box.buy_scheme;

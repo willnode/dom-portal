@@ -12,6 +12,7 @@
       <a href="/user/hosting/see/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success ml-auto">Cek Login</a>
       <a href="/user/hosting/dns/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek DNS</a>
       <a href="/user/hosting/ssl/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek HTTPS</a>
+      <a href="/user/hosting/deploys/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek Deploy</a>
       <a href="/user/hosting/upgrade/<?= $host->id ?>" class="mt-3 btn btn-primary">Upgrade</a>
   </h1>
     <div class="row">

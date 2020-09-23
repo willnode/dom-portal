@@ -10,7 +10,7 @@ class VirtualMinShell
 
 	protected function execute($cmd, $title = '')
 	{
-		if (/*ENVIRONMENT === 'production'*/ true|| $title === NULL) {
+		if (/*ENVIRONMENT === 'production'*/true || $title === NULL) {
 			set_time_limit(300);
 			$username = Services::request()->config->sudoWebminUser;
 			$password = Services::request()->config->sudoWebminPass;
@@ -31,17 +31,17 @@ class VirtualMinShell
 			VirtualMinShell::$output .= $cmd . "\n";
 		}
 	}
-	protected function wrapWget($params, $slave_dn)
+	protected function wrapWget($params, $server)
 	{
 		$port = Services::request()->config->sudoWebminPort;
-		return "https://$slave_dn.domcloud.id:$port/virtual-server/remote.cgi?$params";
+		return "https://$server.domcloud.id:$port/virtual-server/remote.cgi?$params";
 	}
 	protected $featureFlags = [
-		"&dir=&webmin=&web=&mysql=&unix=",
-		"&ssl=&dns=",
+		"&dir=&webmin=&web=&unix=",
+		"&dns=",
 		"&virtualmin-awstats=",
 	];
-	public function createHosting($username, $password, $email, $domain, $slave, $plan, $privilenge, $template)
+	public function createHosting($username, $password, $email, $domain, $server, $plan, $privilenge)
 	{
 		$flags = "";
 		foreach ($this->featureFlags as $level => $flag) {
@@ -50,17 +50,14 @@ class VirtualMinShell
 			}
 			$epassword = urlencode($password);
 			$cmd = "program=create-domain&user=$username&pass=$epassword" .
-			"&email=$email&domain=$domain&plan=$plan&limits-from-plan=$flags";
-			$this->execute($this->wrapWget($cmd, $slave), " Create Hosting for $domain ");
-		}
-		if ($template) {
-			(new TemplateDeployer())->deploy($slave, $domain, $username, $password, $template);
+				"&email=$email&domain=$domain&plan=$plan&limits-from-plan=$flags";
+			$this->execute($this->wrapWget($cmd, $server), " Create Hosting for $domain ");
 		}
 	}
-	public function upgradeHosting($domain, $slave, $oldprivilenge, $newplan, $newprivilenge)
+	public function upgradeHosting($domain, $server, $oldprivilenge, $newplan, $newprivilenge)
 	{
 		$cmd = "program=modify-domain&domain=$domain&apply-plan=$newplan";
-		$this->execute($this->wrapWget($cmd, $slave));
+		$this->execute($this->wrapWget($cmd, $server));
 		if ($oldprivilenge !== $newprivilenge) {
 			$command = $newprivilenge > $oldprivilenge ? 'enable-feature' : 'disable-feature';
 			$from = $newprivilenge > $oldprivilenge ? $oldprivilenge : $newprivilenge;
@@ -72,71 +69,83 @@ class VirtualMinShell
 				}
 			}
 			$cmd = "program=$command&domain=$domain$flags";
-			$this->execute($this->wrapWget($cmd, $slave));
+			$this->execute($this->wrapWget($cmd, $server));
 		}
 	}
-	public function renameHosting($domain, $slave, $newusername)
+	public function renameHosting($domain, $server, $newusername)
 	{
 		$cmd = "program=modify-domain&domain=$domain&user=$newusername";
-		$this->execute($this->wrapWget($cmd, $slave), " Rename hosting $domain ");
+		$this->execute($this->wrapWget($cmd, $server), " Rename hosting $domain ");
 	}
-	public function cnameHosting($domain, $slave, $newdomain)
+	public function cnameHosting($domain, $server, $newdomain)
 	{
 		$cmd = "program=modify-domain&domain=$domain&newdomain=$newdomain";
-		$this->execute($this->wrapWget($cmd, $slave), " Change domain for $domain ");
+		$this->execute($this->wrapWget($cmd, $server), " Change domain for $domain ");
 	}
 	public function addToServerDNS($username, $slave_ip)
 	{
-		$cmd = "program=modify-dns&domain=dom.my.id&add-record=$username+A+$slave_ip&add-record=www.$username+A+$slave_ip";
-		$this->execute($this->wrapWget($cmd, 'portal'), " Adding DNS record for $username to central DOM ");
+		// $cmd = "program=modify-dns&domain=dom.my.id&add-record=$username+A+$slave_ip&add-record=www.$username+A+$slave_ip";
+		// $this->execute($this->wrapWget($cmd, 'portal'), " Adding DNS record for $username to central DOM ");
 	}
 	public function removeFromServerDNS($username)
 	{
-		$cmd = "program=modify-dns&domain=dom.my.id&remove-record=$username+A&remove-record=www.$username+A";
-		$this->execute($this->wrapWget($cmd, 'portal'), " Removing DNS record for $username to central DOM ");
+		// $cmd = "program=modify-dns&domain=dom.my.id&remove-record=$username+A&remove-record=www.$username+A";
+		// $this->execute($this->wrapWget($cmd, 'portal'), " Removing DNS record for $username to central DOM ");
 	}
-	public function resetHosting($domain, $slave, $newpw)
+	public function resetHosting($domain, $server, $newpw)
 	{
 		$cmd = "program=modify-domain&domain=$domain&pass=$newpw";
-		$this->execute($this->wrapWget($cmd, $slave), "Reset Host Password");
+		$this->execute($this->wrapWget($cmd, $server), "Reset Host Password");
 	}
-	public function enableHosting($domain, $slave)
+	public function enableHosting($domain, $server)
 	{
 		$cmd = "program=enable-domain&domain=$domain";
-		$this->execute($this->wrapWget($cmd, $slave));
+		$this->execute($this->wrapWget($cmd, $server));
 	}
-	public function disableHosting($domain, $slave, $why)
+	public function disableHosting($domain, $server, $why)
 	{
-		$cmd = "program=disable-domain&domain=$domain&why=".urlencode($why);
-		$this->execute($this->wrapWget($cmd, $slave));
+		$cmd = "program=disable-domain&domain=$domain&why=" . urlencode($why);
+		$this->execute($this->wrapWget($cmd, $server));
 	}
-	public function deleteHosting($domain, $slave)
+	public function deleteHosting($domain, $server)
 	{
 		$cmd = "program=delete-domain&domain=$domain";
-		$this->execute($this->wrapWget($cmd, $slave), " Delete Hosting for $domain ");
+		$this->execute($this->wrapWget($cmd, $server), " Delete Hosting for $domain ");
 	}
-	public function adjustBandwidthHosting($bw_mb, $domain, $slave)
+	public function requestLetsEncrypt($domain, $server)
+	{
+		$cmd = "program=generate-letsencrypt-cert&domain=$domain&renew=2";
+		$this->execute($this->wrapWget($cmd, $server), " Let's Encrypt for $domain ");
+	}
+	public function enableFeature($domain, $server, $features)
+	{
+		$cmd = "program=enable-feature&domain=$domain" . implode('', array_map(function ($x) {
+			return "&$x=";
+		}, $features));
+		$this->execute($this->wrapWget($cmd, $server), " Enable Features for $domain ");
+	}
+	public function adjustBandwidthHosting($bw_mb, $domain, $server)
 	{
 		$bw_bytes = floor($bw_mb) * 1024 * 1024;
 		$cmd = "program=modify-domain&domain=$domain&bw=$bw_bytes";
-		$this->execute($this->wrapWget($cmd, $slave), " Adjust Bandwidth $domain to $bw_bytes bytes ");
+		$this->execute($this->wrapWget($cmd, $server), " Adjust Bandwidth $domain to $bw_bytes bytes ");
 	}
-	public function createDatabase($name, $type, $domain, $slave)
+	public function createDatabase($name, $type, $domain, $server)
 	{
 		$name = urlencode($name);
 		$cmd = "program=create-database&domain=$domain&name=$name&type=$type";
-		$this->execute($this->wrapWget($cmd, $slave), " Create database $domain named $name ");
+		$this->execute($this->wrapWget($cmd, $server), " Create database $domain named $name ");
 	}
-	public function modifyWebHome($home, $domain, $slave)
+	public function modifyWebHome($home, $domain, $server)
 	{
 		$home = urlencode($home);
 		$cmd = "program=modify-web&domain=$domain&document-dir=$home";
-		$this->execute($this->wrapWget($cmd, $slave), " Set home $domain named $home ");
+		$this->execute($this->wrapWget($cmd, $server), " Set home $domain named $home ");
 	}
-	public function listDomainsInfo($slave)
+	public function listDomainsInfo($server)
 	{
 		$cmd = "program=list-domains&multiline=&toplevel=";
-		$data = $this->execute($this->wrapWget($cmd, $slave), NULL);
+		$data = $this->execute($this->wrapWget($cmd, $server), NULL);
 
 		$data = explode("\n", $data);
 		$result = [];
@@ -160,10 +169,10 @@ class VirtualMinShell
 		}
 		return $result;
 	}
-	public function listBandwidthInfo($slave)
+	public function listBandwidthInfo($server)
 	{
 		$cmd = "program=list-bandwidth&all-domains=";
-		$data = $this->execute($this->wrapWget($cmd, $slave), NULL);
+		$data = $this->execute($this->wrapWget($cmd, $server), NULL);
 
 		$data = explode("\n", $data);
 		$result = [];
@@ -187,10 +196,10 @@ class VirtualMinShell
 		}
 		return $result;
 	}
-	public function listSystemInfo($slave)
+	public function listSystemInfo($server)
 	{
 		$cmd = "program=info";
-		$data = $this->execute($this->wrapWget($cmd, $slave), NULL);
+		$data = $this->execute($this->wrapWget($cmd, $server), NULL);
 		$data = str_replace('*', '-', $data);
 		return $data;
 	}

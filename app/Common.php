@@ -20,23 +20,24 @@ use Config\Services;
 
 function href($url)
 {
-	$req = Services::request();
-	return base_url($req->getLocale() . '/' . $url);
+    $req = Services::request();
+    return base_url($req->getLocale() . '/' . $url);
 }
 
 function fetchOne($table, $where)
 {
-	$db = Database::connect();
-	return $db->table($table)->where($where)->get()->getRow();
+    $db = Database::connect();
+    return $db->table($table)->where($where)->get()->getRow();
 }
 
 function format_money($money)
 {
-	$money = floatval($money);
-	return lang('Interface.code') == 'en' ? number_format($money, 2) . ' US$' : 'Rp ' . number_format($money, 0, ',', '.');
+    $money = floatval($money);
+    return lang('Interface.code') == 'en' ? number_format($money, 2) . ' US$' : 'Rp ' . number_format($money, 0, ',', '.');
 }
 
-function format_bytes($bytes, $precision = 1) {
+function format_bytes($bytes, $precision = 1)
+{
     $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB');
 
     $bytes = max($bytes, 0);
@@ -49,7 +50,10 @@ function format_bytes($bytes, $precision = 1) {
 
     return number_format($bytes, $precision) . ' ' . $units[$pow];
 }
-function tag_callback($value, $tag, $flags) {
-    CLI::write(json_encode(func_get_args())); // debugging
-    return "Hello {$value}";
-  }
+
+function sanitize_shell_arg_dir($dir)
+{
+    return implode('/', array_map(function ($x) {
+        return escapeshellarg($x);
+    }, explode('/', trim($dir, ' /'))));
+}

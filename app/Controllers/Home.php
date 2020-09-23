@@ -8,7 +8,9 @@ use App\Entities\Scheme;
 use App\Libraries\LiquidRegistrar;
 use App\Libraries\Recaptha;
 use App\Libraries\SendGridEmail;
+use App\Libraries\TemplateDeployer;
 use App\Libraries\VirtualMinShell;
+use App\Models\HostDeploysModel;
 use App\Models\HostModel;
 use App\Models\LiquidModel;
 use App\Models\PlanModel;
@@ -87,9 +89,15 @@ class Home extends BaseController
 							$host->domain,
 							$host->server->alias,
 							$plan->alias,
-							$plan->features,
-							$metadata->template
+							$plan->features
 						);
+						if ($metadata->template) {
+							(new TemplateDeployer())->schedule(
+								$host->id,
+								$host->domain,
+								$metadata->template
+							);
+						}
 					} else {
 						// Re-enable and upgrade
 						(new VirtualMinShell())->enableHosting(

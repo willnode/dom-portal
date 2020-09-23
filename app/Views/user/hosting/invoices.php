@@ -13,7 +13,7 @@
           <div class="card-body">
             <div><?= lang('Hosting.statusInvoice') ?></div>
             <div class="input-group mb-3">
-              <h3><?= ucfirst($data->status) ?></h3>
+              <h3><?= ucfirst($host->status) ?></h3>
             </div>
             <?php if ($current && $current->status === 'pending') : ?>
               <?php if (lang('Interface.code') == 'en') : ?>
@@ -40,6 +40,8 @@
                 <input type="hidden" name="action" value="cancel">
                 <input type="submit" class="btn btn-danger" value="<?= lang('Hosting.cancelInvoice') ?>" onclick="return confirm('<?= lang('Hosting.cancelInvoceConfirm') ?>')">
               </form>
+            <?php elseif ($host->status === 'starting') : ?>
+              <p>Hosting anda sedang disiapkan. Tunggulah beberapa menit kemudian. </p>
             <?php endif ?>
           </div>
         </div>
@@ -62,7 +64,7 @@
         </div>
       </div>
     </div>
-    <a href="/user/hosting/detail/<?= $data->hosting_id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
+    <a href="/user/hosting/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
   </div>
 
 </body>

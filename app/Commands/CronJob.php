@@ -13,7 +13,7 @@ use App\Models\ServerModel;
 use App\Models\ServerStatModel;
 use CodeIgniter\CLI\BaseCommand;
 
-require_once "spyc.php";
+require_once APPPATH . 'Libraries' . DIRECTORY_SEPARATOR . 'spyc.php';
 
 class CronJob extends BaseCommand
 {

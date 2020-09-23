@@ -5,6 +5,7 @@
 	'portalUsernameHint' => 'Only alphanumeric and hyphen',
 	'portalPassword' => 'Portal Password',
 	'slaveServer' => 'Slave Server',
+	'template' => 'Template',
 	'chooseTemplate' => 'Choose Template',
 	'selectPacketType' => 'Select host plan',
 	'lookPacketDiff' => 'Find out plan differences',

@@ -16,7 +16,9 @@ use App\Libraries\CountryCodes;
 use App\Libraries\LiquidRegistrar;
 use App\Libraries\PaymentGate;
 use App\Libraries\SendGridEmail;
+use App\Libraries\TemplateDeployer;
 use App\Libraries\VirtualMinShell;
+use App\Models\HostDeploysModel;
 use App\Models\HostModel;
 use App\Models\LiquidModel;
 use App\Models\LoginModel;
@@ -25,6 +27,7 @@ use App\Models\PurchaseModel;
 use App\Models\SchemeModel;
 use App\Models\ServerModel;
 use App\Models\ServerStatModel;
+use App\Models\TemplatesModel;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Config\Services;
@@ -84,7 +87,7 @@ class User extends BaseController
 				'username' => 'required|alpha_dash|min_length[5]|' .
 					'max_length[32]|is_unique[hosts.username]',
 				'server' => 'required|is_not_unique[servers.id]',
-				'password' => 'required|min_length[8]',
+				'password' => 'required|min_length[8]|regex_match[/^[^\'"\/\\\\:]+$/]',
 				'domain_mode' => empty($_POST['domain_mode']) ? 'permit_empty' : 'required|in_list[free,buy,custom]',
 			])) {
 				$data = array_intersect_key(
@@ -162,7 +165,7 @@ class User extends BaseController
 					}
 				} else {
 					// Free plan. Just create
-					$hosting->status = /*$data['template'] ? 'starting' :*/ 'active';
+					$hosting->status = $data['template'] ? 'starting' : 'active';
 					$hosting->expiry_at = date('Y-m-d H:i:s', strtotime("+2 months", \time()));
 					$hosting->domain = $hosting->username . $server->domain;
 					(new VirtualMinShell())->createHosting(
@@ -172,8 +175,7 @@ class User extends BaseController
 						$hosting->domain,
 						$server->alias,
 						$plan->alias,
-						$plan->features,
-						$data['template']
+						$plan->features
 					);
 					(new VirtualMinShell)->addToServerDNS(
 						$hosting->username,
@@ -186,6 +188,12 @@ class User extends BaseController
 					if (isset($payment)) {
 						$payment->hosting_id = $id;
 						(new PurchaseModel())->insert($payment);
+					} else if ($data['template']) {
+						(new TemplateDeployer())->schedule(
+							$id,
+							$hosting->domain,
+							$data['template']
+						);
 					}
 					return $this->response->redirect('/user/hosting/invoices/' . $id);
 				}
@@ -196,6 +204,7 @@ class User extends BaseController
 			'servers' => (new ServerModel())->find(),
 			'schemes' => (new SchemeModel())->find(),
 			'liquid' => (new LiquidModel())->atLogin($this->login->id),
+			'templates' => (new TemplatesModel())->atLang($this->login->lang)->findAll(),
 			'validation' => $this->validator,
 		]);
 	}
@@ -426,6 +435,18 @@ class User extends BaseController
 			'host' => $host,
 		]);
 	}
+	protected function deployesHosting($host)
+	{
+		if ($this->request->getMethod() === 'post' && isset($_POST['template'])) {
+			(new TemplateDeployer())->schedule($host->id, $host->domain, $_POST['template']);
+			return $this->response->redirect('/user/hosting/deploys/'.$host->id);
+		}
+		return view('user/hosting/deployes', [
+			'host' => $host,
+			'deploys' => (new HostDeploysModel())->atHost($host->id)->find(),
+		]);
+	}
+	/** @param Host $host */
 	protected function invoicesHosting($host)
 	{
 		$history = (new PurchaseModel())->atHost($host->id)->descending()->find();
@@ -470,7 +491,7 @@ class User extends BaseController
 			}
 		}
 		return view('user/hosting/invoices', [
-			'data' => $host,
+			'host' => $host,
 			'current' => $host->purchase,
 			'history' => $history,
 		]);
@@ -507,6 +528,8 @@ class User extends BaseController
 					return $this->renameHosting($host);
 				} else if ($page === 'cname') {
 					return $this->cnameHosting($host);
+				} else if ($page === 'deploys') {
+					return $this->deployesHosting($host);
 				} else if ($page === 'see') {
 					return $this->seeHosting($host);
 				} else if ($page === 'ssl') {
