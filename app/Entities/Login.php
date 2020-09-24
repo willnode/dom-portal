@@ -12,6 +12,7 @@ use CodeIgniter\Entity;
  * @property string $password
  * @property string $otp
  * @property string $lang
+ * @property int $trustiness 0=not verifying the email, max hosts is 1, warn on purchase. 1=not puchasing anything, max hosts is 5. 2=not purchasing pro or higher yet, max hosts is 10
  * @property Time $email_verified_at
  */
 class Login extends Entity
@@ -25,5 +26,6 @@ class Login extends Entity
         'otp' => '?string',
         'lang' => 'string',
         'email_verified_at' => '?timestamp',
+        'trustiness' => 'int',
     ];
 }

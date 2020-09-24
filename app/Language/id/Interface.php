@@ -24,7 +24,7 @@
 	'wrongLogin' => 'Salah email atau password',
 	'wrongEmail' => 'Salah email?',
 	'resendConfirmationEmail' => 'Kirim Ulang Konfirmasi Email',
-	'confirmationHint' => 'Anda harus mengkonfirmasi email anda terlebih dahulu, silahkan cek inbox (atau spam box) email',
+	'confirmationHint' => 'PENTING. Anda harus mengkonfirmasi email anda agar kami percaya anda, silahkan cek inbox (atau spam box) email',
 	'confirmationPrompt' => 'Yakin untuk mengirim ulang email? Tindakan ini juga melogout sesi anda sekarang. Mohon cek inbox email anda setelah ini.',
 	'registerAgreement' => 'Dengan mendaftar anda menyetujui <a href="//domcloud.id/service.html">Kebijakan Layanan</a> Kami',
 	'emailSent' => 'Email untuk verifikasi telah dikirim, mohon cek inbox (dan spam box) anda sebelum masuk.',

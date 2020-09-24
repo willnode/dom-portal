@@ -118,6 +118,11 @@ class Home extends BaseController
 					$host->plan = $metadata->plan;
 					$host->status = 'active';
 					$host->addons += $plan->net * 1024 / 12;
+					if ($login->trustiness < $metadata->plan) {
+						$login->trustiness = $metadata->plan;
+						(new LoginModel())->save($login);
+					}
+
 				}
 				if ($metadata->addons) {
 					$host->addons += $metadata->addons * 1024;
@@ -182,9 +187,9 @@ class Home extends BaseController
 					$this->db->table('login')->update([
 						'email_verified_at' => date('Y-m-d H:i:s'),
 						'otp' => null,
+						'trustiness' => max($row->trustiness, 1)
 					], ['email' => $code[0]]);
 					$this->request->setLocale($row->lang ?: 'id');
-					$this->session->destroy();
 					return view('static/verified', [
 						'email' => $code[0],
 					]);
@@ -196,7 +201,7 @@ class Home extends BaseController
 
 	public function login()
 	{
-		if ($this->session->has('login_id')) {
+		if ($this->session->has('login')) {
 			return $this->response->redirect('/user');
 		}
 
@@ -264,7 +269,8 @@ class Home extends BaseController
 					$this->session->login = $this->db->insertID();
 					$u = new User();
 					$u->initController($this->request, $this->response, $this->logger);
-					return $u->verify_email();
+					$u->verify_email();
+					return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
 				}
 			}
 			return redirect()->back()->withInput()->with('errors', $this->validator->listErrors());

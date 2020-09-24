@@ -44,8 +44,9 @@ class User extends BaseController
 		if (!$this->session->get('login') || (!($this->login = (new LoginModel())->find($this->session->login)))) {
 			$path = Services::request()->detectPath('REQUEST_URI');
 			$query = Services::request()->detectPath('QUERY_STRING');
+			$this->session->destroy();
 			Services::response()->redirect(href(
-				'login?r=' . urlencode($path.($query ? '?'.$query : ''))
+				'login?r=' . urlencode($path . ($query ? '?' . $query : ''))
 			))->pretend(false)->send();
 			exit;
 		} else {
@@ -82,7 +83,9 @@ class User extends BaseController
 	}
 	protected function createHosting()
 	{
-		if ($this->request->getMethod() === 'post') {
+		$count = $this->db->table('hosts')->where('login_id', $this->login->id)->countAllResults();
+		$ok = $count < ($this->login->trustiness === 0 ? 1 : ($this->login->trustiness * 5));
+		if ($ok && $this->request->getMethod() === 'post') {
 			if ($this->validate([
 				'plan' => 'required|is_not_unique[plans.id]',
 				'username' => 'required|alpha_dash|min_length[5]|' .
@@ -206,7 +209,9 @@ class User extends BaseController
 			'schemes' => (new SchemeModel())->find(),
 			'liquid' => (new LiquidModel())->atLogin($this->login->id),
 			'templates' => (new TemplatesModel())->atLang($this->login->lang)->findAll(),
+			'trustiness' => $this->login->trustiness,
 			'validation' => $this->validator,
+			'ok' => $ok,
 		]);
 	}
 	/** @param Host $host */
@@ -440,7 +445,7 @@ class User extends BaseController
 	{
 		if ($this->request->getMethod() === 'post' && isset($_POST['template'])) {
 			(new TemplateDeployer())->schedule($host->id, $host->domain, $_POST['template']);
-			return $this->response->redirect('/user/hosting/deploys/'.$host->id);
+			return $this->response->redirect('/user/hosting/deploys/' . $host->id);
 		}
 		return view('user/hosting/deployes', [
 			'host' => $host,
@@ -513,9 +518,6 @@ class User extends BaseController
 	}
 	public function hosting($page = 'list', $id = 0)
 	{
-		if (!$this->login->email_verified_at) {
-			return $this->verify_email();
-		}
 		if ($page === 'list') {
 			return $this->listHosting();
 		} else if ($page === 'create') {
@@ -794,7 +796,6 @@ class User extends BaseController
 					'verify_url' => base_url('verify?code=' . urlencode(base64_encode($data->email . ':' . $data->otp))),
 				]
 			]]);
-			$this->session->destroy();
 			return $this->response->redirect("/$data->lang/login?msg=emailsent");
 		}
 		return view('user/veremail', [
@@ -804,6 +805,9 @@ class User extends BaseController
 	public function profile()
 	{
 		if ($this->request->getMethod() === 'post') {
+			if (($_POST['action'] ?? '') === 'resend') {
+				return $this->verify_email();
+			} else
 			if ($this->validate([
 				'name' => 'required|min_length[3]|max_length[255]',
 				'phone' => 'required|min_length[8]|max_length[16]',
@@ -852,20 +856,13 @@ class User extends BaseController
 	public function delete()
 	{
 		$ok = $this->db->table('hosts')->where(['login_id' => $this->login->id])->countAll() === 0;
-		$ok = $ok && count((new LiquidModel())->atLogin($this->login->id)->domains ?? []) === 0;
+		$ok = $ok && count(($liquid = (new LiquidModel())->atLogin($this->login->id))->domains ?? []) === 0;
 		if ($ok && $this->request->getMethod() === 'post' && strpos($this->request->getPost('wordpass'), 'Y') !== FALSE) {
-			$liquid = fetchOne('liquid', [
-				'liquid_login' =>  $this->login->id
-			]);
 			if ($liquid) {
-				(new LiquidRegistrar())->deleteCustomer($liquid->liquid_id);
-				$this->db->table('liquid')->delete([
-					'liquid_login' => $this->login->id,
-				]);
+				(new LiquidRegistrar())->deleteCustomer($liquid->id);
+				(new LiquidModel())->delete($liquid->id);
 			}
-			$this->db->table('login')->delete([
-				'login_id' => $this->login->id,
-			]);
+			(new LoginModel())->delete($this->login->id);
 			$this->session->destroy();
 			return $this->response->redirect('/');
 		}

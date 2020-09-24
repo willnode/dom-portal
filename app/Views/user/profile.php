@@ -18,7 +18,7 @@
             </div>
             <div class="mb-3">
               <label for="email"><?= lang('Interface.email') ?></label>
-              <input class="form-control" <?=$email_verified_at ? 'disabled' : ''?> id="email" maxlength="255" name="email" type="email" required placeholder="<?= lang('Interface.activeEmail') ?>" value="<?= esc($data->email, 'attr') ?>">
+              <input class="form-control" <?= $email_verified_at ? 'disabled' : '' ?> id="email" maxlength="255" name="email" type="email" required placeholder="<?= lang('Interface.activeEmail') ?>" value="<?= esc($data->email, 'attr') ?>">
             </div>
             <div class="mb-3">
               <label for="phone"><?= lang('Interface.phone') ?></label>
@@ -39,6 +39,15 @@
         </div>
       </div>
       <div class="col-md-6">
+        <?php if (!$email_verified_at) : ?>
+          <div class="alert alert-danger mb-3">
+            <p><?= lang('Interface.confirmationHint') ?> <b><?= esc($data->email) ?></b></p>
+            <form method="post" class="my-2">
+              <input type="hidden" name="action" value="resend">
+              <input type="submit" class="btn btn-success" onclick="return confirm('<?= lang('Interface.confirmationPrompt') ?>')" value="<?= lang('Interface.resendConfirmationEmail') ?>">
+            </form>
+          </div>
+        <?php endif ?>
         <div class="card">
           <form action="/user/reset" method="POST" class="card-body">
             <h2 class="mb-3"><?= lang('Interface.changePassword') ?></h2>
