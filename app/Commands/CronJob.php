@@ -73,10 +73,10 @@ class CronJob extends BaseCommand
                         $stat->fill($newStat);
                     }
                     (new HostStatModel())->replace($stat->toRawArray());
-                    $expired = time() >= strtotime($host->expiry_at->getTimestamp());
-                    $overDisk = ($domain['Server byte quota used'] ?? 0) > $plan->disk * 1024 * 1024;
-                    $overBw = ($domain['Bandwidth byte usage'] ?? 0) > $plan->net * 1024 * 1024 * 1024 / 12 + $host->addons * 1024 * 1024;
-                    if (!empty($domain['Disabled'])) {
+                    $expired = time() >= $host->expiry_at->getTimestamp();
+                    $overDisk = ($stat->quota_server) > $plan->disk * 1024 * 1024;
+                    $overBw = ($stat->quota_net) > $plan->net * 1024 * 1024 * 1024 / 12 + $host->addons * 1024 * 1024;
+                    if (!$stat->disabled) {
                         if ($overDisk) {
                             // Disable
                             (new VirtualMinShell())->disableHosting($host->domain, $server->alias, 'Running out Disk Space');
@@ -88,15 +88,15 @@ class CronJob extends BaseCommand
                             (new VirtualMinShell())->disableHosting($host->domain, $server->alias, 'host expired');
                         }
                     } else {
-                        if (strtotime('-2 weeks', time()) >= strtotime($host->expiry_at)) {
-                            // Delete
-                            (new VirtualMinShell())->deleteHosting($host->domain, $server->alias);
-                            // TODO: Deleted email
-                        } else {
-                            if (!($expired || $overDisk || $overBw)) {
-                                // Enable
-                                (new VirtualMinShell())->enableHosting($host->domain, $server->alias);
+                        if (strtotime('-2 weeks', time()) >= $host->expiry_at->getTimestamp()) {
+                            if ($host->plan_id === 1) {
+                                // Paid hosts should be immune from this, in case error logic happens...
+                                (new VirtualMinShell())->deleteHosting($host->domain, $server->alias);
                             }
+                            // TODO: Deleted email
+                        } else if (!($expired || $overDisk || $overBw)) {
+                            // Enable
+                            (new VirtualMinShell())->enableHosting($host->domain, $server->alias);
                         }
                     }
                 }

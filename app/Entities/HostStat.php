@@ -14,7 +14,7 @@ use CodeIgniter\Entity;
  * @property int $quota_db
  * @property int $quota_net
  * @property int $features
- * @property int $disabled
+ * @property string $disabled
  * @property string[] bandwidths
  * @property Time $created_at
  * @property Time $updated_at
@@ -31,7 +31,7 @@ class HostStat extends Entity
         'quota_db' => 'integer',
         'quota_net' => 'integer',
         'features' => 'integer',
-        'disabled' => 'integer',
+        'disabled' => 'string',
         'bandwidths' => 'json-array',
     ];
 }
