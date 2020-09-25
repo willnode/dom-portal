@@ -1,5 +1,7 @@
 # DOM Cloud Portal
 
+<p align=center><img src="http://portal.domcloud.id/logo.svg" alt="Logo" width=200px></p>
+
 This is the actual server code that runs on [portal.domcloud.id](https://portal.domcloud.id). Open sourced because I want to transparent and clear about how your data will be handled and what or how limitations applies for you.
 
 DOM Cloud runs above Azure VM. So it's a hosting business that runs a top of another host service. Why it's exist? Because I get tired of host solutions these days. I want something easy to deploy like Heroku or Docker, but don't want to mess with immutability and no-SQL stuffs that really only benefit when you get like, millions of traffic (which of course, never happen to me).
