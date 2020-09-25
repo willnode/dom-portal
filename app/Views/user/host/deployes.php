@@ -7,8 +7,8 @@
   <?= view('user/navbar') ?>
   <div class="container">
     <div class="d-flex mb-3">
-      <h1>Deployment Hosting</h1>
-      <a href="/user/hosting/detail/<?= $host->id ?>" class="mt-3 ml-auto btn btn-secondary">Kembali</a>
+      <h1>Deployment Host</h1>
+      <a href="/user/host/detail/<?= $host->id ?>" class="mt-3 ml-auto btn btn-secondary">Kembali</a>
     </div>
     <?php
 

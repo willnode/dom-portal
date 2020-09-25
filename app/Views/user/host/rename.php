@@ -23,7 +23,7 @@
         </div>
       </div>
     <?php endif ?>
-    <a href="/user/hosting/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary">Kembali</a>
+    <a href="/user/host/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary">Kembali</a>
   </div>
 
 </body>

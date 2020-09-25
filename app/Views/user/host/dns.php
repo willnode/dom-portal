@@ -75,6 +75,6 @@
         window.onload = cek;
       </script>
     </div>
-    <a href="/user/hosting/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
+    <a href="/user/host/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
 
 </body>

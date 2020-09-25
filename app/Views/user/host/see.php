@@ -15,8 +15,8 @@
             <p class="flex-grow-1">URL:<br><b>https://<?= $slave ?>.domcloud.id:8443</b><br>
               Username:<br><b><?= esc($user) ?></b><br>
               Password:<br><b><?= $pass ?></b></p>
-            <p><small><a href="https://<?= $slave ?>.domcloud.id:8443/" target="_blank" rel="noreferrer">Login ke Portal Hosting</a></small></p>
-            <p><small><a href="/user/hosting/login/<?= $id ?>">Panduan Login ke Portal Hosting</a></small></p>
+            <p><small><a href="https://<?= $slave ?>.domcloud.id:8443/" target="_blank" rel="noreferrer">Login ke Portal Host</a></small></p>
+            <p><small><a href="/user/host/login/<?= $id ?>">Panduan Login ke Portal Host</a></small></p>
           </div>
         </div>
         <div class="col-md-6 col-xl-3">
@@ -54,7 +54,7 @@
         <?php else : ?>
           <a href="?show=password" class="mt-3 btn btn-warning float-right">Tampilkan Password</a>
         <?php endif ?>
-        <a href="/user/hosting/detail/<?= $id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
+        <a href="/user/host/detail/<?= $id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
       </div>
     </div>
   </div>

@@ -6,12 +6,12 @@
 <body>
   <?= view('user/navbar') ?>
   <div class="container">
-    <h1 class="mb-3"><?= lang('Hosting.manageInvoice') ?></h1>
+    <h1 class="mb-3"><?= lang('Host.manageInvoice') ?></h1>
     <div class="row">
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
-            <div><?= lang('Hosting.statusInvoice') ?></div>
+            <div><?= lang('Host.statusInvoice') ?></div>
             <div class="input-group mb-3">
               <h3><?= ucfirst($host->status) ?></h3>
             </div>
@@ -21,27 +21,27 @@
               <?php else : ?>
                 <form method="post" class="my-2">
                   <input type="hidden" name="action" value="pay">
-                  <input type="submit" class="btn btn-primary" value="<?= lang('Hosting.finishPayment') ?>">
+                  <input type="submit" class="btn btn-primary" value="<?= lang('Host.finishPayment') ?>">
                 </form>
               <?php endif ?>
               <p>
                 <?php $money = format_money($current->metadata->price) ?>
-                <?php ($current->liquid ? lang('Hosting.formatInvoiceAlt', [
+                <?php ($current->liquid ? lang('Host.formatInvoiceAlt', [
                   "<b>$current->plan</b>",
                   "<b>$data->domain</b>",
-                ]) : lang('Hosting.formatInvoice', [
+                ]) : lang('Host.formatInvoice', [
                   "<b>$current->plan</b>",
-                ])) . lang("Hosting.formatInvoiceSum", ["<b>$money</b>"]) ?>
+                ])) . lang("Host.formatInvoiceSum", ["<b>$money</b>"]) ?>
               </p>
               <p>
-                <?= lang('Hosting.cancelInvoiceHint') ?>
+                <?= lang('Host.cancelInvoiceHint') ?>
               </p>
               <form method="post" class="my-2">
                 <input type="hidden" name="action" value="cancel">
-                <input type="submit" class="btn btn-danger" value="<?= lang('Hosting.cancelInvoice') ?>" onclick="return confirm('<?= lang('Hosting.cancelInvoceConfirm') ?>')">
+                <input type="submit" class="btn btn-danger" value="<?= lang('Host.cancelInvoice') ?>" onclick="return confirm('<?= lang('Host.cancelInvoceConfirm') ?>')">
               </form>
             <?php elseif ($host->status === 'starting') : ?>
-              <p>Hosting anda sedang disiapkan. Tunggulah beberapa menit kemudian. </p>
+              <p>Host anda sedang disiapkan. Tunggulah beberapa menit kemudian. </p>
             <?php endif ?>
           </div>
         </div>
@@ -64,7 +64,7 @@
         </div>
       </div>
     </div>
-    <a href="/user/hosting/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
+    <a href="/user/host/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
   </div>
 
 </body>

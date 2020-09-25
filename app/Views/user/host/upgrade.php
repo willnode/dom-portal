@@ -7,7 +7,7 @@
   <?= view('user/navbar') ?>
 
   <div class="container">
-    <h1><?= lang('Hosting.upgradeHost') ?></h1>
+    <h1><?= lang('Host.upgradeHost') ?></h1>
     <?php if ($purchase && $purchase->status === 'pending') : ?>
       <div class="alert alert-danger">
         Anda tidak dapat melakukan upgrade apabila masih ada transaksi belum selesai.
@@ -17,7 +17,7 @@
         <div class="col-lg-4">
           <div class="card">
             <div class="card-body">
-              <p><?= lang('Hosting.chooseUpgradeMethod') ?></p>
+              <p><?= lang('Host.chooseUpgradeMethod') ?></p>
               <div class="radio">
                 <label>
                   <div>
@@ -25,7 +25,7 @@
                     <b><?= lang('Interface.renew') ?></b>
                   </div>
                   <div class="pl-4">
-                    <?= lang('Hosting.renewHint') ?>
+                    <?= lang('Host.renewHint') ?>
                   </div>
                 </label>
                 <label>
@@ -34,7 +34,7 @@
                     <b><?= lang('Interface.extend') ?></b>
                   </div>
                   <div class="pl-4">
-                    <?= lang('Hosting.extendHint') ?>
+                    <?= lang('Host.extendHint') ?>
                   </div>
 
                 </label>
@@ -44,7 +44,7 @@
                     <b><?= lang('Interface.upgrade') ?></b>
                   </div>
                   <div class="pl-4">
-                    <?= lang('Hosting.upgradeHint') ?>
+                    <?= lang('Host.upgradeHint') ?>
                   </div>
                 </label>
                 <label>
@@ -53,7 +53,7 @@
                     <b><?= lang('Interface.topup') ?></b>
                   </div>
                   <div class="pl-4">
-                    <?= lang('Hosting.topupHint') ?>
+                    <?= lang('Host.topupHint') ?>
                   </div>
                 </label>
               </div>
@@ -63,7 +63,7 @@
         <div class="col-lg-4">
           <div class="card">
             <div class="card-body">
-              <div><?= lang('Hosting.selectPacketType') ?></div>
+              <div><?= lang('Host.selectPacketType') ?></div>
               <div class="row mb-3">
                 <?php foreach ($plans as $plan) : ?>
                   <div class="col-4">
@@ -74,11 +74,11 @@
                   </div>
                 <?php endforeach ?>
                 <small class="col-12 form-text text-muted">
-                  <a href="https://domcloud.id/price" target="_blank"><?= lang('Hosting.lookPacketDiff') ?></a>.
+                  <a href="https://domcloud.id/price" target="_blank"><?= lang('Host.lookPacketDiff') ?></a>.
                 </small>
               </div>
               <div class="row align-items-center">
-                <label class="form-label col-6" for="years"><?= lang('Hosting.yearDuration') ?></label>
+                <label class="form-label col-6" for="years"><?= lang('Host.yearDuration') ?></label>
                 <div class="col-6">
                   <input type="number" class="form-control my-1" name="years" id="years" value="1" min="1" max="5" onchange="recalculate()">
                 </div>
@@ -90,18 +90,18 @@
               <div id="domain-renew" class="d-none">
                 <?php if ($data->scheme_id == 1 || $data->scheme_id === null) : ?>
                   <div class="mb-3">
-                    <label class="form-label" for="domain_mode"><?= lang('Hosting.selectDomainKind') ?></label>
+                    <label class="form-label" for="domain_mode"><?= lang('Host.selectDomainKind') ?></label>
                     <select name="domain_mode" id="domain_mode" class="form-select" onchange="recalculate()">
-                      <option value="free" selected><?= lang('Hosting.useFreeDomain') ?></option>
-                      <option value="buy"><?= lang('Hosting.buyNewDomain') ?></option>
-                      <option value="custom"><?= lang('Hosting.useExistingDomain') ?></option>
+                      <option value="free" selected><?= lang('Host.useFreeDomain') ?></option>
+                      <option value="buy"><?= lang('Host.buyNewDomain') ?></option>
+                      <option value="custom"><?= lang('Host.useExistingDomain') ?></option>
                     </select>
                   </div>
                   <div id="dm-free">
                     <div class="mb-3">
                       <input class="form-control" id="free_cname" value="<?= $data->username ?>.dom.my.id" disabled>
                       <small class="form-text text-muted">
-                        <?= lang('Hosting.freeDomainHint') ?>
+                        <?= lang('Host.freeDomainHint') ?>
                         <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                       </small>
                     </div>
@@ -109,7 +109,7 @@
                   <div id="dm-buy" class="d-none">
                     <?php if ($liquid) : ?>
                       <div class="mb-3">
-                        <label class="form-label"><?= lang('Hosting.findDomain') ?></label>
+                        <label class="form-label"><?= lang('Host.findDomain') ?></label>
                         <div class="input-group">
                           <input name="buy_cname" id="buy_cname" class="form-control" pattern="^[-a-zA-Z0-9]+$" required oninput="recalculate()">
                           <select class="form-select" name="buy_scheme" id="buy_scheme" required style="max-width: 120px" onchange="recalculate()">
@@ -121,26 +121,26 @@
                           <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
                         </div>
                         <small class="form-text text-muted">
-                          <a href="https://dom.my.id/domain" target="_blank"><?= lang('Hosting.findAvailableGLTDs') ?></a>.
+                          <a href="https://dom.my.id/domain" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
                         </small>
                       </div>
                       <p id="buy-status-prompt" class="alert alert-primary">
-                        <?= lang('Hosting.findReady') ?>
+                        <?= lang('Host.findReady') ?>
                       </p>
                       <p id="buy-status-available" class="alert alert-success d-none">
-                        <?= lang('Hosting.findAvailable') ?>
+                        <?= lang('Host.findAvailable') ?>
                       </p>
                       <p id="buy-status-loading" class="alert alert-warning d-none">
-                        <?= lang('Hosting.findWait') ?>
+                        <?= lang('Host.findWait') ?>
                       </p>
                       <p id="buy-status-error" class="alert alert-danger d-none">
-                        <?= lang('Hosting.findUnavailable') ?>
+                        <?= lang('Host.findUnavailable') ?>
                       </p>
                     <?php else : ?>
                       <p class="alert alert-danger">
                         <small>
-                          <?= lang('Hosting.findNeedData') ?>
-                          <br><a href="/user/domain?then=reload" target="_blank"><?= lang('Hosting.findNeedDataAction') ?></a>.
+                          <?= lang('Host.findNeedData') ?>
+                          <br><a href="/user/domain?then=reload" target="_blank"><?= lang('Host.findNeedDataAction') ?></a>.
                         </small>
                       </p>
                     <?php endif ?>
@@ -149,7 +149,7 @@
                     <div class="mb-3">
                       <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="masukkan domain kustom" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
                       <small class="form-text text-muted">
-                        <?= lang('Hosting.useExistingHint') ?>
+                        <?= lang('Host.useExistingHint') ?>
                         <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                       </small>
                     </div>
@@ -163,28 +163,28 @@
           <div class="card">
             <div class="card-body">
               <div class="d-flex">
-                <h6><?= lang('Hosting.schemePrice') ?></h6>
+                <h6><?= lang('Host.schemePrice') ?></h6>
                 <div class="ml-auto" id="outprice">-</div>
               </div>
               <div class="d-flex">
-                <h6><?= lang('Hosting.domainPrice') ?></h6>
+                <h6><?= lang('Host.domainPrice') ?></h6>
                 <div class="ml-auto" id="outdomain">-</div>
               </div>
               <div class="d-flex">
-                <h6><?= lang('Hosting.addonsPrice') ?></h6>
+                <h6><?= lang('Host.addonsPrice') ?></h6>
                 <div class="ml-auto" id="outaddons">-</div>
               </div>
               <div class="d-flex">
-                <h6><?= lang('Hosting.transactionCost') ?></h6>
+                <h6><?= lang('Host.transactionCost') ?></h6>
                 <div class="ml-auto" id="outtip">-</div>
               </div>
               <hr>
               <div class="d-flex">
-                <h6><?= lang('Hosting.totalPayment') ?></h6>
+                <h6><?= lang('Host.totalPayment') ?></h6>
                 <div class="ml-auto" id="outbill">-</div>
               </div>
               <div class="d-flex">
-                <h6><?= lang('Hosting.expirationDate') ?></h6>
+                <h6><?= lang('Host.expirationDate') ?></h6>
                 <div class="ml-auto" id="outexp">-</div>
               </div>
               <hr>
@@ -202,13 +202,13 @@
                   <div class="ml-auto" id="specbwb">- GiB</div>
                 </div>
               </div>
-              <input type="submit" value="<?= lang('Hosting.orderNow') ?>" class="form-control btn-lg btn btn-primary mt-3">
+              <input type="submit" value="<?= lang('Host.orderNow') ?>" class="form-control btn-lg btn btn-primary mt-3">
             </div>
           </div>
         </div>
       </form>
     <?php endif ?>
-    <a href="/user/hosting/detail/<?= $data->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
+    <a href="/user/host/detail/<?= $data->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
 
   </div>
 
@@ -332,7 +332,7 @@
 
         // Show values
         if (unit == 0 && mode !== 'topup') {
-          const free = '<?= lang('Hosting.free') ?>'
+          const free = '<?= lang('Host.free') ?>'
           $('#outprice').text('-');
           $('#outdomain').text('-');
           $('#outaddons').html('-');

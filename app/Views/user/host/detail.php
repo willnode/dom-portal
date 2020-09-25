@@ -7,56 +7,56 @@
   <?= view('user/navbar') ?>
   <div class="container">
     <h1 class="mb-3 d-flex">
-      <div><?= lang('Hosting.manageHost') ?></div>
+      <div><?= lang('Host.manageHost') ?></div>
 
-      <a href="/user/hosting/see/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success ml-auto">Cek Login</a>
-      <a href="/user/hosting/dns/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek DNS</a>
-      <a href="/user/hosting/ssl/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek HTTPS</a>
-      <a href="/user/hosting/deploys/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek Deploy</a>
-      <a href="/user/hosting/upgrade/<?= $host->id ?>" class="mt-3 btn btn-primary">Upgrade</a>
+      <a href="/user/host/see/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success ml-auto">Cek Login</a>
+      <a href="/user/host/dns/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek DNS</a>
+      <a href="/user/host/ssl/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek HTTPS</a>
+      <a href="/user/host/deploys/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek Deploy</a>
+      <a href="/user/host/upgrade/<?= $host->id ?>" class="mt-3 btn btn-primary">Upgrade</a>
   </h1>
     <div class="row">
       <div class="col-lg-4">
         <div class="card">
           <div class="card-body">
-            <div><?= lang('Hosting.hostStatus') ?></div>
+            <div><?= lang('Host.hostStatus') ?></div>
             <div class="input-group mb-3">
               <h3><?= ucfirst($host->status) ?></h3>
               <?php if ($host->status === 'pending') : ?>
-                <a href="/user/hosting/invoices/<?= $host->id ?>" class="ml-auto btn btn-primary"><?= lang('Hosting.finishPayment') ?></a>
+                <a href="/user/host/invoices/<?= $host->id ?>" class="ml-auto btn btn-primary"><?= lang('Host.finishPayment') ?></a>
               <?php elseif ($host->status === 'active') : ?>
-                <a href="http://<?= $host->domain ?>" target="_blank" rel="noopener noreferrer" class="ml-auto btn btn-primary"><?= lang('Hosting.openWebsite') ?></a>
+                <a href="http://<?= $host->domain ?>" target="_blank" rel="noopener noreferrer" class="ml-auto btn btn-primary"><?= lang('Host.openWebsite') ?></a>
               <?php endif ?>
             </div>
-            <div><?= lang('Hosting.usernameHost') ?></div>
+            <div><?= lang('Host.usernameHost') ?></div>
             <div class="input-group mb-3">
               <input type="text" class="form-control" value="<?= $host->username ?>" readonly>
-              <a href="/user/hosting/rename/<?= $host->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.change') ?></a>
+              <a href="/user/host/rename/<?= $host->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.change') ?></a>
             </div>
-            <div><?= lang('Hosting.domainHost') ?></div>
+            <div><?= lang('Host.domainHost') ?></div>
             <div class="input-group mb-3">
               <input value="<?= $host->domain ?>" type="text" class="form-control" readonly>
-              <a href="/user/hosting/cname/<?= $host->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.change') ?></a>
+              <a href="/user/host/cname/<?= $host->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.change') ?></a>
             </div>
-            <div><?= lang('Hosting.slaveID') ?> / <?= lang('Hosting.IPAddress') ?></div>
+            <div><?= lang('Host.slaveID') ?> / <?= lang('Host.IPAddress') ?></div>
             <div class="input-group mb-3">
               <input value="<?= $host->server->alias . ' / ' . $host->server->ip ?>" type="text" class="form-control" readonly>
-              <a href="/user/hosting/see/<?= $host->id ?>" class="btn btn-outline-secondary"><?= lang('Hosting.manageHostLogin') ?></a>
+              <a href="/user/host/see/<?= $host->id ?>" class="btn btn-outline-secondary"><?= lang('Host.manageHostLogin') ?></a>
             </div>
-            <div><?= lang('Hosting.activeScheme') ?></div>
+            <div><?= lang('Host.activeScheme') ?></div>
             <div class="input-group mb-3">
               <input type="text" class="form-control" value="<?= $host->plan->alias ?>" readonly>
-              <a href="/user/hosting/upgrade/<?= $host->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.upgrade') ?></a>
+              <a href="/user/host/upgrade/<?= $host->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.upgrade') ?></a>
             </div>
-            <div><?= lang('Hosting.purchaseDate') ?></div>
+            <div><?= lang('Host.purchaseDate') ?></div>
             <div class="input-group mb-3">
               <input type="text" class="form-control" value="<?= $host->created_at ?>" readonly>
-              <a href="/user/hosting/invoices/<?= $host->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.archives') ?></a>
+              <a href="/user/host/invoices/<?= $host->id ?>" class="btn btn-outline-secondary"><?= lang('Interface.archives') ?></a>
             </div>
-            <div><?= lang('Hosting.expiryDate') ?></div>
+            <div><?= lang('Host.expiryDate') ?></div>
             <div class="input-group mb-3">
               <input type="text" class="form-control" value="<?= $host->expiry_at ?>" readonly>
-              <a href="/user/hosting/upgrade/<?= $host->id ?>#extend" class="btn btn-outline-secondary"><?= lang('Interface.extend') ?></a>
+              <a href="/user/host/upgrade/<?= $host->id ?>#extend" class="btn btn-outline-secondary"><?= lang('Interface.extend') ?></a>
             </div>
           </div>
         </div>
@@ -71,24 +71,24 @@
                 </div>
                 <div class="col-12 col-lg-9">
                   <div class="progress my-3">
-                    <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * $stat->quota_user / $plan->disk_bytes ?>%"></div>
-                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: <?= 100 * $stat->quota_db / $plan->disk_bytes ?>%"></div>
-                    <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: <?= 100 * ($stat->quota_server - $stat->quota_user - $stat->quota_db) / $plan->disk_bytes ?>%"></div>
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: <?= 100 * $stat->quota_user / $plan->disk_bytes ?>%"></div>
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: <?= 100 * $stat->quota_db / $plan->disk_bytes ?>%"></div>
+                    <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * ($plan->disk_bytes - $stat->quota_server) / $plan->disk_bytes ?>%"></div>
                   </div>
                 </div>
                 <div class="col">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($plan->disk_bytes) ?></div>
                   <div class="text-black">Total</div>
                 </div>
-                <div class="col text-primary">
+                <div class="col text-danger">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($stat->quota_user) ?></div>
                   <div>Files</div>
                 </div>
-                <div class="col text-success">
+                <div class="col text-warning">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($stat->quota_db) ?></div>
                   <div>Database</div>
                 </div>
-                <div class="col text-muted">
+                <div class="col text-primary">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($plan->disk_bytes - $stat->quota_server) ?></div>
                   <div>Kosong</div>
                 </div>
@@ -144,8 +144,8 @@
       </div>
     </div>
     <div class="d-flex mb-3">
-      <a href="/user/hosting" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
-      <a href="/user/hosting/delete/<?= $host->id ?>" class="mt-3 ml-auto btn btn-danger"><?= lang('Hosting.deleteHost') ?></a>
+      <a href="/user/host" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
+      <a href="/user/host/delete/<?= $host->id ?>" class="mt-3 ml-auto btn btn-danger"><?= lang('Host.deleteHost') ?></a>
     </div>
   </div>
   <script id="bandwidths" type="application/json">

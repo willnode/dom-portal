@@ -56,12 +56,12 @@ class User extends BaseController
 
 	public function index()
 	{
-		return $this->response->redirect('/user/hosting');
+		return $this->response->redirect('/user/host');
 	}
 
-	protected function listHosting()
+	protected function listHost()
 	{
-		return view('user/hosting/list', [
+		return view('user/host/list', [
 			'list' => (new HostModel())->atLogin($this->login->id)->find(),
 			'page' => 'hosting',
 		]);
@@ -81,7 +81,7 @@ class User extends BaseController
 		$liquid['invoice_option'] = 'only_add';
 		return (new LiquidRegistrar())->issuePurchaseDomain($liquid);
 	}
-	protected function createHosting()
+	protected function createHost()
 	{
 		$count = $this->db->table('hosts')->where('login_id', $this->login->id)->countAllResults();
 		$ok = $count < ($this->login->trustiness === 0 ? 1 : ($this->login->trustiness * 5));
@@ -165,14 +165,14 @@ class User extends BaseController
 						$payment->metadata = $metadata;
 					} else {
 						$this->request->setMethod('get');
-						return $this->createHosting();
+						return $this->createHost();
 					}
 				} else {
 					// Free plan. Just create
 					$hosting->status = $data['template'] ? 'starting' : 'active';
 					$hosting->expiry_at = date('Y-m-d H:i:s', strtotime("+2 months", \time()));
 					$hosting->domain = $hosting->username . $server->domain;
-					(new VirtualMinShell())->createHosting(
+					(new VirtualMinShell())->createHost(
 						$hosting->username,
 						$hosting->password,
 						$this->login->email,
@@ -199,11 +199,11 @@ class User extends BaseController
 							$data['template']
 						);
 					}
-					return $this->response->redirect('/user/hosting/invoices/' . $id);
+					return $this->response->redirect('/user/host/invoices/' . $id);
 				}
 			}
 		}
-		return view('user/hosting/create', [
+		return view('user/host/create', [
 			'plans' => (new PlanModel())->find(),
 			'servers' => (new ServerModel())->find(),
 			'schemes' => (new SchemeModel())->find(),
@@ -215,7 +215,7 @@ class User extends BaseController
 		]);
 	}
 	/** @param Host $host */
-	protected function upgradeHosting($host)
+	protected function upgradeHost($host)
 	{
 		if ($this->request->getMethod() === 'post') {
 			if (!($current = $host->purchase) && $_POST['plan'] === '1') {
@@ -223,7 +223,7 @@ class User extends BaseController
 				// Just expand the expiry time and do nothing else.
 				$host->expiry_at = date('Y-m-d H:i:s', strtotime("+2 months", \time()));
 				(new HostModel())->save($host);
-				return $this->response->redirect('/user/hosting/invoices/' . $host->id);
+				return $this->response->redirect('/user/host/invoices/' . $host->id);
 			}
 			// Anything goes out of rule... nice try hackers.
 			$mode = $_POST['mode'] ?? '';
@@ -296,9 +296,9 @@ class User extends BaseController
 			$payment->metadata = $metadata;
 			$payment->host_id = $host->id;
 			(new PurchaseModel())->save($payment);
-			return $this->response->redirect('/user/hosting/invoices/' . $host->id);
+			return $this->response->redirect('/user/host/invoices/' . $host->id);
 		}
-		return view('user/hosting/upgrade', [
+		return view('user/host/upgrade', [
 			'data' => $host,
 			'purchase' => $host->purchase,
 			'liquid' => (new LiquidModel())->atLogin($this->login->id),
@@ -307,18 +307,18 @@ class User extends BaseController
 		]);
 	}
 	/** @param Host $host */
-	protected function detailHosting($host)
+	protected function detailHost($host)
 	{
-		return view('user/hosting/detail', [
+		return view('user/host/detail', [
 			'host' => $host,
 			'plan' => $host->plan,
 			'stat' => $host->stat,
 		]);
 	}
-	protected function seeHosting($host)
+	protected function seeHost($host)
 	{
 		$shown = ($_GET['show'] ?? '') === 'password';
-		return view('user/hosting/see', [
+		return view('user/host/see', [
 			'id' => $host->id,
 			'slave' => $host->server->alias,
 			'user' => $host->username,
@@ -330,7 +330,7 @@ class User extends BaseController
 	}
 
 	/** @param Host $host */
-	protected function dnsHosting($host)
+	protected function dnsHost($host)
 	{
 		if ($this->request->getMethod() === 'post') {
 			$domain = $host->domain;
@@ -340,12 +340,12 @@ class User extends BaseController
 			$heads = dns_get_record($domain, DNS_A | DNS_TXT | DNS_CNAME | DNS_MX | DNS_NS);
 			return $this->response->setJSON($heads);
 		}
-		return view('user/hosting/dns', [
+		return view('user/host/dns', [
 			'host' => $host
 		]);
 	}
 	/** @param Host $host */
-	protected function sslHosting($host)
+	protected function sslHost($host)
 	{
 		if ($this->request->getMethod() === 'post') {
 			$t = [0, 0, 0, 0];
@@ -368,12 +368,12 @@ class User extends BaseController
 			}
 			return $this->response->setJSON($t);
 		}
-		return view('user/hosting/ssl', [
+		return view('user/host/ssl', [
 			'host' => $host
 		]);
 	}
 	/** @param Host $host */
-	protected function renameHosting($host)
+	protected function renameHost($host)
 	{
 		if ($this->request->getMethod() === 'post' && $host->status === 'active') {
 			if (!$this->validate([
@@ -383,7 +383,7 @@ class User extends BaseController
 			}
 			$username = strtolower($_POST['username']);
 			if (array_search($username, (new BannedNames())->names) !== FALSE) return;
-			(new VirtualMinShell())->renameHosting(
+			(new VirtualMinShell())->renameHost(
 				$host->domain,
 				$host->server->alias,
 				$username
@@ -398,12 +398,12 @@ class User extends BaseController
 			$host->username = $username;
 			(new HostModel())->save($host);
 		}
-		return view('user/hosting/rename', [
+		return view('user/host/rename', [
 			'host' => $host,
 		]);
 	}
 	/** @param Host $host */
-	protected function cnameHosting($host)
+	protected function cnameHost($host)
 	{
 		if ($this->request->getMethod() === 'post' && !$host->liquid_id && $host->plan_id !== 1 && $host->status === 'active') {
 			if (isset($_POST['cname'])) {
@@ -422,7 +422,7 @@ class User extends BaseController
 				} else if (strpos($domain, $server->domain) !== false) {
 					return; // Nice try, hackers.
 				}
-				(new VirtualMinShell())->cnameHosting(
+				(new VirtualMinShell())->cnameHost(
 					$host->domain,
 					$host->alias,
 					$domain
@@ -437,23 +437,23 @@ class User extends BaseController
 			}
 			return redirect()->back();
 		}
-		return view('user/hosting/cname', [
+		return view('user/host/cname', [
 			'host' => $host,
 		]);
 	}
-	protected function deployesHosting($host)
+	protected function deployesHost($host)
 	{
 		if ($this->request->getMethod() === 'post' && isset($_POST['template'])) {
 			(new TemplateDeployer())->schedule($host->id, $host->domain, $_POST['template']);
-			return $this->response->redirect('/user/hosting/deploys/' . $host->id);
+			return $this->response->redirect('/user/host/deploys/' . $host->id);
 		}
-		return view('user/hosting/deployes', [
+		return view('user/host/deployes', [
 			'host' => $host,
 			'deploys' => (new HostDeploysModel())->atHost($host->id)->find(),
 		]);
 	}
 	/** @param Host $host */
-	protected function invoicesHosting($host)
+	protected function invoicesHost($host)
 	{
 		$history = (new PurchaseModel())->atHost($host->id)->descending()->find();
 		if ($this->request->getMethod() === 'post' && !empty($action = $_POST['action']) && $host->purchase_status === 'pending') {
@@ -468,7 +468,7 @@ class User extends BaseController
 					$this->db->table('hosting')->delete([
 						'id' => $host->id
 					]);
-					return $this->response->redirect('user/hosting');
+					return $this->response->redirect('user/host');
 				} else {
 					$this->db->table('purchase')->delete([
 						'purchase_id' => $host->purchase_id
@@ -479,13 +479,13 @@ class User extends BaseController
 						'purchase_active' => 2,
 						'purchase_hosting' => $host->id,
 					]);
-					return $this->response->redirect('/user/hosting/invoices/' . $host->id);
+					return $this->response->redirect('/user/host/invoices/' . $host->id);
 				}
 			} else if ($action === 'pay') {
 				$pay = (new PaymentGate())->createPayment(
 					$host->purchase_id,
 					$host->purchase_price,
-					"Hosting $host->plan_alias $host->purchase_years Tahun" . ($host->purchase_liquid ? " dengan domain $host->domain_name" : ""),
+					"Host $host->plan_alias $host->purchase_years Tahun" . ($host->purchase_liquid ? " dengan domain $host->domain_name" : ""),
 					$host->purchase_challenge
 				);
 				if ($pay && isset($pay->sessionID)) {
@@ -493,61 +493,61 @@ class User extends BaseController
 						$this->request->config->paymentURL . $pay->sessionID
 					);
 				}
-				return $this->response->redirect('/user/hosting/invoices/' . $host->id);
+				return $this->response->redirect('/user/host/invoices/' . $host->id);
 			}
 		}
-		return view('user/hosting/invoices', [
+		return view('user/host/invoices', [
 			'host' => $host,
 			'current' => $host->purchase,
 			'history' => $history,
 		]);
 	}
 	/** @param Host $host */
-	protected function deleteHosting($host)
+	protected function deleteHost($host)
 	{
 		if ($this->request->getMethod() === 'post' && $host->plan_id == 1 && ($_POST['wordpass'] ?? '') === $host->username) {
 			(new VirtualMinShell)->removeFromServerDNS($host->domain);
-			(new VirtualMinShell())->deleteHosting($host->domain, $host->server->alias);
+			(new VirtualMinShell())->deleteHost($host->domain, $host->server->alias);
 			(new HostModel())->delete($host->id);
 			log_message('notice', VirtualMinShell::$output);
-			return $this->response->redirect('/user/hosting/');
+			return $this->response->redirect('/user/host/');
 		}
-		return view('user/hosting/delete', [
+		return view('user/host/delete', [
 			'host' => $host,
 		]);
 	}
-	public function hosting($page = 'list', $id = 0)
+	public function host($page = 'list', $id = 0)
 	{
 		if ($page === 'list') {
-			return $this->listHosting();
+			return $this->listHost();
 		} else if ($page === 'create') {
-			return $this->createHosting();
+			return $this->createHost();
 		} else {
 			$host = (new HostModel())->atLogin($this->login->id)->find($id);
 			if ($host) {
 				if ($page === 'detail') {
-					return $this->detailHosting($host);
+					return $this->detailHost($host);
 				} else if ($page === 'rename') {
-					return $this->renameHosting($host);
+					return $this->renameHost($host);
 				} else if ($page === 'cname') {
-					return $this->cnameHosting($host);
+					return $this->cnameHost($host);
 				} else if ($page === 'deploys') {
-					return $this->deployesHosting($host);
+					return $this->deployesHost($host);
 				} else if ($page === 'see') {
-					return $this->seeHosting($host);
+					return $this->seeHost($host);
 				} else if ($page === 'ssl') {
-					return $this->sslHosting($host);
+					return $this->sslHost($host);
 				} else if ($page === 'dns') {
-					return $this->dnsHosting($host);
+					return $this->dnsHost($host);
 				} else if ($page === 'upgrade') {
-					return $this->upgradeHosting($host);
+					return $this->upgradeHost($host);
 				} else if ($page === 'invoices') {
-					return $this->invoicesHosting($host);
+					return $this->invoicesHost($host);
 				} else if ($page === 'delete') {
-					return $this->deleteHosting($host);
+					return $this->deleteHost($host);
 				}
 			} else {
-				return $this->response->redirect('/user/hosting');
+				return $this->response->redirect('/user/host');
 			}
 		}
 		throw new PageNotFoundException();
@@ -686,7 +686,7 @@ class User extends BaseController
 					return ($_GET['then'] ?? '') !== 'reload' ? $s :
 						'<!doctype html><body><script>window.opener.location.reload();window.close();</script></body>';
 				}
-				return view('user/hosting/output', [
+				return view('user/host/output', [
 					'output' => json_encode($data),
 					'link' => '/user/domain/',
 				]);

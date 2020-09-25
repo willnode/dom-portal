@@ -11,11 +11,11 @@
       <div class="card-body">
         <?php if (($_GET['status'] ?? '') === 'return') : ?>
           <div class="alert alert-primary">
-            <?= lang('Hosting.purchasedHint') ?>
+            <?= lang('Host.purchasedHint') ?>
           </div>
         <?php endif ?>
-        <a class="btn btn-primary my-2 float-sm-right" href="/user/hosting/create"><?= lang('Hosting.newOrder') ?></a>
-        <h1 class="mb-4"><?= lang('Hosting.listTitle') ?></h1>
+        <a class="btn btn-primary my-2 float-sm-right" href="/user/host/create"><?= lang('Host.newOrder') ?></a>
+        <h1 class="mb-4"><?= lang('Host.listTitle') ?></h1>
         <hr>
         <div class="table-responsive">
           <table class="table table-striped">
@@ -30,7 +30,7 @@
             <tbody>
               <?php foreach ($list as $host) : ?>
                 <tr>
-                  <td><a href="/user/hosting/detail/<?= $host->id ?>"><?= $host->domain ?></a></td>
+                  <td><a href="/user/host/detail/<?= $host->id ?>"><?= $host->domain ?></a></td>
                   <td><?= $host->plan->alias ?></td>
                   <td><?= ucfirst($host->status) ?></td>
                   <td><?= $host->expiry_at->humanize() ?> &mdash; <?= $host->expiry_at->toDateString() ?></td>
@@ -39,7 +39,7 @@
               <?php if (count($list) === 0) : ?>
                 <tr>
                   <td colspan="4" class="p-2 text-center small text-muted">
-                    <?= lang('Hosting.emptyList') ?>
+                    <?= lang('Host.emptyList') ?>
                   </td>
                 </tr>
                 <?php endif ?>

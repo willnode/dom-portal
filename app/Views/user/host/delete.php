@@ -6,7 +6,7 @@
 <body>
 	<?= view('user/navbar') ?>
 	<div class="container text-center" style="max-width: 576px;">
-		<h1 class="mb-3">Menghapus Hosting</h1>
+		<h1 class="mb-3">Menghapus Host</h1>
 		<?php if ($host->plan_id === 1) : ?>
 			<div class="card">
 				<div class="card-body">
@@ -18,7 +18,7 @@
 					<p>"<?= $host->username ?>"</p>
 					<form method="POST">
 						<input type="text" name="wordpass" class="form-control" required>
-						<input type="submit" value="Hapus Hosting" class="mt-2 form-control btn btn-danger">
+						<input type="submit" value="Hapus Host" class="mt-2 form-control btn btn-danger">
 					</form>
 				</div>
 			</div>
@@ -27,7 +27,7 @@
 				Anda tidak dapat menghapus hosting ini selama masa belum menyentuh masa tanggung.
 			</div>
 		<?php endif ?>
-		<a href="/user/hosting/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary">Kembali</a>
+		<a href="/user/host/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary">Kembali</a>
 	</div>
 
 </body>

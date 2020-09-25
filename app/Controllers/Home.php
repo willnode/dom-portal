@@ -83,7 +83,7 @@ class Home extends BaseController
 					$plan = (new PlanModel())->find($metadata->plan);
 					if ($host->status === 'pending') {
 						// First time creation
-						(new VirtualMinShell())->createHosting(
+						(new VirtualMinShell())->createHost(
 							$host->username,
 							$host->password,
 							$login->email,
@@ -101,11 +101,11 @@ class Home extends BaseController
 						}
 					} else {
 						// Re-enable and upgrade
-						(new VirtualMinShell())->enableHosting(
+						(new VirtualMinShell())->enableHost(
 							$host->domain,
 							$host->server->alias
 						);
-						(new VirtualMinShell())->upgradeHosting(
+						(new VirtualMinShell())->upgradeHost(
 							$host->domain,
 							$host->server->alias,
 							$host->plan->alias,
@@ -127,14 +127,14 @@ class Home extends BaseController
 				if ($metadata->addons) {
 					$host->addons += $metadata->addons * 1024;
 					// Add more bandwidth
-					(new VirtualMinShell())->adjustBandwidthHosting(
+					(new VirtualMinShell())->adjustBandwidthHost(
 						($host->addons + ($plan->net * 1024 / 12)),
 						$host->domain,
 						$host->server->alias
 					);
 					if (!$metadata->plan) {
 						// Re-enable (in case disabled by bandwidth)
-						(new VirtualMinShell())->enableHosting(
+						(new VirtualMinShell())->enableHost(
 							$host->domain,
 							$host->server->alias
 						);
@@ -146,10 +146,10 @@ class Home extends BaseController
 					(new HostModel())->save($host);
 				} {
 					// Email
-					$desc = ($metadata->liquid ? lang('Hosting.formatInvoiceAlt', [
+					$desc = ($metadata->liquid ? lang('Host.formatInvoiceAlt', [
 						$metadata->plan,
 						$data->domain,
-					]) : lang('Hosting.formatInvoice', [
+					]) : lang('Host.formatInvoice', [
 						$metadata->plan,
 					]));
 
@@ -227,7 +227,7 @@ class Home extends BaseController
 
 	public function import()
 	{
-		return $this->response->redirect('/user/hosting/create?from=' . urlencode($this->request->getGet('from')));
+		return $this->response->redirect('/user/host/create?from=' . urlencode($this->request->getGet('from')));
 	}
 
 	public function logout()

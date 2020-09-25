@@ -33,7 +33,7 @@ class LiquidRegistrar
 			$type = ($json->type ?? '');
 			if ($type == 'unauthorized' || $type == 'invalid_request') {
 				log_message('error', 'DOMAIN: '.$route.'\n'. $response);
-				echo view('user/hosting/output', [
+				echo view('user/host/output', [
 					'output' => $type == 'unauthorized' ?
 						'The registrar service was busy. Try again later in 15 minutes.' :
 						json_encode($json),

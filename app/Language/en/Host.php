@@ -17,7 +17,7 @@
 	'addonsPrice' => 'Add-ons Price',
 	'hostingDuration' => 'Host Duration',
 	'hostingCost' => 'Host Cost',
-	'oldHosting' => 'Old Host',
+	'oldHost' => 'Old Host',
 	'transactionCost' => 'Transaction Cost',
 	'totalPayment' => 'Total Payment',
 	'expirationDate' => 'Expiration Date',

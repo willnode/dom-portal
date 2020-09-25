@@ -65,7 +65,7 @@ class CronJob extends BaseCommand
                         // Roll over time
                         log_message('notice', 'ROLLOVER ' . $newStat['domain'] . ': ' . json_encode([$stat->quota_net, $newStat['quota_net']]));
                         $host->addons = max(0, $host->addons - (($newStat['quota_net'] / 1024 / 1024) - ($plan->net * 1024 / 12)));
-                        (new VirtualMinShell())->adjustBandwidthHosting(
+                        (new VirtualMinShell())->adjustBandwidthHost(
                             ($host->addons + ($plan->net * 1024 / 12)),
                             $host->domain,
                             $server->alias
@@ -81,28 +81,28 @@ class CronJob extends BaseCommand
                 if (!$stat->disabled) {
                     if ($overDisk) {
                         // Disable
-                        (new VirtualMinShell())->disableHosting($host->domain, $server->alias, 'Running out Disk Space');
+                        (new VirtualMinShell())->disableHost($host->domain, $server->alias, 'Running out Disk Space');
                         $host->status = 'suspended';
                     } else if ($overBw) {
                         // Disable
-                        (new VirtualMinShell())->disableHosting($host->domain, $server->alias, 'Running out Bandwidth');
+                        (new VirtualMinShell())->disableHost($host->domain, $server->alias, 'Running out Bandwidth');
                         $host->status = 'suspended';
                     } else if ($expired) {
                         // Disable
-                        (new VirtualMinShell())->disableHosting($host->domain, $server->alias, 'host expired');
+                        (new VirtualMinShell())->disableHost($host->domain, $server->alias, 'host expired');
                         $host->status = 'expired';
                     }
                 } else {
                     if ((strtotime('-2 weeks', time()) >= $host->expiry_at->getTimestamp()) || ($stat->quota_server > $plan->disk * 1024 * 1024 * 3)) {
                         if ($host->plan_id === 1) {
                             // Paid hosts should be immune from this, in case error logic happens...
-                            (new VirtualMinShell())->deleteHosting($host->domain, $server->alias);
+                            (new VirtualMinShell())->deleteHost($host->domain, $server->alias);
                             $host->status = 'removed';
                         }
                         // TODO: Deleted email
                     } else if (!($expired || $overDisk || $overBw)) {
                         // Enable
-                        (new VirtualMinShell())->enableHosting($host->domain, $server->alias);
+                        (new VirtualMinShell())->enableHost($host->domain, $server->alias);
                         $host->status = 'active';
                     }
                 }
