@@ -162,7 +162,7 @@ class User extends BaseController
 						$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 						$hosting->status = 'pending';
 						$hosting->expiry_at = $metadata->expiration;
-						$payment->metadata = json_encode($metadata->toRawArray());
+						$payment->metadata = $metadata->toRawArray();
 					} else {
 						$this->request->setMethod('get');
 						return $this->createHost();
@@ -293,7 +293,7 @@ class User extends BaseController
 			}
 			$metadata->price += ['idr' => 4000, 'usd' => 0.4][$metadata->price_unit] * $metadata->addons;
 			$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
-			$payment->metadata = $metadata;
+			$payment->metadata = $metadata->toRawArray();
 			$payment->host_id = $host->id;
 			(new PurchaseModel())->save($payment);
 			return $this->response->redirect('/user/host/invoices/' . $host->id);
