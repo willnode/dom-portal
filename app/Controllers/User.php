@@ -158,8 +158,8 @@ class User extends BaseController
 						}
 						$metadata->expiration = $hosting->expiry_at = date('Y-m-d H:i:s', strtotime("+$metadata->years years", \time()));
 						$metadata->price += $plan->price_local * $_POST['years'];
-						$metadata->price += ['idr' => 4000, 'usd' => 0.32][$metadata->price_unit] * $metadata->addons;
-						$metadata->price += ['idr' => 5000, 'usd' => 0.4][$metadata->price_unit];
+						$metadata->price += ['idr' => 4000, 'usd' => 0.4][$metadata->price_unit] * $metadata->addons;
+						$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 						$hosting->status = 'pending';
 						$hosting->expiry_at = $metadata->expiration;
 						$payment->metadata = json_encode($metadata->toRawArray());
@@ -291,8 +291,8 @@ class User extends BaseController
 				$metadata->years = max(1, ceil($host->expiry_at->difference(now())->getYears()));
 				$metadata->price = ($plan->price_local - $host->plan->price_local) * $metadata->years + 5000;
 			}
-			$metadata->price += ['idr' => 4000, 'usd' => 0.32][$metadata->price_unit] * $metadata->addons;
-			$metadata->price += ['idr' => 5000, 'usd' => 0.4][$metadata->price_unit];
+			$metadata->price += ['idr' => 4000, 'usd' => 0.4][$metadata->price_unit] * $metadata->addons;
+			$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 			$payment->metadata = $metadata;
 			$payment->host_id = $host->id;
 			(new PurchaseModel())->save($payment);

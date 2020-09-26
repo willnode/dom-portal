@@ -329,11 +329,11 @@
       function recalculate() {
         // Get values
         var tip = {
-          'usd': 0.4,
+          'usd': 0.5,
           'idr': 5000
         } [currency];
         var bww = {
-          'usd': 0.32,
+          'usd': 0.4,
           'idr': 4000
         } [currency];
         var form = window.box;
