@@ -37,7 +37,7 @@ class Plan extends Entity
 
     public function getPriceLocal()
     {
-        return $this->attributes['price_'.lang('Interface.currency')];
+        return intval($this->attributes['price_'.lang('Interface.currency')]);
     }
 
     public function getNetMonthlyBytes()

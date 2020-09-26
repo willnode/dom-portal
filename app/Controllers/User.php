@@ -162,7 +162,7 @@ class User extends BaseController
 						$metadata->price += ['idr' => 5000, 'usd' => 0.4][$metadata->price_unit];
 						$hosting->status = 'pending';
 						$hosting->expiry_at = $metadata->expiration;
-						$payment->metadata = $metadata;
+						$payment->metadata = json_encode($metadata->toRawArray());
 					} else {
 						$this->request->setMethod('get');
 						return $this->createHost();
@@ -190,7 +190,7 @@ class User extends BaseController
 				// Send to Database
 				if ($id = (new HostModel())->insert($hosting)) {
 					if (isset($payment)) {
-						$payment->hosting_id = $id;
+						$payment->host_id = $id;
 						(new PurchaseModel())->insert($payment);
 					} else if ($data['template']) {
 						(new TemplateDeployer())->schedule(
