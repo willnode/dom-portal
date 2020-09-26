@@ -15,9 +15,9 @@
             <div class="input-group mb-3">
               <h3><?= ucfirst($host->status) ?></h3>
             </div>
-            <?php if ($current && $current->status === 'pending') : ?>
+            <?php if ($host && $host->status === 'pending') : ?>
               <?php if (lang('Interface.code') == 'en') : ?>
-                <p><i>Please <a href="https://api.whatsapp.com/send?phone=6289514631927&text=Hello,+I+want+to+proceed+my+purchase+with+ID+<?= $data->purchase_id ?>">request support</a> to finish payment.</i></p>
+                <p><i>Please <a href="mailto:support@domcloud.id?subject=Hello,+I+want+to+proceed+my+purchase+with+ID+<?= $data->purchase_id ?>">request support</a> to finish payment.</i></p>
               <?php else : ?>
                 <form method="post" class="my-2">
                   <input type="hidden" name="action" value="pay">
@@ -41,7 +41,7 @@
                 <input type="submit" class="btn btn-danger" value="<?= lang('Host.cancelInvoice') ?>" onclick="return confirm('<?= lang('Host.cancelInvoceConfirm') ?>')">
               </form>
             <?php elseif ($host->status === 'starting') : ?>
-              <p>Host anda sedang disiapkan. Tunggulah beberapa menit kemudian. </p>
+              <p><?= lang('Host.preparingHint') ?> </p>
             <?php endif ?>
           </div>
         </div>

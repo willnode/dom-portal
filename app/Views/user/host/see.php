@@ -30,11 +30,12 @@
         </div>
         <div class="col-md-6 col-xl-3">
           <div class="card-body d-flex flex-column h-100">
-            <h2>MySQL</h2>
+            <h2>MySQL / PostgreSQL</h2>
             <p class="flex-grow-1">Hostname:<br><b><?= $slave ?>.domcloud.id</b><br>
               Username:<br><b><?= esc($user) ?></b><br>
               Password:<br><b><?= $pass ?></b></p>
             <p><small><a href="https://phpmyadmin.dom.my.id/" target="_blank" rel="noreferrer">Login ke phpMyAdmin</a></small></p>
+            <p><small><a href="https://phppgadmin.dom.my.id/" target="_blank" rel="noreferrer">Login ke phpPgAdmin</a></small></p>
             <p><small><a href="https://panduan.domcloud.id/manage-db.html">Panduan Mengisi Database</a></small></p>
           </div>
         </div>

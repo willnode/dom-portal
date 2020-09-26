@@ -6,15 +6,14 @@
 <body>
 	<?= view('user/navbar') ?>
 	<div class="container text-center" style="max-width: 576px;">
-		<h1 class="mb-3">Menghapus Host</h1>
+		<h1 class="mb-3"><?= lang('Host.deleteTitle') ?></h1>
 		<?php if ($host->plan_id === 1) : ?>
 			<div class="card">
 				<div class="card-body">
 					<div class="alert alert-danger">
-						PERHATIAN! Penghapusan hosting bersifat permanen dan
-						kami tidak dapat mengembalikan aksi tersebut.
+						<?= lang('Host.deleteWarn') ?>
 					</div>
-					<p>Mohon ketik username hosting untuk menyetujui penghapusan hosting.</p>
+					<p><?= lang('Host.deleteHint') ?></p>
 					<p>"<?= $host->username ?>"</p>
 					<form method="POST">
 						<input type="text" name="wordpass" class="form-control" required>
@@ -24,10 +23,10 @@
 			</div>
 		<?php else : ?>
 			<div class="alert alert-danger">
-				Anda tidak dapat menghapus hosting ini selama masa belum menyentuh masa tanggung.
+			<p><?= lang('Host.deleteDisabled') ?></p>
 			</div>
 		<?php endif ?>
-		<a href="/user/host/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary">Kembali</a>
+		<a href="/user/host/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back')?></a>
 	</div>
 
 </body>

@@ -9,10 +9,10 @@
     <h1 class="mb-3 d-flex">
       <div><?= lang('Host.manageHost') ?></div>
 
-      <a href="/user/host/see/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success ml-auto">Cek Login</a>
-      <a href="/user/host/dns/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek DNS</a>
-      <a href="/user/host/ssl/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek HTTPS</a>
-      <a href="/user/host/deploys/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success">Cek Deploy</a>
+      <a href="/user/host/see/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success ml-auto"><?= lang('Host.check', ['Login']) ?></a>
+      <a href="/user/host/dns/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success"><?= lang('Host.check', ['DNS']) ?></a>
+      <a href="/user/host/ssl/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success"><?= lang('Host.check', ['SSL']) ?></a>
+      <a href="/user/host/deploys/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success"><?= lang('Host.check', ['Deploy']) ?></a>
       <a href="/user/host/upgrade/<?= $host->id ?>" class="mt-3 btn btn-primary">Upgrade</a>
   </h1>
     <div class="row">
@@ -137,7 +137,7 @@
         <?php else : ?>
           <div class="card">
             <div class="card-body">
-              <p class="text-center text-muted">Data penggunaan hosting akan muncul disini. Tunggulah satu jam kemudian agar datanya muncul.</p>
+              <p class="text-center text-muted"><?= lang('Host.waitForDataHint') ?></p>
             </div>
           </div>
         <?php endif ?>

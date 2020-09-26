@@ -7,9 +7,9 @@
   <?= view('user/navbar') ?>
   <?php
 
-    use App\Models\PlanModel;
+  use App\Models\PlanModel;
 
-if ($ok) : ?>
+  if ($ok) : ?>
     <div class="container-fluid">
       <h1><?= lang('Host.newHost') ?></h1>
       <?= $validation ? $validation->listErrors() : '' ?>
@@ -392,15 +392,14 @@ if ($ok) : ?>
     </script>
   <?php else : ?>
     <div class="container">
-    <div class="alert alert-danger">
-      <?php if ($trustiness === 0) : ?>
-      Maaf, limit jumlah hosting anda tercapai, anda harus mengkonfirmasi email terlebih dahulu
-      <?php else : ?>
-      Maaf, limit jumlah hosting anda tercapai, paling tidak anda
-      harus punya hosting dengan paket <?= (new PlanModel())->find($trustiness + 1)->alias ?> sebelum lanjut.
-      <?php endif ?>
-    </div>
-    <a href="<?= base_url('user/host') ?>" class="btn btn-secondary"><?= lang('Interface.back') ?></a>
+      <div class="alert alert-danger">
+        <?php if ($trustiness === 0) : ?>
+          <?= lang('Host.createLimitVerEmail') ?>
+        <?php else : ?>
+          <?= lang('Host.createLimitUpgrade', [(new PlanModel())->find($trustiness + 1)->alias]) ?>
+        <?php endif ?>
+      </div>
+      <a href="<?= base_url('user/host') ?>" class="btn btn-secondary"><?= lang('Interface.back') ?></a>
     </div>
   <?php endif ?>
 </body>

@@ -1,4 +1,5 @@
 <?php return [
+
 	'listTitle' => 'Daftar Hosting',
 	'newOrder' => 'Order Baru',
 	'portalUsername' => 'Username Portal',
@@ -44,7 +45,13 @@
 	'findNeedData' => 'Kami tidak dapat memproses pembelian domain sebelum anda mengisi data yang kami butuhkan.',
 	'findNeedDataAction' =>  'Isi sekarang',
 	'useExistingHint' => 'Anda perlu mengarahkan domain setelah ini.',
+	'preparingHint' => 'Host anda sedang disiapkan. Tunggulah beberapa menit kemudian.',
+	'createLimitVerEmail' => 'Maaf, limit jumlah hosting anda tercapai, anda harus mengkonfirmasi email terlebih dahulu',
+	'createLimitUpgrade' => 'Maaf, limit jumlah hosting anda tercapai, paling tidak anda harus punya hosting dengan paket {0} sebelum lanjut.',
+	'waitForDataHint' => 'Data penggunaan hosting akan muncul disini. Tunggulah satu jam kemudian agar datanya muncul.',
+	'waitingDeployHint' => 'Operasi masih belum selesai. Akan dibatalkan {0}',
 
+	'check' => 'Cek {0}',
 	'manageHost' => 'Kelola Hosting',
 	'slaveID' => 'Slave ID',
 	'IPAddress' => 'Alamat IP',
@@ -75,4 +82,9 @@
 	'formatInvoice' => 'Pembayaran Hosting Paket {0}',
 	'formatInvoiceAlt' => 'Pembayaran Hosting Paket {0} dengan domain {1}',
 	'formatInvoiceSum' => ' seharga {1} ',
+
+	'deleteTitle' => 'Menghapus Hosting',
+	'deleteWarn' => 'PERHATIAN! Penghapusan hosting bersifat permanen dan kami tidak dapat mengembalikan aksi tersebut.',
+	'deleteHint' => 'Mohon ketik username hosting untuk menyetujui penghapusan hosting.',
+	'deleteDisabled' => 'Anda tidak dapat menghapus hosting ini selama belum menyentuh masa tanggung.',
 ];

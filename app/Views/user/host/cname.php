@@ -7,7 +7,7 @@
   <?= view('user/navbar') ?>
   <div class="container">
     <h1 class="mb-3">Mengganti Nama Domain Hosting</h1>
-    <?php if ($host->liquid_id || $host->status !== 'active') : ?>
+    <?php if ($host->liquid_id || $host->status !== 'active' || $host->plan_id === 1) : ?>
       <div class="alert alert-danger">
         Mengganti Domain hosting tidak tersedia apabila belum terbayar atau sedang menggunakan hosting paket Free.
       </div>

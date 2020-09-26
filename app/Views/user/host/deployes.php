@@ -10,12 +10,7 @@
       <h1>Deployment Host</h1>
       <a href="/user/host/detail/<?= $host->id ?>" class="mt-3 ml-auto btn btn-secondary">Kembali</a>
     </div>
-    <?php
-
-                                    use CodeIgniter\I18n\Time;
-
-$i = 0;
-    foreach (array_reverse($deploys) as $deploy) : ?>
+    <?php $i = 0; foreach (array_reverse($deploys) as $deploy) : ?>
       <form class="card" method="POST">
         <div class="card-body">
           <details <?= $i++ === 0 ? 'open' : '' ?>>
@@ -29,7 +24,7 @@ $i = 0;
                   <pre style="white-space: pre-wrap;"><?= $deploy->result ?></pre>
                 <?php else : ?>
                   <p class="text-center">
-                    Operasi masih belum selesai. Akan dibatalkan <?= $deploy->created_at->addMinutes($host->plan_id * 5)->humanize() ?>
+                    <?= lang('Host.waitingDeployHint', [$deploy->created_at->addMinutes($host->plan_id * 5)->humanize()]) ?>
                   </p>
                 <?php endif ?>
               </div>

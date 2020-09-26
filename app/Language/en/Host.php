@@ -1,4 +1,5 @@
 <?php return [
+
 	'listTitle' => 'Hosts List',
 	'newOrder' => 'New Order',
 	'portalUsername' => 'Portal Username',
@@ -44,7 +45,13 @@
 	'findNeedData' => 'We cannot process domain purchases until you fill in the data we need.',
 	'findNeedDataAction' =>  'Fill now',
 	'useExistingHint' => 'You need to point the domain after this.',
+	'preparingHint' => 'Your host is being set up. Wait a few minutes later.',
+	'createLimitVerEmail' => 'Sorry, the limit for the number of your hosting has been reached, you must confirm your email first',
+	'createLimitUpgrade' => 'Sorry, the limit for the number of your hosting has been reached, at least you must have hosting with package {0} before continuing.',
+	'waitForDataHint' => 'Hosting usage data will appear here. Wait an hour later for the data to appear.',
+	'waitingDeployHint' => 'The operation is still not over. Will be canceled {0}',
 
+	'check' => 'Check {0}',
 	'manageHost' => 'Manage Host',
 	'slaveID' => 'Slave ID',
 	'IPAddress' => 'IP Address',
@@ -74,4 +81,9 @@
 	'formatInvoice' => 'Payment for {0} Plan Host',
 	'formatInvoiceAlt' => 'Payment for {0} Plan Host with domain {1}',
 	'formatInvoiceSum' => ' for {1} ',
+
+	'deleteTitle' => 'Delete Host',
+	'deleteWarn' => 'ATTENTION! Host deletions are permanent and we can\'t reverse the action.',
+	'deleteHint' => 'Please enter your hosting username to agree to host deletion.',
+	'deleteDisabled' => 'You cannot delete this host as long as it\'s not reached the expiry time.',
 ];
