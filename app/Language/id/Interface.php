@@ -31,6 +31,7 @@
 	'learnMore' => 'Pelajari lebih lanjut',
 	'passwordNotice' => 'Anda tidak perlu mengingat password ini',
 	'thanksForVerify' => 'Terima Kasih, email kamu sudah diverifikasi',
+	'lastUpdated' => 'Terakhir update',
 
 	'name' => 'Nama',
 	'phone' => 'Nomor HP',

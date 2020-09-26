@@ -78,7 +78,7 @@
                 </div>
                 <div class="col">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($plan->disk_bytes) ?></div>
-                  <div class="text-black">Total</div>
+                  <div class="text-black"><?= lang('Host.total')?></div>
                 </div>
                 <div class="col text-danger">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($stat->quota_user) ?></div>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="col text-primary">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($plan->disk_bytes - $stat->quota_server) ?></div>
-                  <div>Kosong</div>
+                  <div><?= lang('Host.free')?></div>
                 </div>
               </div>
               <div class="row g-0 mb-3">
@@ -106,19 +106,19 @@
                 </div>
                 <div class="col">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($host->addons_bytes + $plan->net_monthly_bytes) ?></div>
-                  <div class="text-black">Total</div>
+                  <div class="text-black"><?= lang('Host.total')?></div>
                 </div>
                 <div class="col text-danger">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes($stat->quota_net) ?></div>
-                  <div>Digunakan</div>
+                  <div><?= lang('Host.used')?></div>
                 </div>
                 <div class="col text-primary">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes(max(0, -$stat->quota_net + $plan->net_monthly_bytes)) ?></div>
-                  <div>Sisa Bulanan Paket</div>
+                  <div><?= lang('Host.remainingMonthlyPlan')?></div>
                 </div>
                 <div class="col text-success">
                   <div class="h3 font-weight-normal m-0"><?= format_bytes(min($host->addons_bytes, $host->addons_bytes - max(0, $stat->quota_net - $plan->net_monthly_bytes))) ?></div>
-                  <div>Sisa Add-Ons</div>
+                  <div><?= lang('Host.remainingAddons')?></div>
                 </div>
               </div>
               <div class="mb-3">
@@ -126,10 +126,10 @@
               </div>
               <div class="row g-0 text-muted">
                 <div class="col-6">
-                  <small> Paket <?= $plan->alias ?>, <?= format_bytes($plan->disk_bytes) ?> disk space, <?= format_bytes($plan->net_monthly_bytes) ?> data bulanan.</small>
+                  <small> <?= lang('Host.planDetail', [$plan->alias, format_bytes($plan->disk_bytes), format_bytes($plan->net_monthly_bytes)]) ?></small>
                 </div>
                 <div class="col-6 text-right">
-                  <small>Terakhir update <span title="<?=$stat->updated_at?> UTC"><?=$stat->updated_at->humanize()?></span></small>
+                  <small><?= lang('Interface.lastUpdated')?> <span title="<?=$stat->updated_at?> UTC"><?=$stat->updated_at->humanize()?></span></small>
                 </div>
               </div>
             </div>
@@ -175,7 +175,7 @@
             legend: false,
             title: {
               display: true,
-              text: 'Penggunaan Harian Bandwidth dalam MB'
+              text: '<?= lang('Host.bandwidthLegend') ?>'
             }
           }
         });

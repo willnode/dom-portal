@@ -73,7 +73,7 @@
             </table>
 
             <div class="text-muted text-right">
-              <small>Terakhir update <?= $stat_update ?> UTC</small>
+              <small><?= lang('Interface.lastUpdated')?> <?= $stat_update ?> UTC</small>
             </div>
           </div>
         </div>

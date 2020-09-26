@@ -48,6 +48,7 @@
 	'preparingHint' => 'Your host is being set up. Wait a few minutes later.',
 	'createLimitVerEmail' => 'Sorry, the limit for the number of your hosting has been reached, you must confirm your email first',
 	'createLimitUpgrade' => 'Sorry, the limit for the number of your hosting has been reached, at least you must have hosting with package {0} before continuing.',
+	'bandwidthLegend' => 'Daily Usage of Bandwidth in MB',
 	'waitForDataHint' => 'Hosting usage data will appear here. Wait an hour later for the data to appear.',
 	'waitingDeployHint' => 'The operation is still not over. Will be canceled {0}',
 
@@ -67,6 +68,12 @@
 	'administrativeOption' => 'Administrative Option',
 	'manageHostLogin' => 'Manage Host Login',
 	'deleteHost' => 'Delete Host',
+	'free' => 'Free',
+	'total' => 'Total',
+	'used' => 'Used',
+	'remainingMonthlyPlan' => 'Remaining Monthly Plan',
+	'remainingAddons' => 'Remaining Add-Ons',
+	'planDetail' => '{0} Plan, {1} disk space, {2} monthly bandwidth.',
 
 	'upgradeHost' => 'Upgrade Host',
 	'chooseUpgradeMethod' => 'Choose upgrade method',
@@ -86,4 +93,12 @@
 	'deleteWarn' => 'ATTENTION! Host deletions are permanent and we can\'t reverse the action.',
 	'deleteHint' => 'Please enter your hosting username to agree to host deletion.',
 	'deleteDisabled' => 'You cannot delete this host as long as it\'s not reached the expiry time.',
+	'cnameTitle' => 'Changing the Domain Name of Host',
+	'cnameDisabled' => 'Changing Domain hosting is not available if it has not been paid or is currently using a Freedom plan.',
+	'cnameHint' => 'You can change the main domain name hosting here. Enter the new domain name:',
+	'renameTitle' => 'Changing the Host Username',
+	'renameDisabled' => 'Changing the host username is not available if you haven\'t paid or are currently using the Freedom plan.',
+	'renameHint' => 'You can change your hosting username here. Enter the new username:',
+	'showPassword' => 'Show Password',
+	'hidePassword' => 'Hide Password',
 ];

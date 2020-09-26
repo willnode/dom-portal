@@ -50,10 +50,9 @@
       </div>
       <div class="card-body">
         <?php if ($shown) : ?>
-          <p class="text-muted">Password valid selama anda belum menggatinya secara manual dalam portal Webmin. <a href="https://domcloud.id/privacy#kata-sandi-hosting" target="_blank" rel="noopener noreferrer">Pernyataan Privasi Kami</a>.</p>
-          <a href="?" class="mt-3 btn btn-warning float-right">Sembunyikan Password</a>
+          <a href="?" class="mt-3 btn btn-warning float-right"><?= lang('Host.hidePassword')?></a>
         <?php else : ?>
-          <a href="?show=password" class="mt-3 btn btn-warning float-right">Tampilkan Password</a>
+          <a href="?show=password" class="mt-3 btn btn-warning float-right"><?= lang('Host.showPassword')?></a>
         <?php endif ?>
         <a href="/user/host/detail/<?= $id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
       </div>

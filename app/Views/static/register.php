@@ -18,7 +18,6 @@
 
         <input type="text" name="name" placeholder="<?= lang('Interface.fullName') ?>" value="<?= old('name') ?>" class="form-control mb-2">
         <input type="text" name="email" placeholder="<?= lang('Interface.activeEmail') ?>" value="<?= old('email') ?>" class="form-control mb-2">
-        <input type="text" name="phone" placeholder="<?= lang('Interface.phoneHint') ?>" value="<?= old('phone') ?>" class="form-control mb-2">
         <input type="password" name="password" placeholder="<?= lang('Interface.password') ?>" class="form-control mb-2">
         <input type="password" name="passconf" placeholder="<?= lang('Interface.passwordAgain') ?>" class="form-control mb-2">
         <div class="g-recaptcha mb-2 mx-auto" data-sitekey="<?= $recapthaSite ?>"></div>

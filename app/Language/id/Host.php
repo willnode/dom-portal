@@ -48,6 +48,7 @@
 	'preparingHint' => 'Host anda sedang disiapkan. Tunggulah beberapa menit kemudian.',
 	'createLimitVerEmail' => 'Maaf, limit jumlah hosting anda tercapai, anda harus mengkonfirmasi email terlebih dahulu',
 	'createLimitUpgrade' => 'Maaf, limit jumlah hosting anda tercapai, paling tidak anda harus punya hosting dengan paket {0} sebelum lanjut.',
+	'bandwidthLegend' => 'Penggunaan Harian Bandwidth dalam MB',
 	'waitForDataHint' => 'Data penggunaan hosting akan muncul disini. Tunggulah satu jam kemudian agar datanya muncul.',
 	'waitingDeployHint' => 'Operasi masih belum selesai. Akan dibatalkan {0}',
 
@@ -67,6 +68,12 @@
 	'administrativeOption' => 'Opsi Administratif',
 	'manageHostLogin' => 'Atur Login Hosting',
 	'deleteHost' => 'Hapus Hosting',
+	'free' => 'Kosong',
+	'total' => 'Total',
+	'used' => 'Digunakan',
+	'remainingMonthlyPlan' => 'Sisa Bulanan Paket',
+	'remainingAddons' => 'Sisa Add-Ons',
+	'planDetail' => 'Paket {0}, {1} kapasitas disk, {2} data bulanan.',
 
 	'upgradeHost' => 'Upgrade Hosting',
 	'chooseUpgradeMethod' => 'Pilih metode upgrade',
@@ -87,4 +94,12 @@
 	'deleteWarn' => 'PERHATIAN! Penghapusan hosting bersifat permanen dan kami tidak dapat mengembalikan aksi tersebut.',
 	'deleteHint' => 'Mohon ketik username hosting untuk menyetujui penghapusan hosting.',
 	'deleteDisabled' => 'Anda tidak dapat menghapus hosting ini selama belum menyentuh masa tanggung.',
+	'cnameTitle' => 'Mengganti Nama Domain Hosting',
+	'cnameDisabled' => 'Mengganti Domain hosting tidak tersedia apabila belum terbayar atau sedang menggunakan hosting paket Free.',
+	'cnameHint' => 'Anda dapat mengganti nama domain utama hosting disini. Masukkan nama domain baru: ',
+	'renameTitle' => 'Mengganti Username Hosting',
+	'renameDisabled' => 'Mengganti username hosting tidak tersedia apabila belum terbayar atau sedang menggunakan hosting paket Free.',
+	'renameHint' => 'Anda dapat mengganti Username hosting disini. Masukkan username baru: ',
+	'showPassword' => 'Tampilkan Password',
+	'hidePassword' => 'Sembunyikan Password',
 ];

@@ -810,7 +810,6 @@ class User extends BaseController
 			} else
 			if ($this->validate([
 				'name' => 'required|min_length[3]|max_length[255]',
-				'phone' => 'required|min_length[8]|max_length[16]',
 				'email' => $this->login->email_verified_at ? 'permit_empty' : 'required|valid_email',
 				'lang' => 'required|in_list[id,en]',
 			])) {

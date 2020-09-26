@@ -17,7 +17,7 @@
             </div>
             <?php if ($host && $host->status === 'pending') : ?>
               <?php if (lang('Interface.code') == 'en') : ?>
-                <p><i>Please <a href="mailto:support@domcloud.id?subject=Hello,+I+want+to+proceed+my+purchase+with+ID+<?= $data->purchase_id ?>">request support</a> to finish payment.</i></p>
+                <p><i>Please <a href="mailto:support@domcloud.id?subject=Hello,+I+want+to+proceed+my+purchase+with+ID+<?= $current->id ?>">request support</a> to finish payment.</i></p>
               <?php else : ?>
                 <form method="post" class="my-2">
                   <input type="hidden" name="action" value="pay">
@@ -49,7 +49,7 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
-            <h3>Arsip Langganan</h3>
+            <h3><?= lang('Interface.archives')?></h3>
             <?php foreach ($history as $item) : ?>
               <div class="card">
                 <div class="card-body">

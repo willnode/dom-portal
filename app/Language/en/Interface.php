@@ -31,6 +31,7 @@
 	'learnMore' => 'Learn more',
 	'passwordNotice' => 'You don\'t need to remember this password',
 	'thanksForVerify' => 'Thank you, your email has been verified',
+	'lastUpdated' => 'Last updated',
 
 	'name' => 'Name',
 	'phone' => 'Phone Number',

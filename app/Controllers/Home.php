@@ -249,7 +249,6 @@ class Home extends BaseController
 		} else {
 			if ($this->validate([
 				'name' => 'required|min_length[3]|max_length[255]',
-				'phone' => 'required|min_length[8]|max_length[16]|is_unique[login.phone]',
 				'email' => 'required|valid_email|is_unique[login.email]',
 				'password' => 'required|min_length[8]',
 				'passconf' => 'required|matches[password]',
