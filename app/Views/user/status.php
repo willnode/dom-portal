@@ -7,7 +7,7 @@
   <?= view('user/navbar') ?>
 
   <div class="container">
-    <h1 class="mb">Server: <?= $server->alias ?></h1>
+    <h1 class="mb">Server <?= $server->description ?> (<?= $server->alias ?> &mdash; <?= $server->domain ?>)</h1>
     <div class="row">
 
       <div class="col-md-8">
@@ -44,18 +44,6 @@
                 <td width="150px" class="text-right">
                   <?= format_bytes(($stat->mem[0] - $stat->mem[1]) * 1024) ?> /
                   <?= format_bytes($stat->mem[0] * 1024) ?>
-                </td>
-              </tr>
-              <tr>
-                <td>Swap</td>
-                <td>
-                  <div class="progress my-1">
-                    <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * ($stat->mem[2] - $stat->mem[3]) / $stat->mem[2] ?>%"></div>
-                  </div>
-                </td>
-                <td class="text-right">
-                  <?= format_bytes(($stat->mem[2] - $stat->mem[3]) * 1024) ?> /
-                  <?= format_bytes($stat->mem[2] * 1024) ?>
                 </td>
               </tr>
               <tr>
