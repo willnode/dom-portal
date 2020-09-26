@@ -88,7 +88,7 @@
 	'cancelInvoceConfirm' => 'Yakin ingin membatalkan pembayaran? Hosting anda akan kembali menggunakan status langganan lama. Apabila ini adalah langganan pertama maka hosting ini akan dihapus secara otomatis.',
 	'formatInvoice' => 'Pembayaran Hosting Paket {0}',
 	'formatInvoiceAlt' => 'Pembayaran Hosting Paket {0} dengan domain {1}',
-	'formatInvoiceSum' => ' seharga {1} ',
+	'formatInvoiceSum' => ' seharga {0} ',
 
 	'deleteTitle' => 'Menghapus Hosting',
 	'deleteWarn' => 'PERHATIAN! Penghapusan hosting bersifat permanen dan kami tidak dapat mengembalikan aksi tersebut.',

@@ -87,7 +87,7 @@
 	'cancelInvoceConfirm' => 'Are you sure you want to cancel your payment? This host will return to using the old subscription status. If this is your first subscription then this host will be removed automatically.',
 	'formatInvoice' => 'Payment for {0} Plan Host',
 	'formatInvoiceAlt' => 'Payment for {0} Plan Host with domain {1}',
-	'formatInvoiceSum' => ' for {1} ',
+	'formatInvoiceSum' => ' for {0} ',
 
 	'deleteTitle' => 'Delete Host',
 	'deleteWarn' => 'ATTENTION! Host deletions are permanent and we can\'t reverse the action.',

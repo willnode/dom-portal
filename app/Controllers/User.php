@@ -455,38 +455,34 @@ class User extends BaseController
 	/** @param Host $host */
 	protected function invoicesHost($host)
 	{
+		/** @var Purchase[] */
 		$history = (new PurchaseModel())->atHost($host->id)->descending()->find();
-		if ($this->request->getMethod() === 'post' && !empty($action = $_POST['action']) && $host->purchase_status === 'pending') {
+		$current = $history[0] ?? null;
+		if ($this->request->getMethod() === 'post' && !empty($action = $_POST['action']) && $current && $current->status === 'pending') {
+			$metadata = $current->metadata;
 			if ($action === 'cancel') {
-				if ($host->purchase_liquid) {
-					$r = explode('|', $host->purchase_liquid);
-					(new LiquidRegistrar())->cancelPurchaseDomain($r[0], [
-						'transaction_id' => $r[1],
+				if ($metadata->liquid) {
+					(new LiquidRegistrar())->cancelPurchaseDomain((new LiquidModel())->atLogin($this->login->id)->id, [
+						'transaction_id' => $metadata->liquid,
 					]);
 				}
 				if (count($history) === 1) {
-					$this->db->table('hosting')->delete([
-						'id' => $host->id
-					]);
+					(new HostModel())->delete($host->id);
 					return $this->response->redirect('user/host');
 				} else {
-					$this->db->table('purchase')->delete([
-						'purchase_id' => $host->purchase_id
-					]);
-					$this->db->table('purchase')->update([
-						'purchase_active' => 1
-					], [
-						'purchase_active' => 2,
-						'purchase_hosting' => $host->id,
-					]);
+					(new PurchaseModel())->delete($current->id);
 					return $this->response->redirect('/user/host/invoices/' . $host->id);
 				}
-			} else if ($action === 'pay') {
+			} else if ($action === 'pay' && $metadata->price_unit === 'idr') {
+				$plan = (new PlanModel())->find($metadata->plan)->alias ?? '';
 				$pay = (new PaymentGate())->createPayment(
-					$host->purchase_id,
-					$host->purchase_price,
-					"Host $host->plan_alias $host->purchase_years Tahun" . ($host->purchase_liquid ? " dengan domain $host->domain_name" : ""),
-					$host->purchase_challenge
+					$current->id,
+					$metadata->price,
+					lang('Host.formatInvoiceAlt', [
+						"<b>$plan</b>",
+						"<b>$metadata->domain</b>",
+					  ]) . lang("Host.formatInvoiceSum", ["<b>$metadata->price</b>"]),
+					$metadata->_challenge
 				);
 				if ($pay && isset($pay->sessionID)) {
 					return $this->response->redirect(

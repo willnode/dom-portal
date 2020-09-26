@@ -26,11 +26,12 @@
               <?php endif ?>
               <p>
                 <?php $money = format_money($current->metadata->price) ?>
-                <?php ($current->liquid ? lang('Host.formatInvoiceAlt', [
-                  "<b>$current->plan</b>",
+                <?php $plan = (new \App\Models\PlanModel())->find($current->plan)->alias ?>
+                <?= ($current->liquid ? lang('Host.formatInvoiceAlt', [
+                  "<b>$plan</b>",
                   "<b>$data->domain</b>",
                 ]) : lang('Host.formatInvoice', [
-                  "<b>$current->plan</b>",
+                  "<b>$plan</b>",
                 ])) . lang("Host.formatInvoiceSum", ["<b>$money</b>"]) ?>
               </p>
               <p>
