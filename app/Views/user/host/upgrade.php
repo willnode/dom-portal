@@ -84,7 +84,7 @@
                 </div>
                 <label class="form-label col-6" for="addons">Data Add-ons (GB)</label>
                 <div class="col-6">
-                  <input type="number" class="form-control my-1" name="addons" id="addons" value="0" min="0" max="1000" onchange="recalculate()">
+                  <input type="number" class="form-control my-1" name="addons" id="addons" value="0" min="0" max="10000" step="10" onchange="recalculate()">
                 </div>
               </div>
               <div id="domain-renew" class="d-none">
@@ -285,17 +285,17 @@
     function recalculate() {
       // Get values
       var tip = {
-        'usd': 0.4,
+        'usd': 0.5,
         'idr': 5000
       } [currency];
       var bww = {
-        'usd': 0.32,
-        'idr': 4000
+        'usd': 0.05,
+        'idr': 500
       } [currency];
       var mode = window.box.mode.value;
       var plan = window.box.plan.value;
       var years = Math.min(5, parseInt(window.box.years.value));
-      var addons = Math.min(1000, parseInt(window.box.addons.value));
+      var addons = Math.min(10000, parseInt(window.box.addons.value));
       var oldyr = parseInt('<?= $purchase->metadata->years ?? 0 ?>');
       var oldplan = parseInt('<?= $data->plan_id ?>');
       var oldval = parseInt('<?= $data->plan->{'price_' . lang('Interface.currency')} ?? 0 ?>');

@@ -79,7 +79,7 @@
                     <label for="addons">Data Add-ons (GB)</label>
                   </div>
                   <div class="col">
-                    <input type="number" disabled class="form-control" name="addons" name="addons" value="0" min="0" max="1000" onchange="recalculate()">
+                    <input type="number" disabled class="form-control" name="addons" name="addons" value="0" min="0" max="10000" step="10" onchange="recalculate()">
                   </div>
                 </div>
                 <p>
@@ -333,14 +333,14 @@
           'idr': 5000
         } [currency];
         var bww = {
-          'usd': 0.4,
-          'idr': 4000
+          'usd': 0.05,
+          'idr': 500
         } [currency];
         var form = window.box;
         var dommod = form.domain_mode.value;
         var unit = parseInt(plans[form.plan.value]['price_' + currency]);
         var years = unit === 0 ? 1 / 6 : Math.min(5, parseInt(form.years.value));
-        var addons = unit === 0 ? 0 : Math.min(1000, parseInt(form.addons.value));
+        var addons = unit === 0 ? 0 : Math.min(10000, parseInt(form.addons.value));
         var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
         // Domain Calc
         var scheme = 0;

@@ -5,7 +5,6 @@ namespace App\Commands;
 use App\Entities\Host;
 use App\Entities\HostStat;
 use App\Entities\Server;
-use App\Entities\ServerStat;
 use App\Libraries\VirtualMinShell;
 use App\Models\HostModel;
 use App\Models\HostStatModel;
@@ -13,8 +12,7 @@ use App\Models\ServerModel;
 use App\Models\ServerStatModel;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
-
-require_once APPPATH . 'Libraries' . DIRECTORY_SEPARATOR . 'spyc.php';
+use Symfony\Component\Yaml\Yaml;
 
 class CronJob extends BaseCommand
 {
@@ -113,7 +111,7 @@ class CronJob extends BaseCommand
             $data = [
                 'server_id' => $server->id,
                 // php_yaml can't handle 64 bit ints properly
-                'metadata' => json_encode(spyc_load((new VirtualMinShell())->listSystemInfo($server->alias))),
+                'metadata' => json_encode(Yaml::parse((new VirtualMinShell())->listSystemInfo($server->alias))),
                 'updated_at' => date('Y-m-d H:i:s'),
             ];
             (new ServerStatModel())->replace($data);

@@ -119,7 +119,7 @@ class User extends BaseController
 						'buy_cname' => $data['domain_mode'] === 'buy' ? 'required|regex_match[/^[-\w]+$/]' : 'permit_empty',
 						'buy_scheme' => $data['domain_mode'] === 'buy' ? 'required|is_not_unique[schemes.id]' : 'permit_empty',
 						'years' => 'required|integer|greater_than[0]|less_than[6]',
-						'addons' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[1000]',
+						'addons' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[10000]',
 					])) {
 						// Not Free, so add invoice details
 						$payment = new Purchase([
@@ -158,7 +158,7 @@ class User extends BaseController
 						}
 						$metadata->expiration = $hosting->expiry_at = date('Y-m-d H:i:s', strtotime("+$metadata->years years", \time()));
 						$metadata->price += $plan->price_local * $_POST['years'];
-						$metadata->price += ['idr' => 4000, 'usd' => 0.4][$metadata->price_unit] * $metadata->addons;
+						$metadata->price += ['idr' => 500, 'usd' => 0.05][$metadata->price_unit] * $metadata->addons;
 						$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 						$hosting->status = 'pending';
 						$hosting->expiry_at = $metadata->expiration;
@@ -231,7 +231,7 @@ class User extends BaseController
 				'mode' => $host->plan_id === 1 ? 'required|in_list[new]' : 'required|in_list[new,extend,upgrade,topup]',
 				'plan' => $mode === 'topup' ? 'permit_empty' : 'required|greater_than[1]|is_not_unique[plans.id]',
 				'years' => $mode === 'new' || $mode === 'extend' ? 'required|greater_than[0]|less_than[6]' : 'permit_empty',
-				'addons' => ($_POST['addons'] ?? null) ? 'required|integer|greater_than_equal_to[0]|less_than_equal_to[1000]' : 'permit_empty',
+				'addons' => ($_POST['addons'] ?? null) ? 'required|integer|greater_than_equal_to[0]|less_than_equal_to[10000]' : 'permit_empty',
 			]) || ($mode === 'upgrade' && $_POST['plan'] <= $host->plan_id)) {
 				return;
 			}
@@ -289,9 +289,9 @@ class User extends BaseController
 			} else if ($mode === 'upgrade') {
 				// The years need to be revamped
 				$metadata->years = max(1, ceil($host->expiry_at->difference(now())->getYears()));
-				$metadata->price = ($plan->price_local - $host->plan->price_local) * $metadata->years + 5000;
+				$metadata->price = ($plan->price_local - $host->plan->price_local) * $metadata->years;
 			}
-			$metadata->price += ['idr' => 4000, 'usd' => 0.4][$metadata->price_unit] * $metadata->addons;
+			$metadata->price += ['idr' => 500, 'usd' => 0.05][$metadata->price_unit] * $metadata->addons;
 			$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 			$payment->metadata = $metadata->toRawArray();
 			$payment->host_id = $host->id;

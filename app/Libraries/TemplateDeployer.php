@@ -4,6 +4,7 @@ namespace App\Libraries;
 
 use App\Models\HostDeploysModel;
 use phpseclib\Net\SSH2;
+use Symfony\Component\Yaml\Yaml;
 
 class TemplateDeployer
 {
@@ -31,7 +32,7 @@ class TemplateDeployer
             'features' => [],
             'commands' => [],
         ];
-        $config = array_replace_recursive($config, yaml_parse($template));
+        $config = array_replace_recursive($config, Yaml::parse($template));
         if (!($path = $config['source'] ?? '')) {
             return "Missing source path";
         }
