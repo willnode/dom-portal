@@ -146,11 +146,12 @@ class Home extends BaseController
 					(new HostModel())->save($host);
 				} {
 					// Email
+					$plan = (new PlanModel())->find($metadata->plan)->alias;
 					$desc = ($metadata->liquid ? lang('Host.formatInvoiceAlt', [
-						$metadata->plan,
+						$plan,
 						$data->domain,
 					]) : lang('Host.formatInvoice', [
-						$metadata->plan,
+						$plan,
 					]));
 
 					(new SendGridEmail())->send('receipt_email', 'billing', [[

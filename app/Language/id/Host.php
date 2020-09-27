@@ -44,6 +44,7 @@
 	'findUnavailable' => 'Domain sedang tidak tersedia.',
 	'findNeedData' => 'Kami tidak dapat memproses pembelian domain sebelum anda mengisi data yang kami butuhkan.',
 	'findNeedDataAction' =>  'Isi sekarang',
+	'enterCustomDomain' => 'Masukkan domain kustom',
 	'useExistingHint' => 'Anda perlu mengarahkan domain setelah ini.',
 	'preparingHint' => 'Host anda sedang disiapkan. Tunggulah beberapa menit kemudian.',
 	'createLimitVerEmail' => 'Maaf, limit jumlah hosting anda tercapai, anda harus mengkonfirmasi email terlebih dahulu',

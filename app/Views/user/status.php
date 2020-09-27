@@ -37,7 +37,7 @@
                 <td width="100px">Memory</td>
                 <td>
                   <div class="progress my-1">
-                    <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * ($stat->mem[0] - $stat->mem[1] - $stat->mem[4]) / $stat->mem[0] ?>%"></div>
+                    <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * ($stat->mem[0] - $stat->mem[1]) / $stat->mem[0] ?>%"></div>
                     <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: <?= 100 * ($stat->mem[4]) / $stat->mem[0] ?>%"></div>
                   </div>
                 </td>

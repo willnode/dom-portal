@@ -109,8 +109,6 @@ class CronJob extends BaseCommand
                 }
             }
             $yaml = Yaml::parse((new VirtualMinShell())->listSystemInfo($server->alias));
-            $yaml['disk_free'] = strval($yaml['disk_free']); // Got int limit problem
-            $yaml['disk_total'] = strval($yaml['disk_total']); // Got int limit problem
             $data = [
                 'server_id' => $server->id,
                 // php_yaml can't handle 64 bit ints properly

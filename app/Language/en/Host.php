@@ -44,6 +44,7 @@
 	'findUnavailable' => 'Domain is currently unavailable.',
 	'findNeedData' => 'We cannot process domain purchases until you fill in the data we need.',
 	'findNeedDataAction' =>  'Fill now',
+	'enterCustomDomain' => 'Enter custom domain',
 	'useExistingHint' => 'You need to point the domain after this.',
 	'preparingHint' => 'Your host is being set up. Wait a few minutes later.',
 	'createLimitVerEmail' => 'Sorry, the limit for the number of your hosting has been reached, you must confirm your email first',

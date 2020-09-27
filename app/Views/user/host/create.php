@@ -5,11 +5,7 @@
 
 <body>
   <?= view('user/navbar') ?>
-  <?php
-
-  use App\Models\PlanModel;
-
-  if ($ok) : ?>
+  <?php if ($ok) : ?>
     <div class="container-fluid">
       <h1><?= lang('Host.newHost') ?></h1>
       <?= $validation ? $validation->listErrors() : '' ?>
@@ -84,7 +80,7 @@
                 </div>
                 <p>
                   <small class="form-text text-muted">
-                    <a href="https://domcloud.id/price" target="_blank"><?= lang('Host.lookPacketDiff') ?></a>.
+                    <a href="<?= lang('Interface.lang') == 'id' ? 'https://domcloud.id/price' : 'https://domcloud.id/en/price' ?>" target="_blank"><?= lang('Host.lookPacketDiff') ?></a>.
                   </small>
                 </p>
                 <h3 class="card-title"><?= lang('Interface.domain') ?></h3>
@@ -146,7 +142,7 @@
                 </div>
                 <div id="dm-custom" class="d-none">
                   <div class="mb-3">
-                    <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="masukkan domain kustom" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
+                    <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="<?= lang('Host.enterCustomDomain') ?>" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
                     <small class="form-text text-muted">
                       <?= lang('Host.useExistingHint') ?>
                       <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
@@ -214,7 +210,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Pilih Template</h5>
+            <h5 class="modal-title"><?= lang('Host.chooseTemplate') ?></h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -396,7 +392,7 @@
         <?php if ($trustiness === 0) : ?>
           <?= lang('Host.createLimitVerEmail') ?>
         <?php else : ?>
-          <?= lang('Host.createLimitUpgrade', [(new PlanModel())->find($trustiness + 1)->alias]) ?>
+          <?= lang('Host.createLimitUpgrade', [(new App\Models\PlanModel())->find($trustiness + 1)->alias]) ?>
         <?php endif ?>
       </div>
       <a href="<?= base_url('user/host') ?>" class="btn btn-secondary"><?= lang('Interface.back') ?></a>
