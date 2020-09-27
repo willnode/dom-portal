@@ -770,7 +770,7 @@ class User extends BaseController
 			'server' => $server,
 			'servers' => $servers,
 			'stat' => $server->stat->metadata,
-			'stat_update' => $server->stat->updated_at,
+			'stat_update' => $server->stat->updated_at->humanize(),
 		]);
 	}
 

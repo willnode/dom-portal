@@ -5,7 +5,7 @@
 	'portalUsername' => 'Portal Username',
 	'portalUsernameHint' => 'Only alphanumeric and hyphen',
 	'portalPassword' => 'Portal Password',
-	'slaveServer' => 'Slave Server',
+	'slaveServer' => 'Server Location',
 	'template' => 'Template',
 	'chooseTemplate' => 'Choose Template',
 	'selectPacketType' => 'Select host plan',

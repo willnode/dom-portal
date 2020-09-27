@@ -7,7 +7,7 @@
   <?= view('user/navbar') ?>
 
   <div class="container">
-    <h1 class="mb">Server <?= $server->description ?> (<?= $server->alias ?> &mdash; <?= $server->domain ?>)</h1>
+    <h1 class="mb">Server Status @ <?= $server->description ?> (<?= $server->alias ?> &mdash; <?= $server->domain ?>)</h1>
     <div class="row">
 
       <div class="col-md-8">
@@ -61,7 +61,7 @@
             </table>
 
             <div class="text-muted text-right">
-              <small><?= lang('Interface.lastUpdated')?> <?= $stat_update ?> UTC</small>
+              <small><?= lang('Interface.lastUpdated')?> <?= $stat_update ?></small>
             </div>
           </div>
         </div>

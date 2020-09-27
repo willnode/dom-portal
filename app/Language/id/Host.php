@@ -5,7 +5,7 @@
 	'portalUsername' => 'Username Portal',
 	'portalUsernameHint' => 'Hanya huruf, digit dan strip',
 	'portalPassword' => 'Password Portal',
-	'slaveServer' => 'Server Slave',
+	'slaveServer' => 'Lokasi Server',
 	'template' => 'Template',
 	'chooseTemplate' => 'Pilih Template',
 	'selectPacketType' => 'Pilih jenis paket',

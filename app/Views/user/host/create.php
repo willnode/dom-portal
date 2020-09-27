@@ -37,7 +37,7 @@
                   <select class="form-select" id="server" name="server" required>
                     <?php foreach ($servers as $server) : ?>
                       <label class="form-check">
-                        <option value="<?= $server->id ?>"><?= $server->alias ?></option>
+                        <option value="<?= $server->id ?>"><?= $server->alias ?> &mdash; <?= $server->description ?></option>
                       </label>
                     <?php endforeach ?>
                   </select>
