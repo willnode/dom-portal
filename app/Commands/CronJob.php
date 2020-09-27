@@ -52,12 +52,13 @@ class CronJob extends BaseCommand
                     'quota_db' => intval($domain['Databases byte size'] ?? 0),
                     'quota_net' => intval($domain['Bandwidth byte usage'] ?? 0),
                     'features' => $domain['Features'],
-                    'bandwidths' => json_encode($bandwidths[$host->domain] ?? null),
+                    'bandwidths' => $bandwidths[$host->domain] ?? null,
                     'disabled' => $domain['Disabled'] ?? null,
                     'updated_at' => date('Y-m-d H:i:s'),
                 ];
                 if (!$stat) {
-                    $stat = new HostStat($newStat);
+                    $stat = new HostStat();
+                    $stat->fill($newStat);
                 } else {
                     if ($stat->quota_net > $newStat['quota_net']) {
                         // Roll over time
@@ -75,7 +76,7 @@ class CronJob extends BaseCommand
                 $expired = time() >= $host->expiry_at->getTimestamp();
                 $overDisk = ($stat->quota_server) > $plan->disk * 1024 * 1024;
                 $overBw = ($stat->quota_net) > $plan->net * 1024 * 1024 * 1024 / 12 + $host->addons * 1024 * 1024;
-                CLI::write('INJURY TIME ' . json_encode([$host->domain, $stat->disabled, $expired, $overDisk, $overBw]));
+                // CLI::write('INJURY TIME ' . json_encode([$host->domain, $stat->disabled, $expired, $overDisk, $overBw]));
                 if (!$stat->disabled) {
                     if ($overDisk) {
                         // Disable
