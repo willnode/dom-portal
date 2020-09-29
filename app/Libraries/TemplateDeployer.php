@@ -64,8 +64,6 @@ class TemplateDeployer
             $config['source'] = "https://github.com/$tdomain$tpath/archive/$thash.zip";
             $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
             $config['directory'] = str_replace('${REPO}', "$tpath-$thash", $config['directory']);
-        } else {
-            return "Unknown Target Scheme"; // Don't try to bother
         }
         if ($config['root'] ?? null) {
             (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server);
