@@ -225,6 +225,9 @@
                   </div>
                 </div>
               <?php endforeach ?>
+              <div class="col-12 my-1">
+                <a href="https://github.com/domcloud/dom-templates/">More templates</a>
+              </div>
             </div>
           </div>
           <div class="modal-footer">

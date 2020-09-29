@@ -45,6 +45,7 @@ class TemplateDeployer
         $tpath = strtolower(parse_url($path, PHP_URL_PATH));
         $tscheme = strtolower(parse_url($path, PHP_URL_SCHEME));
         $thash = strtolower(parse_url($path, PHP_URL_FRAGMENT));
+        $flag_enable_ssl = 0;
 
         if ($tscheme === 'https' || $tscheme === 'http') {
             if ($tdomain === 'github.com' && preg_match('/(\w+)(\/\w+)\/?/', $tpath, $matches)) {
@@ -97,27 +98,15 @@ class TemplateDeployer
                 $cmd .= "mv $dir/{.,}* . 2>/dev/null ; rmdir $dir ; ";
             }
             $cmd .= 'chmod -R 0755 * ; ';
+            $cmd .= "DATABASE='{$username}_db' ; ";
+            $cmd .= "DOMAIN='$domain' ; ";
+            $cmd .= "USERNAME='$username' ; ";
+            $cmd .= "SCHEME='".($flag_enable_ssl ? 'https' : 'http')."' ; ";
+            $cmd .= "PASSWORD='$password' ; ";
             if (count($config['commands']) > 0) {
                 $cmd .= 'echo ==== execution started ==== ; ';
-                $cmd .= preg_replace_callback(
-                    '/\$\{(\w+)\}/',
-                    function ($matches) use ($domain, $username, $password) {
-                        switch ($matches[1]) {
-                            case 'DATABASE':
-                                return $username . '_db';
-                            case 'DOMAIN':
-                                return $domain;
-                            case 'USERNAME':
-                                return $username;
-                            case 'PASSWORD':
-                                return $password;
-                            default:
-                                return $matches[0];
-                        }
-                    },
-                    implode(' ; ', $config['commands'])
-                );
-                if (isset($flag_enable_ssl)) {
+                $cmd .= implode(' ; ', $config['commands']);
+                if ($flag_enable_ssl) {
                     $cmd .= ' ; mkdir -m 0755 $HOME/' . sanitize_shell_arg_dir($config['root']) . '/.well-known';
                 }
                 $cmd .= ' ; echo ==== execution finished ==== ';
@@ -135,7 +124,7 @@ class TemplateDeployer
             $log .= "\n\n exit code: " . json_encode($ssh->getExitStatus());
             $log .= "\n execution time: " . number_format(microtime(true) - $timing, 3) . " s";
             $log .= "\n executed commands: " . str_replace($password, '****MASKED****', $cmd);
-            if (isset($flag_enable_ssl)) {
+            if ($flag_enable_ssl) {
                 (new VirtualMinShell())->requestLetsEncrypt($domain, $server);
             }
             return str_replace("\0", "", $log);

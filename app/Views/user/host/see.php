@@ -12,12 +12,12 @@
         <div class="col-md-6 col-xl-3">
           <div class="card-body d-flex flex-column h-100">
             <h2>Webmin</h2>
-            <p class="flex-grow-1">URL:<br><b>https://<?= $slave ?>.domcloud.id:8443</b><br>
+            <p class="flex-grow-1">URL:<br><b style="user-select: all;">https://<?= $slave ?>.domcloud.id:8443</b><br>
               Username:<br><b style="user-select: all;"><?= esc($user) ?></b><br>
               Password:<br><b style="user-select: all;"><?= $pass ?></b></p>
             <form target="_blank" action="https://<?= $slave ?>.domcloud.id:8443/session_login.cgi" method="POST">
-              <input name="user" value="<?= esc($user) ?>">
-              <input name="pass" value="<?= esc($rawpass) ?>">
+              <input name="user" class="d-none" value="<?= esc($user) ?>">
+              <input name="pass" class="d-none" value="<?= esc($rawpass) ?>">
               <p><small>
                   <input type="submit" value="<?= lang('Host.loginTo') ?> Portal Host" class="btn btn-link">
                 </small></p>
@@ -47,7 +47,7 @@
         <div class="col-md-6 col-xl-3">
           <div class="card-body d-flex flex-column h-100">
             <h2>SSH</h2>
-            <p class="flex-grow-1"><br><b style="user-select: all;">ssh <?= esc($user) ?>@<?= $slave ?>.domcloud.id</b><br>
+            <p class="flex-grow-1">Run:<br><b style="user-select: all;">ssh <?= esc($user) ?>@<?= $slave ?>.domcloud.id</b><br>
               Password:<br><b style="user-select: all;"><?= $pass ?></b></p>
             <p><small><a href="https://panduan.domcloud.id/ssh-toolkit.html">Panduan Menggunakan SSH</a></small></p>
           </div>
