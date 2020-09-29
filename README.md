@@ -4,7 +4,7 @@
 
 This is the actual server code that runs on [portal.domcloud.id](https://portal.domcloud.id). Open sourced because I want to transparent and clear about how your data will be handled and what or how limitations applies for you.
 
-DOM Cloud runs above Azure VM. So it's a hosting business that runs a top of another host service. Why it's exist? Because I get tired of host solutions these days. I want something easy to deploy like Heroku or Docker, but don't want to mess with immutability and no-SQL stuffs that really only benefit when you get like, millions of traffic (which of course, never happen to me).
+DOM Cloud runs above Digital Ocean's Droplet. So it's a hosting business that runs a top of another host service. Why it's exist? Because I get tired of host solutions these days. I want something easy to deploy like Heroku or Docker, but don't want to mess with immutability and no-SQL stuffs that really only benefit when you get like, millions of traffic (which of course, never happen to me).
 
 Any way, in DOM Cloud, you can deploy anything there... WordPress, Laravel, Django, Rails, Express, whatever. It's mutable, you can edit the server file after you deploy them with [templates](https://github.com/domcloud/dom-templates). Edit files using FTP, run SSH commands, use MySQL or Postgres database, or just use Webmin portal. All common hosting tools is there. And best of all, it's cost nothing for you to start with.
 
