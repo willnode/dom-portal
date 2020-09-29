@@ -90,7 +90,7 @@ class TemplateDeployer
         // I know, this is a bit naive to check headers first before actually do SSH. But do we have options?
         if (array_search('Content-Type: application/zip', get_headers($config['source'])) !== false) {
             $path = escapeshellarg($config['source']);
-            $cmd = 'rm -rf public_html/* ; cd public_html ; ';
+            $cmd = "cd /home/$username ; rm -rf public_html/* ; cd public_html ; ";
             $cmd .= "wget -q -O __extract.zip $path ; ";
             $cmd .= 'unzip -q -o __extract.zip ; rm __extract.zip ; ';
             if ($config['directory']) {
