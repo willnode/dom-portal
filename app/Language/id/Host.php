@@ -68,6 +68,7 @@
 	'domainHost' => 'Domain Hosting',
 	'administrativeOption' => 'Opsi Administratif',
 	'manageHostLogin' => 'Atur Login Hosting',
+	'loginTo' => 'Login ke',
 	'deleteHost' => 'Hapus Hosting',
 	'free' => 'Kosong',
 	'total' => 'Total',

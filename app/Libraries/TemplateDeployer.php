@@ -10,6 +10,9 @@ class TemplateDeployer
 {
     public function schedule($host_id, $domain, $template)
     {
+        if (!($template = trim($template))) {
+            return;
+        }
         $did = (new HostDeploysModel())->insert([
             'host_id' => $host_id,
             'template' => $template,
@@ -34,7 +37,8 @@ class TemplateDeployer
         ];
         $config = array_replace_recursive($config, Yaml::parse($template));
         if (!($path = $config['source'] ?? '')) {
-            return "Missing source path";
+            // empty zip
+            $path = 'https://portal.domcloud.id/null.zip';
         }
 
         $tdomain = strtolower(parse_url($path, PHP_URL_HOST));
@@ -42,6 +46,16 @@ class TemplateDeployer
         $tscheme = strtolower(parse_url($path, PHP_URL_SCHEME));
         $thash = strtolower(parse_url($path, PHP_URL_FRAGMENT));
 
+        if ($tscheme === 'https' || $tscheme === 'http') {
+            if ($tdomain === 'github.com' && preg_match('/(\w+)(\/\w+)\/?/', $tpath, $matches)) {
+                $tscheme = 'github';
+                $tdomain = $matches[1];
+                $tpath = $matches[2];
+            } else {
+                // ${REPO} flag is useless here
+                $config['directory'] = str_replace('${REPO}', '', $config['directory']);
+            }
+        }
         if ($tscheme === 'github') {
             // Get tag
             $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
@@ -49,9 +63,6 @@ class TemplateDeployer
             $config['source'] = "https://github.com/$tdomain$tpath/archive/$thash.zip";
             $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
             $config['directory'] = str_replace('${REPO}', "$tpath-$thash", $config['directory']);
-        } else if ($tscheme === 'https' || $tscheme === 'http') {
-            // ${REPO} flag is useless here
-            $config['directory'] = str_replace('${REPO}', '', $config['directory']);
         } else {
             return "Unknown Target Scheme"; // Don't try to bother
         }

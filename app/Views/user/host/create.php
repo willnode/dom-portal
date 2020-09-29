@@ -21,7 +21,7 @@
                 <div class="mb-3">
                   <label class="form-label" for="name"><?= lang('Host.portalPassword') ?></label>
                   <div class="input-group">
-                    <input class="form-control" id="password" oninput="this.type = 'password'" name="password" type="password" minlength="8" autocomplete="new-password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$">
+                    <input class="form-control" id="password" oninput="this.type = 'password'" name="password" type="password" minlength="8" autocomplete="one-time-code" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$">
                     <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
                   </div>
                   <small class="form-text text-muted">

@@ -252,7 +252,6 @@ class Home extends BaseController
 				'name' => 'required|min_length[3]|max_length[255]',
 				'email' => 'required|valid_email|is_unique[login.email]',
 				'password' => 'required|min_length[8]',
-				'passconf' => 'required|matches[password]',
 				'g-recaptcha-response' => ENVIRONMENT === 'production' ? 'required' : 'permit_empty',
 			])) {
 				if (ENVIRONMENT !== 'production' || (new Recaptha())->verify($_POST['g-recaptcha-response'])) {

@@ -24,7 +24,7 @@
                   <pre style="white-space: pre-wrap;"><?= $deploy->result ?></pre>
                 <?php else : ?>
                   <p class="text-center">
-                    <?= lang('Host.waitingDeployHint', [$deploy->created_at->addMinutes($host->plan_id * 5)->humanize()]) ?>
+                    <?= lang('Host.waitingDeployHint', [$deploy->created_at->addMinutes($host->plan_id * 5 + 5)->humanize()]) ?>
                   </p>
                 <?php endif ?>
               </div>

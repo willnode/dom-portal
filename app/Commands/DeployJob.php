@@ -19,7 +19,7 @@ class FetchTemplate extends BaseCommand
 
     public function run(array $params)
     {
-        set_time_limit(20 * 60);
+        set_time_limit(30 * 60);
         /** @var HostDeploys */
         $deploy = (new HostDeploysModel())->find($params[0]);
         if ($deploy) {
@@ -30,7 +30,7 @@ class FetchTemplate extends BaseCommand
                 $host->username,
                 $host->password,
                 $deploy->template,
-                $host->plan_id * 300
+                ($host->plan_id + 1) * 300
             );
             if ($host->status === 'starting') {
                 $host->status = 'active';

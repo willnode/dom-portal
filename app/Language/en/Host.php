@@ -68,6 +68,7 @@
 	'domainHost' => 'Host Domain',
 	'administrativeOption' => 'Administrative Option',
 	'manageHostLogin' => 'Manage Host Login',
+	'loginTo' => 'Login to',
 	'deleteHost' => 'Delete Host',
 	'free' => 'Free',
 	'total' => 'Total',
