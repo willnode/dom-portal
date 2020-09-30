@@ -690,7 +690,7 @@ class User extends BaseController
 		}
 		return view('user/domain/intro', [
 			'page' => 'domain',
-			'data' => $_SESSION,
+			'data' => $this->login,
 			'codes' => CountryCodes::$codes,
 		]);
 	}
