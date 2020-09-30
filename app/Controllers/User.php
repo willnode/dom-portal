@@ -71,7 +71,7 @@ class User extends BaseController
 		$liq = (new LiquidModel())->atLogin($this->login->id);
 		$liqc = $liq->default_contacts;
 		$liquid['domain_name'] = $domain;
-		$liquid['customer_id'] = $liq->liquid_id;
+		$liquid['customer_id'] = $liq->id;
 		$liquid['years'] = $years;
 		$liquid['registrant_contact_id'] = $liqc->registrant_contact->contact_id;
 		$liquid['billing_contact_id'] = $liqc->billing_contact->contact_id;
