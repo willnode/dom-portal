@@ -248,6 +248,7 @@ class User extends BaseController
 				"plan" => $mode === 'upgrade' || $mode === 'new' ? intval($_POST['plan']) : $host->plan_id,
 				"addons" => intval($_POST['addons'] ?? '0'),
 				"liquid" => null, // later
+				"scheme" => null, // later
 				"_challenge" => random_int(111111111, 999999999),
 				"_id" => null,
 				"_via" => null,
@@ -273,7 +274,7 @@ class User extends BaseController
 						/** @var Scheme */
 						$scheme = (new SchemeModel())->find($_POST['buy_scheme']);
 						$metadata->domain = $_POST['buy_cname'] . $scheme->alias;
-						$metadata->scheme_id = $_POST['buy_scheme'];
+						$metadata->scheme = $scheme->id;
 						$metadata->price += $scheme->price_local + $scheme->renew_local * ($metadata->years - 1);
 						$rrr = $this->processNewDomainTransaction($metadata->domain, $metadata->years);
 						$host->liquid_id = $rrr->domain_id;

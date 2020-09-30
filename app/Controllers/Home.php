@@ -140,7 +140,7 @@ class Home extends BaseController
 						);
 					}
 				}
-				$data->metadata = $metadata;
+				$data->metadata = $metadata->toRawArray();
 				(new PurchaseModel())->save($data);
 				if ($host->hasChanged()) {
 					(new HostModel())->save($host);
@@ -149,7 +149,7 @@ class Home extends BaseController
 					$plan = (new PlanModel())->find($metadata->plan)->alias;
 					$desc = ($metadata->liquid ? lang('Host.formatInvoiceAlt', [
 						$plan,
-						$data->domain,
+						$metadata->domain,
 					]) : lang('Host.formatInvoice', [
 						$plan,
 					]));
@@ -161,7 +161,7 @@ class Home extends BaseController
 						]],
 						'dynamic_template_data' => [
 							'name' => $login->name,
-							'price' => format_money($metadata->price),
+							'price' => format_money($metadata->price, $metadata->price_unit),
 							'description' => $desc,
 							'id' => $metadata->_id,
 							'timestamp' => $metadata->_invoiced,

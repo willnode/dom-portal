@@ -30,10 +30,10 @@ function fetchOne($table, $where)
     return $db->table($table)->where($where)->get()->getRow();
 }
 
-function format_money($money)
+function format_money($money, $currency = null)
 {
     $money = floatval($money);
-    return lang('Interface.code') == 'en' ? number_format($money, 2) . ' US$' : 'Rp ' . number_format($money, 0, ',', '.');
+    return ($currency ?: lang('Interface.currency')) == 'usd' ? number_format($money, 2) . ' US$' : 'Rp ' . number_format($money, 0, ',', '.');
 }
 
 function format_bytes($bytes, $precision = 1)
