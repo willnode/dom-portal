@@ -20,7 +20,7 @@
             <h3><?= lang('Domain.administrationData') ?></h3>
             <div class="mb-3">
               <label for="name"><?= lang('Interface.fullName') ?></label>
-              <input class="form-control" id="name" name="name" value="<?= esc($data['name'], 'attr') ?>" autocomplete="name" readonly required>
+              <input class="form-control" id="name" name="name" value="<?= esc($data->name, 'attr') ?>" autocomplete="name" readonly required>
             </div>
             <div class="mb-3">
               <label for="company"><?= lang('Interface.companyName') ?></label>
@@ -28,7 +28,7 @@
             </div>
             <div class="mb-3">
               <label for="name"><?= lang('Interface.email') ?></label>
-              <input class="form-control" id="email" name="email" autocomplete="email" value="<?= esc($data['email'], 'attr') ?>" readonly required>
+              <input class="form-control" id="email" name="email" autocomplete="email" value="<?= esc($data->email, 'attr') ?>" readonly required>
             </div>
             <div class="mb-3">
               <label for="name"><?= lang('Interface.password') ?></label>
@@ -91,7 +91,7 @@
               <label for="country_code"><?= lang('Domain.country') ?></label>
               <select class="form-select" name="country_code" required>
                 <?php foreach ($codes as $code) : $c = strtolower($code['country']);
-                  $l = $data['lang'] === 'en' ? 'us' : 'id' ?>
+                  $l = $data->lang === 'en' ? 'us' : 'id' ?>
                   <option value="<?= $c ?>" <?= $l === $c ? 'selected' : '' ?>><?= $code['name'] ?></option>
                 <?php endforeach ?>
               </select>
