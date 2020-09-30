@@ -552,7 +552,7 @@ class User extends BaseController
 	protected function checkDomain()
 	{
 		if (!empty($_GET['name']) && !empty($_GET['scheme'])) {
-			$name = $_GET['name'];
+			$name = strtolower($_GET['name']);
 			/** @var Scheme */
 			$scheme = (new SchemeModel())->find($_GET['scheme']);
 			if (strlen($name) > 512 || strpos($name, '.') !== false || !$scheme || $scheme->{'price_' . lang('Interface.currency')} == 0) {
@@ -597,11 +597,12 @@ class User extends BaseController
 						'purchase_privacy_protection'
 					])
 				);
+				/** @var Scheme */
 				$scheme = (new SchemeModel())->find($post['domain_scheme']);
-				if ($scheme->scheme_price == 0) return;
-				$post['domain_name'] .= $scheme->scheme_alias;
+				if ($scheme->price_local == 0) return;
+				$post['domain_name'] .= $scheme->alias;
 				unset($post['domain_scheme']);
-				$post['customer_id'] = $this->liquid->liquid_id;
+				$post['customer_id'] = $this->liquid->id;
 				$post['invoice_option'] = 'only_add';
 				log_message('notice', $rrr = (new LiquidRegistrar())->issuePurchaseDomain($post));
 				return $this->syncDomain();
@@ -732,6 +733,7 @@ class User extends BaseController
 		return $this->response->redirect('/user/domain');
 	}
 
+	/** @var Liquid */
 	protected $liquid;
 
 	public function domain($page = 'list', $id = 0)
