@@ -42,14 +42,17 @@ class TemplateDeployer
         }
 
         $tdomain = strtolower(parse_url($path, PHP_URL_HOST));
-        $tpath = strtolower(parse_url($path, PHP_URL_PATH));
         $tscheme = strtolower(parse_url($path, PHP_URL_SCHEME));
-        $thash = strtolower(parse_url($path, PHP_URL_FRAGMENT));
+        $tpath = (parse_url($path, PHP_URL_PATH));
+        $thash = (parse_url($path, PHP_URL_FRAGMENT));
         $flag_enable_ssl = 0;
-
         if ($tscheme === 'https' || $tscheme === 'http') {
-            if ($tdomain === 'github.com' && preg_match('/(\w+)(\/\w+)\/?/', $tpath, $matches)) {
+            if ($tdomain === 'github.com' && preg_match('/^\/(\w+)(\/\w+)/', $tpath, $matches)) {
                 $tscheme = 'github';
+                $tdomain = $matches[1];
+                $tpath = $matches[2];
+            } else if ($tdomain === 'gitlab.com' && preg_match('/^\/(\w+)(\/\w+)/', $tpath, $matches)) {
+                $tscheme = 'gitlab';
                 $tdomain = $matches[1];
                 $tpath = $matches[2];
             } else {
@@ -63,6 +66,14 @@ class TemplateDeployer
             // Replace with proper ZIP URL
             $config['source'] = "https://github.com/$tdomain$tpath/archive/$thash.zip";
             $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
+            $config['directory'] = str_replace('${REPO}', "$tpath-$thash", $config['directory']);
+        }
+        if ($tscheme === 'gitlab') {
+            // Get tag
+            $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
+            // Replace with proper ZIP URL
+            $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
+            $config['source'] = "https://gitlab.com/$tdomain$tpath/-/archive/$thash/$tpath-$thash.zip";
             $config['directory'] = str_replace('${REPO}', "$tpath-$thash", $config['directory']);
         }
         if ($config['root'] ?? null) {
