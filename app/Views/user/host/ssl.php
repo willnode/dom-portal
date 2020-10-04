@@ -7,7 +7,7 @@
   <?= view('user/navbar') ?>
 
   <div class="container mb-3">
-  <?= view('user/host/navbar') ?>
+    <?= view('user/host/navbar') ?>
 
     <div class="row">
       <div class="col-md-6 mb-3">
@@ -52,6 +52,7 @@
                 <h4>⚠ Website anda tidak mendukung HTTPS</h4>
                 <p>Mohon periksa apakah anda sudah menyalakan server SSL/HTTPS dan apakah anda sudah memasang sertifikat SSL dengan benar.</p>
                 <form method="POST">
+                  <?= csrf_field() ?>
                   <p><input type="hidden" name="action" value="fix3"><input type="submit" class="btn btn-primary" value="Try Fix"></p>
                 </form>
                 <p><a href="https://panduan.domcloud.id/install-ssl.html" target="_blank" rel="noopener noreferrer">Panduan Mengatur SSL</a></p>
@@ -91,9 +92,9 @@
           $('#tiploading').addClass('d-none');
         }
         window.onload = function() {
-            fetch(window.location, {
-              method: 'post'
-            }).then(x => x.json().then(y => report(y)));
+          fetch(window.location, {
+            method: 'post'
+          }).then(x => x.json().then(y => report(y)));
         }
       </script>
     </div>

@@ -16,6 +16,7 @@
         <div class="card-body">
           <p><?= lang('Host.cnameHint') ?></p>
           <form method="POST">
+            <?= csrf_field() ?>
             <input type="text" class="form-control mb-3" name="cname" value="<?= $host->domain === $host->username . $host->server->domain ? '' : $host->domain ?>">
             <input type="submit" value="<?= lang('Interface.save') ?>" class="btn btn-primary">
           </form>

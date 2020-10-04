@@ -13,6 +13,7 @@
 		</div>
 		<div class="col-md-4">
 			<form method="POST" class="container h-100 d-flex flex-column justify-content-center text-center">
+				<?= csrf_field() ?>
 				<h1 class="mb-2"><?= lang('Interface.login') ?></h1>
 				<?php if ($message) : ?>
 					<div class="alert alert-<?= isset($_GET['msg']) ? 'primary' : 'danger' ?>">

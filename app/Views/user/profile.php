@@ -10,6 +10,7 @@
       <div class="col-md-6">
         <div class="card">
           <form method="POST" class="card-body">
+            <?= csrf_field() ?>
             <h2 class="mb-3"><?= lang('Interface.editProfile') ?></h2>
             <p><?= lang('Interface.editProfileMessage') ?></p>
             <div class="mb-3">
@@ -43,6 +44,7 @@
           <div class="alert alert-danger mb-3">
             <p><?= lang('Interface.confirmationHint') ?> <b><?= esc($data->email) ?></b></p>
             <form method="post" class="my-2">
+              <?= csrf_field() ?>
               <input type="hidden" name="action" value="resend">
               <input type="submit" class="btn btn-success" onclick="return confirm('<?= lang('Interface.confirmationPrompt') ?>')" value="<?= lang('Interface.resendConfirmationEmail') ?>">
             </form>
@@ -50,6 +52,7 @@
         <?php endif ?>
         <div class="card">
           <form action="/user/reset" method="POST" class="card-body">
+            <?= csrf_field() ?>
             <h2 class="mb-3"><?= lang('Interface.changePassword') ?></h2>
             <p><?= lang('Interface.changePasswordMessage') ?></p>
             <div class="mb-3">

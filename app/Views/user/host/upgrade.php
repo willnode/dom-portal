@@ -14,6 +14,7 @@
       </div>
     <?php else : ?>
       <form name="box" class="row" method="POST">
+        <?= csrf_field() ?>
         <div class="col-lg-4">
           <div class="card">
             <div class="card-body">

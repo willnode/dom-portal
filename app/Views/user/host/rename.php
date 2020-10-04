@@ -16,6 +16,7 @@
         <div class="card-body">
           <p><?= lang('Host.renameHint') ?></p>
           <form method="POST">
+            <?= csrf_field() ?>
             <input type="text" class="form-control mb-3" value="<?= $host->username ?>" required>
             <input type="submit" value="<?= lang('Interface.save') ?>" class="btn btn-primary">
           </form>

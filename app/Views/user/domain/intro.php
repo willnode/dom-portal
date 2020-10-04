@@ -8,6 +8,7 @@
 
   <div class="container">
     <form method="POST" class="row">
+      <?= csrf_field() ?>
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
@@ -37,7 +38,7 @@
                 <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
               </div>
               <small class="form-text text-muted">
-              <?= lang('Interface.passwordNotice') ?>
+                <?= lang('Interface.passwordNotice') ?>
               </small>
             </div>
             <div class="mb-3">

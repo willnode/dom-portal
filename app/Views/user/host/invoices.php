@@ -20,6 +20,7 @@
                 <p><i>Please <a href="mailto:support@domcloud.id?subject=Hello,+I+want+to+proceed+my+purchase+with+ID+<?= $current->id ?>">request support</a> to finish payment.</i></p>
               <?php else : ?>
                 <form method="post" class="my-2">
+                  <?= csrf_field() ?>
                   <input type="hidden" name="action" value="pay">
                   <input type="submit" class="btn btn-primary" value="<?= lang('Host.finishPayment') ?>">
                 </form>

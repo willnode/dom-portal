@@ -8,10 +8,11 @@
 
   <div class="container">
     <div class="alert alert-danger">
-    <?= lang('Interface.confirmationHint') ?> <b><?= esc($email) ?></b>.
+      <?= lang('Interface.confirmationHint') ?> <b><?= esc($email) ?></b>.
     </div>
     <div class="d-flex">
       <form method="post" class="my-2">
+        <?= csrf_field() ?>
         <input type="hidden" name="action" value="resend">
         <input type="submit" class="btn btn-success" onclick="return confirm('<?= lang('Interface.confirmationPrompt') ?>')" value="<?= lang('Interface.resendConfirmationEmail') ?>">
       </form>

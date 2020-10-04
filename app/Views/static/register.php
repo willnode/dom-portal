@@ -13,6 +13,7 @@
     </div>
     <div class="col-md-4">
       <form method="POST" class="container h-100 d-flex flex-column justify-content-center text-center">
+        <?= csrf_field() ?>
         <h1 class="mb-2"><?= lang('Interface.register') ?></h1>
         <?= $errors ?>
 

@@ -6,7 +6,7 @@
 <body>
   <?= view('user/navbar') ?>
   <div class="container">
-  <?= view('user/host/navbar') ?>
+    <?= view('user/host/navbar') ?>
     <div class="card">
       <div class="row">
         <div class="col-md-6 col-xl-3">

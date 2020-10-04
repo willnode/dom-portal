@@ -9,6 +9,7 @@
     <?= view('user/host/navbar') ?>
     <?php $i = 0; foreach (array_reverse($deploys) as $deploy) : ?>
       <form class="card" method="POST">
+        <?= csrf_field() ?>
         <div class="card-body">
           <details <?= $i++ === 0 ? 'open' : '' ?>>
             <summary><?= $deploy->updated_at->humanize() ?></summary>

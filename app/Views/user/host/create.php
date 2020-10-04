@@ -10,6 +10,7 @@
       <h1><?= lang('Host.newHost') ?></h1>
       <?= $validation ? $validation->listErrors() : '' ?>
       <form method="POST" name="box">
+				<?= csrf_field() ?>
         <div class="row">
           <div class="col-lg-4">
             <div class="card my-2">

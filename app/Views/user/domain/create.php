@@ -9,6 +9,7 @@
     <h1>Order Domain</h1>
     <?= isset($validation) ? $validation->listErrors() : '' ?>
     <form method="POST" name="upgrade">
+      <?= csrf_field() ?>
       <div class="row">
         <div class="col-lg-6">
           <div class="card">

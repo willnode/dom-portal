@@ -16,6 +16,7 @@
 					</div>
 					<p>Mohon ketik "YA" untuk menyetujui penghapusan akun.</p>
 					<form method="POST">
+						<?= csrf_field() ?>
 						<input type="text" name="wordpass" class="form-control" required>
 						<input type="submit" value="Hapus Akun" class="mt-2 form-control btn btn-danger">
 					</form>

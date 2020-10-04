@@ -13,6 +13,7 @@
 		</div>
 		<div class="col-md-4">
 			<form method="POST" class="container h-100 d-flex flex-column justify-content-center text-center">
+				<?= csrf_field() ?>
 				<h1 class="mb-4 h3"><?= lang('Interface.recoverYourPassword') ?></h1>
 				<p><small>Masukkan password baru untuk diganti</small></p>
 				<input type="password" name="password" placeholder="<?= lang('Interface.password') ?>" class="form-control mb-2" required>
