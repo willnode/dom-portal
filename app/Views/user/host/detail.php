@@ -6,15 +6,7 @@
 <body>
   <?= view('user/navbar') ?>
   <div class="container">
-    <h1 class="mb-3 d-flex">
-      <div><?= lang('Host.manageHost') ?></div>
-
-      <a href="/user/host/see/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success ml-auto"><?= lang('Host.check', ['Login']) ?></a>
-      <a href="/user/host/dns/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success"><?= lang('Host.check', ['DNS']) ?></a>
-      <a href="/user/host/ssl/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success"><?= lang('Host.check', ['SSL']) ?></a>
-      <a href="/user/host/deploys/<?= $host->id ?>" class="mt-3 mr-3 btn btn-success"><?= lang('Host.check', ['Deploy']) ?></a>
-      <a href="/user/host/upgrade/<?= $host->id ?>" class="mt-3 btn btn-primary">Upgrade</a>
-  </h1>
+    <?= view('user/host/navbar') ?>
     <div class="row">
       <div class="col-lg-4">
         <div class="card">

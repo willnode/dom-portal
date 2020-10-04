@@ -7,6 +7,7 @@
   <?= view('user/navbar') ?>
 
   <div class="container mb-3">
+    <?= view('user/host/navbar') ?>
     <div class="row">
       <div class="col-md-4 mb-3">
         <div class="card">

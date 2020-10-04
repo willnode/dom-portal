@@ -6,7 +6,7 @@
 <body>
   <?= view('user/navbar') ?>
   <div class="container">
-    <h1 class="mb-3"><?= lang('Host.manageInvoice') ?></h1>
+    <?= view('user/host/navbar') ?>
     <div class="row">
       <div class="col-md-6">
         <div class="card">
@@ -50,7 +50,7 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
-            <h3><?= lang('Interface.archives')?></h3>
+            <h3><?= lang('Interface.archives') ?></h3>
             <?php foreach ($history as $item) : ?>
               <div class="card">
                 <div class="card-body">

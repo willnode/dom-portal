@@ -308,6 +308,11 @@
         $('#domain-renew').toggleClass('d-none', !includeDomain);
         if (includeDomain) {
           var dommod = window.box.domain_mode.value;
+          window.box.custom_cname.disabled = dommod !== 'custom';
+          if (window.box.buy_cname) {
+            window.box.buy_cname.disabled = dommod !== 'buy';
+            window.box.buy_scheme.disabled = dommod !== 'buy';
+          }
           if (dommod === 'buy' && window.box.buy_scheme) {
             scheme = parseInt(schemes[window.box.buy_scheme.value]['price_' + currency]);
             if (years > 1) {
@@ -318,6 +323,12 @@
           $('#dm-free').toggleClass('d-none', dommod !== 'free');
           $('#dm-buy').toggleClass('d-none', dommod !== 'buy');
           $('#dm-custom').toggleClass('d-none', dommod !== 'custom');
+        } else {
+          window.box.custom_cname.disabled = true;
+          if (window.box.buy_cname) {
+            window.box.buy_cname.disabled = true;
+            window.box.buy_scheme.disabled = true;
+          }
         }
         var unit = mode == 'topup' ? 0 : plans[plan]['price_' + currency];
         window.box.years.disabled = unit == 0 || mode == 'upgrade';

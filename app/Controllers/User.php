@@ -320,6 +320,7 @@ class User extends BaseController
 	{
 		$shown = ($_GET['show'] ?? '') === 'password';
 		return view('user/host/see', [
+			'host' => $host,
 			'id' => $host->id,
 			'slave' => $host->server->alias,
 			'user' => $host->username,
@@ -349,6 +350,15 @@ class User extends BaseController
 	protected function sslHost($host)
 	{
 		if ($this->request->getMethod() === 'post') {
+			if (($_POST['action'] ?? '') == 'fix3') {
+				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, ['ssl']);
+				(new VirtualMinShell())->requestLetsEncrypt($host->domain, $host->server->alias);
+				return $this->response->redirect('/user/host/ssl/' . $host->id);
+			} else if (($_POST['action'] ?? '') == 'fix4') {
+				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, ['ssl']);
+				(new VirtualMinShell())->requestLetsEncrypt($host->domain, $host->server->alias);
+				return $this->response->redirect('/user/host/ssl/' . $host->id);
+			}
 			$t = [0, 0, 0, 0];
 			$domain = $host->domain;
 			$heads = @get_headers("http://$domain/");
@@ -482,7 +492,7 @@ class User extends BaseController
 					lang('Host.formatInvoiceAlt', [
 						"<b>$plan</b>",
 						"<b>$metadata->domain</b>",
-					  ]) . lang("Host.formatInvoiceSum", ["<b>$metadata->price</b>"]),
+					]) . lang("Host.formatInvoiceSum", ["<b>$metadata->price</b>"]),
 					$metadata->_challenge
 				);
 				if ($pay && isset($pay->sessionID)) {

@@ -6,10 +6,7 @@
 <body>
   <?= view('user/navbar') ?>
   <div class="container">
-    <div class="d-flex mb-3">
-      <h1>Deployment Host</h1>
-      <a href="/user/host/detail/<?= $host->id ?>" class="mt-3 ml-auto btn btn-secondary">Kembali</a>
-    </div>
+    <?= view('user/host/navbar') ?>
     <?php $i = 0; foreach (array_reverse($deploys) as $deploy) : ?>
       <form class="card" method="POST">
         <div class="card-body">

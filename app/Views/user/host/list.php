@@ -33,7 +33,7 @@
                   <td><a href="/user/host/detail/<?= $host->id ?>"><?= $host->domain ?></a></td>
                   <td><?= $host->plan->alias ?></td>
                   <td><?= ucfirst($host->status) ?></td>
-                  <td><?= $host->expiry_at->humanize() ?> &mdash; <?= $host->expiry_at->toDateString() ?></td>
+                  <td class="<?= $host->expiry_at->subMonths(1)->getTimestamp() < time() ? 'bg-warning text-danger font-weight-bold' : '' ?>"><?= $host->expiry_at->humanize() ?> &mdash; <?= $host->expiry_at->toDateString() ?></td>
                 </tr>
               <?php endforeach ?>
               <?php if (count($list) === 0) : ?>
