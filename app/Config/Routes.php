@@ -32,7 +32,7 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
 $routes->post('/notify', 'Home::notify');
-$routes->post('/notifyws', 'Home::notifyws');
+$routes->post('/notifyws/(:any)', 'Home::notifyws/$1');
 $routes->get('/verify', 'Home::verify');
 $routes->get('/start', 'Home::import');
 $routes->add('/forgot_reset', 'Home::forgot_reset');
