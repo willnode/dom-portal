@@ -175,6 +175,15 @@ class Home extends BaseController
 		throw new PageNotFoundException();
 	}
 
+	public function notifyws($secret)
+	{
+		if ($this->request->getMethod() === 'post' && $secret === $this->request->config->paymentSecret) {
+			log_message('notice', 'PURCHASE WS: '.file_get_contents('php://input'));
+			return "OK";
+		}
+		throw new PageNotFoundException();
+	}
+
 	public function verify()
 	{
 		if (!empty($_GET['code'])) {
