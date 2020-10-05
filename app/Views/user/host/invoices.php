@@ -145,6 +145,7 @@
                 <?= lang('Host.cancelInvoiceHint') ?>
               </p>
               <form method="post" class="my-2">
+                <?= csrf_field() ?>
                 <input type="hidden" name="action" value="cancel">
                 <input type="submit" class="btn btn-danger" value="<?= lang('Host.cancelInvoice') ?>" onclick="return confirm('<?= lang('Host.cancelInvoceConfirm') ?>')">
               </form>
