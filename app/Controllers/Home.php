@@ -9,6 +9,7 @@ use App\Libraries\LiquidRegistrar;
 use App\Libraries\Recaptha;
 use App\Libraries\SendGridEmail;
 use App\Libraries\TemplateDeployer;
+use App\Libraries\TransferWiseGate;
 use App\Libraries\VirtualMinShell;
 use App\Models\HostDeploysModel;
 use App\Models\HostModel;
@@ -32,7 +33,7 @@ class Home extends BaseController
 		if (
 			isset($_GET['id'], $_GET['challenge'], $_GET['secret']) &&
 			($_GET['secret'] == $this->request->config->IpaymuSecret &&
-				isset($_POST['trx_id'], $_POST['sid'], $_POST['status'], $_POST['via']) &&
+				isset($_POST['trx_id'], $_POST['status'], $_POST['via']) &&
 				$_POST['status'] == 'berhasil' // iPaymu notification
 			)
 		) {
@@ -122,7 +123,6 @@ class Home extends BaseController
 						$login->trustiness = $metadata->plan;
 						(new LoginModel())->save($login);
 					}
-
 				}
 				if ($metadata->addons) {
 					$host->addons += $metadata->addons * 1024;
@@ -178,8 +178,40 @@ class Home extends BaseController
 	public function notifyws()
 	{
 		if ($this->request->getMethod() === 'post') {
-			log_message('notice', 'PURCHASE WS: '.file_get_contents('php://input'));
-			return "OK";
+			$json = file_get_contents('php://input');
+			$gate = (new TransferWiseGate());
+			if ($gate->sign($json, $this->request->getHeader('X-Signature-SHA256'))) {
+				if ($data = $gate->getTransferInfo(json_decode($json)->resource->id ?? '')) {
+					if ($ref = intval(trim($data->details->reference, ' \t\n\r\0#"'))) {
+						/** @var Purchase */
+						if (($invoice = (new PurchaseModel())->find($ref))) {
+							$metadata = $invoice->metadata;
+							// 0.5 USD offset for in case of there's rounding error or something I don't aware of.
+							// Basically if you been here and read this, it's okay to not include transaction fee from us.
+							// But don't take this for granted! I won't solve any transaction error if you made a purchase without it :)
+							if ($metadata->price_unit === strtolower($data->targetCurrency) && $metadata->price <= $data->targetValue + 0.5) {
+								$metadata->_status = $data->status;
+								$metadata->_id = $data->id;
+								$invoice->metadata = $metadata->toRawArray();
+								(new PurchaseModel())->save($invoice);
+								if ($invoice->status === 'pending' && $data->status === 'funds_converted') {
+									// Execute the fuckin payment. Imitate what iPaymu did
+									$_GET = [];
+									$_GET['id'] = $invoice->id;
+									$_GET['challenge'] = $metadata->_challenge;
+									$_GET['secret'] = $this->request->config->IpaymuSecret;
+									$_POST = [];
+									$_POST['trx_id'] = $metadata->_id;
+									$_POST['status'] = 'berhasil';
+									$_POST['via'] = "Transferwise ($data->targetValue $data->targetCurrency)";
+									$this->notify();
+								}
+							}
+						}
+					}
+				}
+				return 'OK';
+			}
 		}
 		throw new PageNotFoundException();
 	}

@@ -140,6 +140,7 @@ class User extends BaseController
 							"_via" => null,
 							"_issued" => date('Y-m-d H:i:s'),
 							"_invoiced" => null,
+							"_status" => null,
 						]);
 						if ($data['domain_mode'] === 'free') {
 							$hosting->domain = $hosting->username . $server->domain;
@@ -254,6 +255,7 @@ class User extends BaseController
 				"_via" => null,
 				"_issued" => date('Y-m-d H:i:s'),
 				"_invoiced" => null,
+				"_status" => null,
 			]);
 			/** @var Plan */
 			$plan = (new PlanModel())->find($plan);

@@ -25,7 +25,6 @@ class SendGridEmail
     public function send($id, $asm, $params)
     {
         if (!($template = $this->sendGridTemplates[$id][lang('Interface.code')] ?? '')) {
-            echo 'A'; exit;
             return;
         }
         $ch = curl_init($this->sendGridUrl);

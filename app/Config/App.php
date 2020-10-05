@@ -11,6 +11,9 @@ class App extends BaseConfig
 	public $ipaymuURL;
 	public $ipaymuKey;
 	public $IpaymuSecret;
+	public $transferWiseURL;
+	public $transferWiseSecret;
+	public $transferWisePID;
 	public $recapthaURL;
 	public $recapthaSite;
 	public $recapthaSecret;
