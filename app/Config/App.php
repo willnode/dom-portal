@@ -8,9 +8,9 @@ class App extends BaseConfig
 	public $sudoWebminUser;
 	public $sudoWebminPass;
 	public $sudoWebminPort;
-	public $paymentURL;
-	public $paymentKey;
-	public $paymentSecret;
+	public $ipaymuURL;
+	public $ipaymuKey;
+	public $IpaymuSecret;
 	public $recapthaURL;
 	public $recapthaSite;
 	public $recapthaSecret;

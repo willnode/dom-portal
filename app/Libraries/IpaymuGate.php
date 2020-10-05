@@ -4,13 +4,13 @@ namespace App\Libraries;
 
 use Config\Services;
 
-class PaymentGate
+class IpaymuGate
 {
 	public function createPayment($id, $amount, $name, $challenge)
 	{
-		$url = Services::request()->config->paymentURL;
-		$key = Services::request()->config->paymentKey;
-		$secret = Services::request()->config->paymentSecret;
+		$url = Services::request()->config->ipaymuURL;
+		$key = Services::request()->config->ipaymuKey;
+		$secret = Services::request()->config->IpaymuSecret;
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, [
@@ -22,14 +22,12 @@ class PaymentGate
 			'format' => 'json',
 			'ureturn' => base_url("user/host/?status=return"),
 			'uncancel' => base_url('user/host/?status=cancel'),
-			'unotify' =>  base_url("notify?id=$id&challenge=$challenge&secret=$secret"),
+			'unotify' =>  base_url("home/notify?id=$id&challenge=$challenge&secret=$secret"),
 			'buyer_name' => Services::session()->name,
 			'buyer_email' => Services::session()->email,
 			'buyer_phone' => Services::session()->phone,
 			'auto_redirect' => 10,
 		]);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
 		// execute!
 		$response = curl_exec($ch);

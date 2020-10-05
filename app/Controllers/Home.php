@@ -31,7 +31,7 @@ class Home extends BaseController
 	{
 		if (
 			isset($_GET['id'], $_GET['challenge'], $_GET['secret']) &&
-			($_GET['secret'] == $this->request->config->paymentSecret &&
+			($_GET['secret'] == $this->request->config->IpaymuSecret &&
 				isset($_POST['trx_id'], $_POST['sid'], $_POST['status'], $_POST['via']) &&
 				$_POST['status'] == 'berhasil' // iPaymu notification
 			)
@@ -175,9 +175,9 @@ class Home extends BaseController
 		throw new PageNotFoundException();
 	}
 
-	public function notifyws($secret)
+	public function notifyws()
 	{
-		if ($this->request->getMethod() === 'post' && $secret === $this->request->config->paymentSecret) {
+		if ($this->request->getMethod() === 'post') {
 			log_message('notice', 'PURCHASE WS: '.file_get_contents('php://input'));
 			return "OK";
 		}

@@ -14,7 +14,7 @@ use App\Entities\ServerStat;
 use App\Libraries\BannedNames;
 use App\Libraries\CountryCodes;
 use App\Libraries\LiquidRegistrar;
-use App\Libraries\PaymentGate;
+use App\Libraries\IpaymuGate;
 use App\Libraries\SendGridEmail;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\VirtualMinShell;
@@ -486,7 +486,7 @@ class User extends BaseController
 				}
 			} else if ($action === 'pay' && $metadata->price_unit === 'idr') {
 				$plan = (new PlanModel())->find($metadata->plan)->alias ?? '';
-				$pay = (new PaymentGate())->createPayment(
+				$pay = (new IpaymuGate())->createPayment(
 					$current->id,
 					$metadata->price,
 					lang('Host.formatInvoiceAlt', [
@@ -497,7 +497,7 @@ class User extends BaseController
 				);
 				if ($pay && isset($pay->sessionID)) {
 					return $this->response->redirect(
-						$this->request->config->paymentURL . $pay->sessionID
+						$this->request->config->ipaymuURL . $pay->sessionID
 					);
 				}
 				return $this->response->redirect('/user/host/invoices/' . $host->id);
