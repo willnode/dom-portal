@@ -18,9 +18,6 @@
     <li class="nav-item">
         <a class="nav-link <?=$path == 'deploys' ? 'active' : '' ?>" href="/user/host/deploys/<?= $host->id ?>">Deploy</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link <?=$path == 'git' ? 'active' : '' ?>" href="/user/host/git/<?= $host->id ?>">Git</a>
-    </li>
     <li class="nav-item ml-auto">
         <span class="nav-link"><?=$host->domain?></span>
     </li>
