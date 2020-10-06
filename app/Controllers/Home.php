@@ -216,6 +216,16 @@ class Home extends BaseController
 		throw new PageNotFoundException();
 	}
 
+	public function notifypp()
+	{
+		if ($this->request->getMethod() === 'post') {
+			log_message('notice', json_encode($this->request->getHeaders()));
+			log_message('notice', $this->request->getBody());
+			return 'OK';
+		}
+		throw new PageNotFoundException();
+	}
+
 	public function verify()
 	{
 		if (!empty($_GET['code'])) {
