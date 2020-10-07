@@ -402,11 +402,13 @@ class User extends BaseController
 				$username
 			);
 			if ($host->plan_id === 1) {
-				(new VirtualMinShell)->removeFromServerDNS($host->username);
-				(new VirtualMinShell)->addToServerDNS(
-					$username,
-					$host->server->ip
+				$newcname = $username.$host->server->domain;
+				(new VirtualMinShell())->cnameHost(
+					$host->domain,
+					$host->server->alias,
+					$newcname
 				);
+				$host->domain = $newcname;
 			}
 			$host->username = $username;
 			(new HostModel())->save($host);
