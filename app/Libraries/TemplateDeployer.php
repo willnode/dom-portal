@@ -38,7 +38,7 @@ class TemplateDeployer
         $config = array_replace_recursive($config, Yaml::parse($template));
         if (!($path = $config['source'] ?? '')) {
             // empty zip
-            $path = 'https://portal.domcloud.id/null.zip';
+            $path = $config['source'] = 'https://portal.domcloud.id/null.zip';
         }
 
         $tdomain = strtolower(parse_url($path, PHP_URL_HOST));
