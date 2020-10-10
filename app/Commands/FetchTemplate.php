@@ -6,6 +6,7 @@ use App\Libraries\VirtualMinShell;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use Config\Database;
+use Symfony\Component\Yaml\Yaml;
 
 class FetchTemplate extends BaseCommand
 {
@@ -20,7 +21,7 @@ class FetchTemplate extends BaseCommand
         $dir = ROOTPATH . 'templates' . DIRECTORY_SEPARATOR;
         foreach (scandir($dir) as $file) {
             if (pathinfo($file, PATHINFO_EXTENSION) !== 'yml') continue;
-            $obj = yaml_parse_file($dir.$file);
+            $obj = Yaml::parse($dir.$file);
             $id = substr($file, 0, strlen($file) - 4);
             $domains = ($obj['target']['domains'] ?? []);
             $matches = ($obj->target->matches ?? ['.*']);

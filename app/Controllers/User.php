@@ -26,7 +26,6 @@ use App\Models\PlanModel;
 use App\Models\PurchaseModel;
 use App\Models\SchemeModel;
 use App\Models\ServerModel;
-use App\Models\ServerStatModel;
 use App\Models\TemplatesModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Config\Services;
@@ -179,12 +178,7 @@ class User extends BaseController
 						$this->login->email,
 						$hosting->domain,
 						$server->alias,
-						$plan->alias,
-						$plan->features
-					);
-					(new VirtualMinShell)->addToServerDNS(
-						$hosting->username,
-						$server->ip
+						$plan->alias
 					);
 					log_message('notice', VirtualMinShell::$output);
 				}
@@ -430,12 +424,8 @@ class User extends BaseController
 				}
 				$domain = strtolower($_POST['cname']);
 				$server = $host->server;
-				if ($host->domain === $host->username . $server->domain) {
-					(new VirtualMinShell)->removeFromServerDNS(
-						$host->username
-					);
-				} else if (strpos($domain, $server->domain) !== false) {
-					return; // Nice try, hackers.
+				if (strpos($domain, $server->domain) !== false) {
+					return; // Nice try hackers
 				}
 				(new VirtualMinShell())->cnameHost(
 					$host->domain,
@@ -444,11 +434,6 @@ class User extends BaseController
 				);
 				$host->domain = $domain;
 				(new HostModel())->save($host);
-			} else {
-				(new VirtualMinShell)->addToServerDNS(
-					$host->username,
-					$host->server->ip
-				);
 			}
 			return redirect()->back();
 		}
@@ -517,7 +502,6 @@ class User extends BaseController
 	protected function deleteHost($host)
 	{
 		if ($this->request->getMethod() === 'post' && $host->plan_id == 1 && ($_POST['wordpass'] ?? '') === $host->username) {
-			(new VirtualMinShell)->removeFromServerDNS($host->domain);
 			(new VirtualMinShell())->deleteHost($host->domain, $host->server->alias);
 			(new HostModel())->delete($host->id);
 			log_message('notice', VirtualMinShell::$output);

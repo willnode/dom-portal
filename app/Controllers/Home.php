@@ -90,8 +90,7 @@ class Home extends BaseController
 							$login->email,
 							$host->domain,
 							$host->server->alias,
-							$plan->alias,
-							$plan->features
+							$plan->alias
 						);
 						if ($metadata->template) {
 							(new TemplateDeployer())->schedule(
@@ -109,10 +108,7 @@ class Home extends BaseController
 						(new VirtualMinShell())->upgradeHost(
 							$host->domain,
 							$host->server->alias,
-							$host->plan->alias,
-							$host->plan->plan_features,
 							$plan->alias,
-							$plan->features
 						);
 					}
 					$host->expiry_at = $metadata->expiration;

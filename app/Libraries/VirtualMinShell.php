@@ -36,41 +36,18 @@ class VirtualMinShell
 		$port = Services::request()->config->sudoWebminPort;
 		return "https://$server.domcloud.id:$port/virtual-server/remote.cgi?$params";
 	}
-	protected $featureFlags = [
-		"&dir=&webmin=&web=&unix=",
-		"&dns=",
-		"&virtualmin-awstats=",
-	];
-	public function createHost($username, $password, $email, $domain, $server, $plan, $privilenge)
+	public function createHost($username, $password, $email, $domain, $server, $plan)
 	{
-		$flags = "";
-		foreach ($this->featureFlags as $level => $flag) {
-			if ($privilenge >= $level) {
-				$flags .= $flag;
-			}
-			$epassword = urlencode($password);
-			$cmd = "program=create-domain&user=$username&pass=$epassword" .
-				"&email=$email&domain=$domain&plan=$plan&limits-from-plan=$flags";
-			$this->execute($this->wrapWget($cmd, $server), " Create Host for $domain ");
-		}
+		$epassword = urlencode($password);
+		$cmd = "program=create-domain&user=$username&pass=$epassword" .
+			"&email=$email&domain=$domain&plan=$plan&limits-from-plan=" .
+			"&dir=&webmin=&virtualmin-nginx=&virtualmin-nginx-ssl=&unix=";
+		$this->execute($this->wrapWget($cmd, $server), " Create Host for $domain ");
 	}
-	public function upgradeHost($domain, $server, $oldprivilenge, $newplan, $newprivilenge)
+	public function upgradeHost($domain, $server, $newplan)
 	{
 		$cmd = "program=modify-domain&domain=$domain&apply-plan=$newplan";
 		$this->execute($this->wrapWget($cmd, $server));
-		if ($oldprivilenge !== $newprivilenge) {
-			$command = $newprivilenge > $oldprivilenge ? 'enable-feature' : 'disable-feature';
-			$from = $newprivilenge > $oldprivilenge ? $oldprivilenge : $newprivilenge;
-			$to = $newprivilenge < $oldprivilenge ? $oldprivilenge : $newprivilenge;
-			$flags = "";
-			foreach ($this->featureFlags as $level => $flag) {
-				if ($level > $from && $level <= $to) {
-					$flags .= $flag;
-				}
-			}
-			$cmd = "program=$command&domain=$domain$flags";
-			$this->execute($this->wrapWget($cmd, $server));
-		}
 	}
 	public function renameHost($domain, $server, $newusername)
 	{
@@ -81,16 +58,6 @@ class VirtualMinShell
 	{
 		$cmd = "program=modify-domain&domain=$domain&newdomain=$newdomain";
 		$this->execute($this->wrapWget($cmd, $server), " Change domain for $domain ");
-	}
-	public function addToServerDNS($username, $slave_ip)
-	{
-		// $cmd = "program=modify-dns&domain=dom.my.id&add-record=$username+A+$slave_ip&add-record=www.$username+A+$slave_ip";
-		// $this->execute($this->wrapWget($cmd, 'portal'), " Adding DNS record for $username to central DOM ");
-	}
-	public function removeFromServerDNS($username)
-	{
-		// $cmd = "program=modify-dns&domain=dom.my.id&remove-record=$username+A&remove-record=www.$username+A";
-		// $this->execute($this->wrapWget($cmd, 'portal'), " Removing DNS record for $username to central DOM ");
 	}
 	public function resetHost($domain, $server, $newpw)
 	{
