@@ -65,4 +65,5 @@
 	'upgrade' => 'Upgrade',
 	'extend' => 'Perpanjang',
 	'topup' => 'Topup',
+	'processing' => 'Memproses',
 ];

@@ -64,4 +64,5 @@
 	'renew' => 'Renew',
 	'upgrade' => 'Upgrade',
 	'extend' => 'Extend',
+	'processing' => 'Processing',
 ];

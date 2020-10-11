@@ -220,7 +220,7 @@
             <div class="row g-2" style="color: white; fill: white">
               <?php foreach ($templates as $t) : ?>
                 <div class="col-md-6 my-1">
-                  <div class="btn btn-block btn-dark text-center" style="background-color: <?= $t->color ?>;" onclick="submitT(this)" data-dismiss="modal" data-template="<?= base64_encode($t->template) ?>">
+                  <div class="btn btn-block btn-dark text-center" style="background-color: <?= $t->color ?>;" onclick="submitT(this)" data-dismiss="modal" data-template="<?= $t->template ?>">
                     <div class="w-50 mx-auto my-2"><?= $t->logo ?></div>
                     <p class="mb-0"><?= $t->name ?></p>
                   </div>
@@ -240,7 +240,7 @@
 
     <script>
       function submitT(t) {
-        window.box.template.value = atob($(t).data('template'));
+        fetch($(t).data('template')).then(x => x.text().then(y => window.box.template.value = y));
       }
 
       function useRandPass() {
@@ -298,7 +298,7 @@
         minimumFractionDigits: digits,
       });
       window.box.onsubmit = (e) => {
-        $('#submitBtn').prop('disabled', true).val('⏳ Memproses...');
+        $('#submitBtn').prop('disabled', true).val('⏳ <?= lang('Interface.processing') ?>...');
       }
       let activedomain = null;
 

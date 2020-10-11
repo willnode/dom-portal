@@ -28,117 +28,148 @@ class TemplateDeployer
     public function deploy($server, $domain, $username, $password, $template, $timeout)
     {
         $timing = microtime(true);
-        $config = [
-            'source' => '',
-            'directory' => '${REPO}',
-            'root' => 'public_html',
-            'features' => [],
-            'commands' => [],
-        ];
-        $config = array_replace_recursive($config, Yaml::parse($template));
-        if (!($path = $config['source'] ?? '')) {
-            // empty zip
-            $path = $config['source'] = 'https://portal.domcloud.id/null.zip';
+        // $config = [
+        //     'debug' => 'false',
+        //     'source' => '',
+        //     'directory' => '',
+        //     'root' => 'public_html',
+        //     'nginx' => [],
+        //     'features' => [],
+        //     'commands' => [],
+        // ];
+        $config = Yaml::parse($template);
+        $debug = $config['debug'] ?? false;
+        $log = '';
+
+        $ssh = new SSH2($server . '.domcloud.id');
+        if (!$ssh->login($username, $password)) {
+            $log .= 'CRITICAL: SSH login failed. Most procedure will not execute.';
+            $ssh = null;
+        } else {
+            $ssh->setTimeout($timeout);
         }
 
-        $tdomain = strtolower(parse_url($path, PHP_URL_HOST));
-        $tscheme = strtolower(parse_url($path, PHP_URL_SCHEME));
-        $tpath = (parse_url($path, PHP_URL_PATH));
-        $thash = (parse_url($path, PHP_URL_FRAGMENT));
-        $flag_enable_ssl = 0;
-        if ($tscheme === 'https' || $tscheme === 'http') {
-            if ($tdomain === 'github.com' && preg_match('/^\/(\w+)(\/\w+)/', $tpath, $matches)) {
-                $tscheme = 'github';
-                $tdomain = $matches[1];
-                $tpath = $matches[2];
-            } else if ($tdomain === 'gitlab.com' && preg_match('/^\/(\w+)(\/\w+)/', $tpath, $matches)) {
-                $tscheme = 'gitlab';
-                $tdomain = $matches[1];
-                $tpath = $matches[2];
+        $log .= '#----- DEPLOYMENT STARTED -----#' . "\n";
+        $log .= 'execution time in UTC: ' . time() . "\n\n";
+        if (!empty($config['root'])) {
+            $log .= '#----- Configuring web root -----#' . "\n";
+            $res = (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server);
+            if ($debug)
+                $log .= $res;
+            $log .= "\ndone\n";
+        }
+        if (!empty($path = $config['source']) && $ssh) {
+            $log .= '#----- Fetching directory content from source -----#' . "\n";
+            $directory = $config['directory'] ?? '';
+            $tdomain = strtolower(parse_url($path, PHP_URL_HOST));
+            $tscheme = strtolower(parse_url($path, PHP_URL_SCHEME));
+            $tpath = parse_url($path, PHP_URL_PATH);
+            $thash = parse_url($path, PHP_URL_FRAGMENT);
+            $tpass = parse_url($path, PHP_URL_PASS);
+            // Check if it was HTTP
+            if ($tscheme === 'https' || $tscheme === 'http') {
+                // expand clone/github/gitlab URLs
+                if (substr_compare($tscheme, '.git', -strlen('.git')) === 0) {
+                    // use git clone
+                    $cloning = true;
+                } else if ($tdomain === 'github.com' && preg_match('/^\/(\w+)(\/\w+)/', $tpath, $matches)) {
+                    $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
+                    $path = "https://github.com/$matches[1]$matches[2]/archive/$thash.zip";
+                    $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
+                    $directory = "$tpath-$thash";
+                } else if ($tdomain === 'gitlab.com' && preg_match('/^\/(\w+)(\/\w+)/', $tpath, $matches)) {
+                    $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
+                    $path = "https://gitlab.com/$matches[1]$matches[2]/-/archive/$thash/$tpath-$thash.zip";
+                    $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
+                    $directory = "$tpath-$thash";
+                }
+                // check headers
+                if (!isset($cloning) && array_search('Content-Type: application/zip', get_headers($path)) === false) {
+                    $log .= "WARNING: The resource doesn't have Content-Type: application/zip header. Likely not a zip file.\n";
+                }
+                // build command
+                $cmd = "cd ~/public_html ; rm -rf * .*  ; ";
+                if (isset($cloning)) {
+                    if ($directory) {
+                        $directory = ' -b ' . $directory;
+                    }
+                    $cmd .= "git clone " . escapeshellarg($path) . $directory . " --depth 1 ; ";
+                } else {
+                    $cmd .= "wget -q -O _.zip " . escapeshellarg($path) . " ; ";
+                    $cmd .= "unzip -q -o _.zip ; rm _.zip ; chmod -R 0750 * .* ";
+                    if ($directory) {
+                        $directory = sanitize_shell_arg_dir($directory);
+                        $cmd .= "mv $directory/{.,}* . 2>/dev/null ; rmdir $directory ; ";
+                    }
+                }
+                if ($debug) {
+                    $log .= "$> $cmd\n\n";
+                } else {
+                    if ($tpass) {
+                        $path = str_replace($tpass, '[password]', $path);
+                    }
+                    $log .= (isset($cloning) ? 'Cloning ' : 'Fetching ') . $path . "\n";
+                }
+                // execute
+                $log .= $ssh->exec($cmd);
+                $log .= "\n\ndone with exit code " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
             } else {
-                // ${REPO} flag is useless here
-                $config['directory'] = str_replace('${REPO}', '', $config['directory']);
+                $log .= 'Error: unknown URL scheme. must be either HTTP or HTTPS' . "\n";
             }
         }
-        if ($tscheme === 'github') {
-            // Get tag
-            $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
-            // Replace with proper ZIP URL
-            $config['source'] = "https://github.com/$tdomain$tpath/archive/$thash.zip";
-            $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
-            $config['directory'] = str_replace('${REPO}', "$tpath-$thash", $config['directory']);
-        }
-        if ($tscheme === 'gitlab') {
-            // Get tag
-            $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
-            // Replace with proper ZIP URL
-            $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
-            $config['source'] = "https://gitlab.com/$tdomain$tpath/-/archive/$thash/$tpath-$thash.zip";
-            $config['directory'] = str_replace('${REPO}', "$tpath-$thash", $config['directory']);
-        }
-        if ($config['root'] ?? null) {
-            (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server);
-        }
-        if (count($config['features']) > 0) {
-            $features = array_intersect($config['features'], ['mysql', 'postgres', 'ssl']);
-            (new VirtualMinShell())->enableFeature($domain, $server, $features);
+        if (!empty($config['features'])) {
+            $log .= '#----- Applying features -----#' . "\n";
             foreach ($config['features'] as $feature) {
-                switch ($feature) {
+                $args = explode(' ', $feature);
+                if (!$args) continue;
+                switch ($feature[0]) {
                     case 'mysql':
-                        (new VirtualMinShell())->createDatabase($username . '_db', 'mysql', $domain, $server);
+                        $log .= (new VirtualMinShell())->enableFeature($domain, $server, ['mysql']);
+                        $log .= (new VirtualMinShell())->createDatabase($username . '_db', 'mysql', $domain, $server);
                         break;
                     case 'postgres':
-                        (new VirtualMinShell())->createDatabase($username . '_db', 'postgres', $domain, $server);
+                        $log .= (new VirtualMinShell())->enableFeature($domain, $server, ['postgres']);
+                        $log .= (new VirtualMinShell())->createDatabase($username . '_db', 'postgres', $domain, $server);
                         break;
                     case 'ssl':
-                        $flag_enable_ssl = 1;
+                        // SSL is enabled by default
+                        if ($config['root'] && $ssh) {
+                            $cmd = 'mkdir -m 0750 -p ' . sanitize_shell_arg_dir($config['root'] . '/.well-known');
+                            if ($debug) {
+                                $cmd = "$> $cmd\n";
+                            }
+                            $log .= $ssh->exec($cmd);
+                        }
+                        $log .= (new VirtualMinShell())->requestLetsEncrypt($domain, $server);
                         break;
                 }
             }
         }
-        // I know, this is a bit naive to check headers first before actually do SSH. But do we have options?
-        if (array_search('Content-Type: application/zip', get_headers($config['source'])) !== false) {
-            $path = escapeshellarg($config['source']);
-            $cmd = "cd /home/$username ; rm -rf public_html/* ; cd public_html ; ";
-            $cmd .= "wget -q -O __extract.zip $path ; ";
-            $cmd .= 'unzip -q -o __extract.zip ; rm __extract.zip ; ';
-            if ($config['directory']) {
-                $dir = sanitize_shell_arg_dir($config['directory']);
-                $cmd .= "mv $dir/{.,}* . 2>/dev/null ; rmdir $dir ; ";
+        if (!empty($config['nginx'])) {
+            $log .= '#----- Applying NginX config -----#' . "\n";
+            $res = (new VirtualMinShell)->setNginxConfig($domain, $server, json_encode($config['nginx']));
+            if ($res) {
+                $log .= "$res\n";
+            } else {
+                $log .= "NginX config applied\n";
             }
-            $cmd .= 'chmod -R 0755 * ; ';
+        }
+        if (!empty($config['commands']) && $ssh) {
+            $log .= '#----- Executing commands -----#' . "\n";
+            $cmd = "cd ~/public_html";
             $cmd .= "DATABASE='{$username}_db' ; ";
             $cmd .= "DOMAIN='$domain' ; ";
             $cmd .= "USERNAME='$username' ; ";
-            $cmd .= "SCHEME='".($flag_enable_ssl ? 'https' : 'http')."' ; ";
             $cmd .= "PASSWORD='$password' ; ";
-            if (count($config['commands']) > 0) {
-                $cmd .= 'echo ==== execution started ==== ; ';
-                $cmd .= implode(' ; ', $config['commands']);
-                if ($flag_enable_ssl) {
-                    $cmd .= ' ; mkdir -m 0755 $HOME/' . sanitize_shell_arg_dir($config['root']) . '/.well-known';
-                }
-                $cmd .= ' ; echo ==== execution finished ==== ';
+            $cmd .= implode(' ; ', $config['commands']);
+            if ($debug) {
+                $log .= "$> $cmd\n\n";
             }
-            $ssh = new SSH2($server . '.domcloud.id');
-            if (!$ssh->login($username, $password)) {
-                return "SSH Login failed";
-            }
-            $ssh->enableQuietMode();
-            $ssh->setTimeout($timeout);
-            $log = $ssh->exec($cmd);
-            $log .= "\n\n=== log errors === \n";
-            $log .= $ssh->getStdError();
-            $log .= "\n=== end of log === \n";
-            $log .= "\n\n exit code: " . json_encode($ssh->getExitStatus());
-            $log .= "\n execution time: " . number_format(microtime(true) - $timing, 3) . " s";
-            $log .= "\n executed commands: " . str_replace($password, '****MASKED****', $cmd);
-            if ($flag_enable_ssl) {
-                (new VirtualMinShell())->requestLetsEncrypt($domain, $server);
-            }
-            return str_replace("\0", "", $log);
-        } else {
-            return "The resource doesn't have Content-Type: application/zip header. Likely not a zip file.";
+            $log .= str_replace($password, '[password]', $ssh->exec($cmd));
+            $log .= "\n\ndone with exit code " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
         }
+        $log .= '#----- DEPLOYMENT ENDED -----#' . "\n";
+        $log .= "\n execution time: " . number_format(microtime(true) - $timing, 3) . " s";
+        return str_replace("\0", "", $log);
     }
 }

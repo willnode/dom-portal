@@ -8,6 +8,7 @@ class App extends BaseConfig
 	public $sudoWebminUser;
 	public $sudoWebminPass;
 	public $sudoWebminPort;
+	public $sudoNginxSecret;
 	public $ipaymuURL;
 	public $ipaymuKey;
 	public $IpaymuSecret;

@@ -10,26 +10,19 @@ class VirtualMinShell
 
 	protected function execute($cmd, $title = '')
 	{
-		if (/*ENVIRONMENT === 'production'*/true || $title === NULL) {
-			set_time_limit(300);
-			$username = Services::request()->config->sudoWebminUser;
-			$password = Services::request()->config->sudoWebminPass;
-			if ($title !== NULL)
-				VirtualMinShell::$output .= 'HOSTING: ' . $title . ' (' . $cmd . ')' . "\n";
-			$ch = curl_init($cmd);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-			$response = curl_exec($ch);
-			if ($title !== NULL)
-				VirtualMinShell::$output .= $response . "\n";
-			curl_close($ch);
-			return $response;
-		} else {
-			VirtualMinShell::$output .= 'HOSTING: ' . $title . "\n";
-			VirtualMinShell::$output .= $cmd . "\n";
-		}
+		set_time_limit(300);
+		$username = Services::request()->config->sudoWebminUser;
+		$password = Services::request()->config->sudoWebminPass;
+		if ($title !== NULL)
+			VirtualMinShell::$output .= 'HOSTING: ' . $title . ' (' . $cmd . ')' . "\n";
+		$ch = curl_init($cmd);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
+		$response = curl_exec($ch);
+		if ($title !== NULL)
+			VirtualMinShell::$output .= $response . "\n";
+		curl_close($ch);
+		return $response;
 	}
 	protected function wrapWget($params, $server)
 	{
@@ -169,5 +162,26 @@ class VirtualMinShell
 		$data = $this->execute($this->wrapWget($cmd, $server), NULL);
 		$data = str_replace('*', '-', $data);
 		return $data;
+	}
+	public function setNginxConfig($domain, $server, $json)
+	{
+		set_time_limit(300);
+		$secret = Services::request()->config->sudoNginxSecret;
+		$ch = curl_init("https://nginx-$server.domcloud.id/?secret=$secret&domain=$domain");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+		$response = curl_exec($ch);
+		curl_close($ch);
+		return $response;
+	}
+	public function getNginxConfig($domain, $server)
+	{
+		set_time_limit(300);
+		$secret = Services::request()->config->sudoNginxSecret;
+		$ch = curl_init("https://nginx-$server.domcloud.id/?secret=$secret&domain=$domain");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		curl_close($ch);
+		return $response;
 	}
 }
