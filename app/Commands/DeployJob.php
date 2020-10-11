@@ -39,10 +39,12 @@ class FetchTemplate extends BaseCommand
                 (new HostModel())->save($host);
             }
             if (!empty($template['source'])) {
-                // Mask password in the URL as
+                // Mask password in the URL (if any) as
                 // we don't have any business with it
                 $tpass = parse_url($template['source'], PHP_URL_PASS);
-                $deploy->template = str_replace($tpass, '****', $deploy->template);
+                if ($tpass) {
+                    $deploy->template = str_replace($tpass, '****', $deploy->template);
+                }
             }
             (new HostDeploysModel())->save($deploy);
         }
