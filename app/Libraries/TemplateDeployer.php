@@ -47,13 +47,13 @@ class TemplateDeployer
         }
 
         $log .= '#----- DEPLOYMENT STARTED -----#' . "\n";
-        $log .= 'execution time in UTC: ' . time() . "\n\n";
+        $log .= 'Time of execution in UTC: ' . date('Y-m-d H:i:s') . "\n\n";
         if (!empty($config['root'])) {
-            $log .= '#----- Configuring web root -----#' . "\n";
-            $log .= (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server);
+            $log .= '#----- CONFIGURING WEB ROOT -----#' . "\n";
+            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server));
         }
         if (!empty($path = $config['source']) && $ssh) {
-            $log .= '#----- Fetching directory content from source -----#' . "\n";
+            $log .= '#----- OVERWRITING HOST FILES WITH SOURCE -----#' . "\n";
             $directory = $config['directory'] ?? '';
             $tdomain = strtolower(parse_url($path, PHP_URL_HOST));
             $tscheme = strtolower(parse_url($path, PHP_URL_SCHEME));
@@ -97,31 +97,41 @@ class TemplateDeployer
                     }
                 }
                 $log .= (isset($cloning) ? 'Cloning ' : 'Fetching ') . $path . "\n";
-                $log .= $tpass ? "$> $cmd\n" : $path;
+                $log .= $tpass ? str_replace($tpass, '[password]', "$> $cmd\n") : "$> $cmd\n";
                 $path = $tpass ? str_replace($tpass, '[password]', $path) : $path;
 
                 // execute
                 $log .= $ssh->exec($cmd);
-                $log .= "\ndone with exit code " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
+                $log .= "\nExit status: " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
             } else {
                 $log .= 'Error: unknown URL scheme. must be either HTTP or HTTPS' . "\n";
             }
         }
+        if (!empty($config['nginx'])) {
+            $log .= '#----- APPLYING NGINX CONFIG -----#' . "\n";
+            $res = (new VirtualMinShell)->setNginxConfig($domain, $server, json_encode($config['nginx']));
+            if ($res) {
+                $log .= "$res\nNginX config discarded.\n";
+            } else {
+                $res = (new VirtualMinShell)->getNginxConfig($domain, $server);
+                $log .= "$res\nNginX config applied.\n";
+            }
+        }
         if (!empty($config['features'])) {
-            $log .= '#----- Applying features -----#' . "\n";
+            $log .= '#----- APPLYING OPTIONAL FEATURES -----#' . "\n";
             foreach ($config['features'] as $feature) {
                 $args = explode(' ', $feature);
                 if (!$args) continue;
                 switch ($args[0]) {
                     case 'mysql':
                         $dbname = ($username . '_' . ($args[1] ?? 'db'));
-                        $log .= (new VirtualMinShell())->enableFeature($domain, $server, ['mysql']);
-                        $log .= (new VirtualMinShell())->createDatabase($dbname, 'mysql', $domain, $server);
+                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, ['mysql']));
+                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->createDatabase($dbname, 'mysql', $domain, $server));
                         break;
                     case 'postgres':
                         $dbname = ($username . '_' . ($args[1] ?? 'db'));
-                        $log .= (new VirtualMinShell())->enableFeature($domain, $server, ['postgres']);
-                        $log .= (new VirtualMinShell())->createDatabase($dbname, 'postgres', $domain, $server);
+                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, ['postgres']));
+                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->createDatabase($dbname, 'postgres', $domain, $server));
                         break;
                     case 'ssl':
                         // SSL is enabled by default
@@ -130,23 +140,14 @@ class TemplateDeployer
                             $log .= "$> $cmd\n";
                             $log .= $ssh->exec($cmd);
                         }
-                        $log .= (new VirtualMinShell())->requestLetsEncrypt($domain, $server);
+                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->requestLetsEncrypt($domain, $server));
                         break;
                 }
             }
         }
-        if (!empty($config['nginx'])) {
-            $log .= '#----- Applying NginX config -----#' . "\n";
-            $res = (new VirtualMinShell)->setNginxConfig($domain, $server, json_encode($config['nginx']));
-            if ($res) {
-                $log .= "$res\n";
-            } else {
-                $log .= "NginX config applied\n";
-            }
-        }
         if (!empty($config['commands']) && $ssh) {
             $dbname = $dbname ?? $username . '_db';
-            $log .= '#----- Executing commands -----#' . "\n";
+            $log .= '#----- EXECUTING COMMANDS -----#' . "\n";
             $cmd = "cd ~/public_html ; ";
             $cmd .= "DATABASE='$dbname' ; ";
             $cmd .= "DOMAIN='$domain' ; ";
@@ -155,7 +156,7 @@ class TemplateDeployer
             $cmd .= implode(' ; ', $config['commands']);
             $log .= str_replace($password, '[password]', "$> $cmd\n\n");
             $log .= str_replace($password, '[password]', $ssh->exec($cmd));
-            $log .= "\ndone with exit code " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
+            $log .= "\nExit status: " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
         }
         $log .= '#----- DEPLOYMENT ENDED -----#' . "\n";
         $log .= "execution time: " . number_format(microtime(true) - $timing, 3) . " s";
