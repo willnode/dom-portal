@@ -96,7 +96,7 @@ class TemplateDeployer
                     $cmd .= "git clone " . escapeshellarg($path) . $directory . " --depth 1 ; ";
                 } else {
                     $cmd .= "wget -q -O _.zip " . escapeshellarg($path) . " ; ";
-                    $cmd .= "unzip -q -o _.zip ; rm _.zip ; chmod -R 0750 * .* ";
+                    $cmd .= "unzip -q -o _.zip ; rm _.zip ; chmod -R 0750 * .* ; ";
                     if ($directory) {
                         $directory = sanitize_shell_arg_dir($directory);
                         $cmd .= "mv $directory/{.,}* . 2>/dev/null ; rmdir $directory ; ";
@@ -134,7 +134,7 @@ class TemplateDeployer
                     case 'ssl':
                         // SSL is enabled by default
                         if ($config['root'] && $ssh) {
-                            $cmd = 'mkdir -m 0750 -p ' . sanitize_shell_arg_dir($config['root'] . '/.well-known');
+                            $cmd = 'mkdir -m 0750 -p ~/' . sanitize_shell_arg_dir($config['root'] . '/.well-known');
                             if ($debug) {
                                 $cmd = "$> $cmd\n";
                             }
@@ -156,7 +156,7 @@ class TemplateDeployer
         }
         if (!empty($config['commands']) && $ssh) {
             $log .= '#----- Executing commands -----#' . "\n";
-            $cmd = "cd ~/public_html";
+            $cmd = "cd ~/public_html ; ";
             $cmd .= "DATABASE='{$username}_db' ; ";
             $cmd .= "DOMAIN='$domain' ; ";
             $cmd .= "USERNAME='$username' ; ";
