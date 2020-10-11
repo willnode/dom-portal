@@ -52,8 +52,9 @@ class TemplateDeployer
             $log .= '#----- CONFIGURING WEB ROOT -----#' . "\n";
             $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server));
         }
-        if (!empty($path = $config['source']) && $ssh) {
+        if (!empty($config['source']) && $ssh) {
             $log .= '#----- OVERWRITING HOST FILES WITH SOURCE -----#' . "\n";
+            $path = $config['source'];
             $directory = $config['directory'] ?? '';
             $tdomain = strtolower(parse_url($path, PHP_URL_HOST));
             $tscheme = strtolower(parse_url($path, PHP_URL_SCHEME));
