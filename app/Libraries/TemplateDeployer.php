@@ -112,7 +112,7 @@ class TemplateDeployer
                 }
                 // execute
                 $log .= $ssh->exec($cmd);
-                $log .= "\n\ndone with exit code " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
+                $log .= "\ndone with exit code " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
             } else {
                 $log .= 'Error: unknown URL scheme. must be either HTTP or HTTPS' . "\n";
             }
@@ -122,14 +122,16 @@ class TemplateDeployer
             foreach ($config['features'] as $feature) {
                 $args = explode(' ', $feature);
                 if (!$args) continue;
-                switch ($feature[0]) {
+                switch ($args[0]) {
                     case 'mysql':
+                        $dbname = ($username . '_' . ($args[1] ?? 'db'));
                         $log .= (new VirtualMinShell())->enableFeature($domain, $server, ['mysql']);
-                        $log .= (new VirtualMinShell())->createDatabase($username . '_db', 'mysql', $domain, $server);
+                        $log .= (new VirtualMinShell())->createDatabase($dbname, 'mysql', $domain, $server);
                         break;
                     case 'postgres':
+                        $dbname = ($username . '_' . ($args[1] ?? 'db'));
                         $log .= (new VirtualMinShell())->enableFeature($domain, $server, ['postgres']);
-                        $log .= (new VirtualMinShell())->createDatabase($username . '_db', 'postgres', $domain, $server);
+                        $log .= (new VirtualMinShell())->createDatabase($dbname, 'postgres', $domain, $server);
                         break;
                     case 'ssl':
                         // SSL is enabled by default
@@ -155,9 +157,10 @@ class TemplateDeployer
             }
         }
         if (!empty($config['commands']) && $ssh) {
+            $dbname = $dbname ?? $username.'_db';
             $log .= '#----- Executing commands -----#' . "\n";
             $cmd = "cd ~/public_html ; ";
-            $cmd .= "DATABASE='{$username}_db' ; ";
+            $cmd .= "DATABASE='$dbname' ; ";
             $cmd .= "DOMAIN='$domain' ; ";
             $cmd .= "USERNAME='$username' ; ";
             $cmd .= "PASSWORD='$password' ; ";
@@ -166,10 +169,10 @@ class TemplateDeployer
                 $log .= "$> $cmd\n\n";
             }
             $log .= str_replace($password, '[password]', $ssh->exec($cmd));
-            $log .= "\n\ndone with exit code " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
+            $log .= "\ndone with exit code " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
         }
         $log .= '#----- DEPLOYMENT ENDED -----#' . "\n";
-        $log .= "\n execution time: " . number_format(microtime(true) - $timing, 3) . " s";
+        $log .= "execution time: " . number_format(microtime(true) - $timing, 3) . " s";
         return str_replace("\0", "", $log);
     }
 }
