@@ -29,7 +29,6 @@ class TemplateDeployer
     {
         $timing = microtime(true);
         // $config = [
-        //     'debug' => 'false',
         //     'source' => '',
         //     'directory' => '',
         //     'root' => 'public_html',
@@ -38,7 +37,6 @@ class TemplateDeployer
         //     'commands' => [],
         // ];
         $config = Yaml::parse($template);
-        $debug = $config['debug'] ?? false;
         $log = '';
 
         $ssh = new SSH2($server . '.domcloud.id');
@@ -99,14 +97,10 @@ class TemplateDeployer
                         $cmd .= "mv $directory/{.,}* . 2>/dev/null ; rmdir $directory ; ";
                     }
                 }
-                if ($debug) {
-                    $log .= "$> $cmd\n\n";
-                } else {
-                    if ($tpass) {
-                        $path = str_replace($tpass, '[password]', $path);
-                    }
-                    $log .= (isset($cloning) ? 'Cloning ' : 'Fetching ') . $path . "\n";
-                }
+                $log .= (isset($cloning) ? 'Cloning ' : 'Fetching ') . $path . "\n";
+                $log .= $tpass ? "$> $cmd\n" : $path;
+                $path = $tpass ? str_replace($tpass, '[password]', $path) : $path;
+
                 // execute
                 $log .= $ssh->exec($cmd);
                 $log .= "\ndone with exit code " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
@@ -134,9 +128,7 @@ class TemplateDeployer
                         // SSL is enabled by default
                         if (isset($config['root']) && $ssh) {
                             $cmd = 'mkdir -m 0750 -p ~/' . sanitize_shell_arg_dir($config['root'] . '/.well-known');
-                            if ($debug) {
-                                $log .= "$> $cmd\n";
-                            }
+                            $log .= "$> $cmd\n";
                             $log .= $ssh->exec($cmd);
                         }
                         $log .= (new VirtualMinShell())->requestLetsEncrypt($domain, $server);
@@ -154,7 +146,7 @@ class TemplateDeployer
             }
         }
         if (!empty($config['commands']) && $ssh) {
-            $dbname = $dbname ?? $username.'_db';
+            $dbname = $dbname ?? $username . '_db';
             $log .= '#----- Executing commands -----#' . "\n";
             $cmd = "cd ~/public_html ; ";
             $cmd .= "DATABASE='$dbname' ; ";
@@ -162,9 +154,7 @@ class TemplateDeployer
             $cmd .= "USERNAME='$username' ; ";
             $cmd .= "PASSWORD='$password' ; ";
             $cmd .= implode(' ; ', $config['commands']);
-            if ($debug) {
-                $log .= "$> $cmd\n\n";
-            }
+            $log .= str_replace($password, '[password]', "$> $cmd\n\n");
             $log .= str_replace($password, '[password]', $ssh->exec($cmd));
             $log .= "\ndone with exit code " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
         }
