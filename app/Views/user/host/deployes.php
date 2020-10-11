@@ -40,7 +40,8 @@
       var code = el.innerHTML;
       code = code.replace(/^(#----- .+ -----#)$/gm, '<b class="text-warning">$1</b>');
       code = code.replace(/(\[password\])/g, '<span class="text-decoration-line-through">$1</span>');
-      code = code.replace(/^(\$&gt; .+)/gm, '<span class="text-muted">$1</span>');
+      code = code.replace(/^\$&gt; (.+)/gm,
+      '<span class="text-muted" style="word-break: break-all; ">$$&gt; <span style="user-select: all;">$1</span></span>');
       code = code.replace(/^(Exit status: .+)/gim, '<span class="text-info">$1</span>');
       el.innerHTML = code;
     });

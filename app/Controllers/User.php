@@ -326,7 +326,6 @@ class User extends BaseController
 			'shown' => $shown,
 		]);
 	}
-
 	/** @param Host $host */
 	protected function dnsHost($host)
 	{
@@ -339,6 +338,17 @@ class User extends BaseController
 			return $this->response->setJSON($heads);
 		}
 		return view('user/host/dns', [
+			'host' => $host
+		]);
+	}
+	/** @param Host $host */
+	protected function nginxHost($host)
+	{
+		if ($this->request->getMethod() === 'post') {
+			$nginx = (new VirtualMinShell())->getNginxConfig($host->domain, $host->server->alias);
+			return $this->response->setContentType('application/nginx')->setBody($nginx);
+		}
+		return view('user/host/nginx', [
 			'host' => $host
 		]);
 	}
@@ -534,6 +544,8 @@ class User extends BaseController
 					return $this->sslHost($host);
 				} else if ($page === 'dns') {
 					return $this->dnsHost($host);
+				} else if ($page === 'nginx') {
+					return $this->nginxHost($host);
 				} else if ($page === 'upgrade') {
 					return $this->upgradeHost($host);
 				} else if ($page === 'invoices') {
