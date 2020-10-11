@@ -25,7 +25,7 @@ class TemplateDeployer
             exec("php spark deploy $did  > /dev/null &");
         }
     }
-    public function deploy($server, $domain, $username, $password, $template, $timeout)
+    public function deploy($server, $domain, $username, $password, $config, $timeout)
     {
         $timing = microtime(true);
         // $config = [
@@ -36,7 +36,6 @@ class TemplateDeployer
         //     'features' => [],
         //     'commands' => [],
         // ];
-        $config = Yaml::parse($template);
         $log = '';
 
         $ssh = new SSH2($server . '.domcloud.id');
@@ -83,7 +82,7 @@ class TemplateDeployer
                     $log .= "WARNING: The resource doesn't have Content-Type: application/zip header. Likely not a zip file.\n";
                 }
                 // build command
-                $cmd = "cd ~/public_html ; rm -rf * .*  ; ";
+                $cmd = "cd ~/public_html ; rm -rf * .* 2>/dev/null ; ";
                 if (isset($cloning)) {
                     if ($directory) {
                         $directory = ' -b ' . $directory;

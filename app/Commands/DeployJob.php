@@ -10,6 +10,7 @@ use App\Models\HostModel;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use Config\Database;
+use Symfony\Component\Yaml\Yaml;
 
 class FetchTemplate extends BaseCommand
 {
@@ -24,17 +25,24 @@ class FetchTemplate extends BaseCommand
         $deploy = (new HostDeploysModel())->find($params[0]);
         if ($deploy) {
             $host = $deploy->host;
+            $template = Yaml::parse($deploy->template);
             $deploy->result = (new TemplateDeployer())->deploy(
                 $host->server->alias,
                 $deploy->domain,
                 $host->username,
                 $host->password,
-                $deploy->template,
+                $template,
                 ($host->plan_id + 1) * 300
             );
             if ($host->status === 'starting') {
                 $host->status = 'active';
                 (new HostModel())->save($host);
+            }
+            if (!empty($template['source'])) {
+                // Mask password in the URL as
+                // we don't have any business with it
+                $tpass = parse_url($template['source'], PHP_URL_PASS);
+                $deploy->template = str_replace($tpass, '****', $deploy->template);
             }
             (new HostDeploysModel())->save($deploy);
         }
