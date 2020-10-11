@@ -19,10 +19,10 @@
               </div>
               <div class="col-md-6 bg-dark text-white">
                 <?php if ($deploy->result) : ?>
-                  <pre style="white-space: pre-wrap;"><?= $deploy->result ?></pre>
+                  <pre class="output-highlight" style="white-space: pre-wrap;"><?= esc($deploy->result) ?></pre>
                 <?php else : ?>
                   <p class="text-center">
-                    <?= lang('Host.waitingDeployHint', [$deploy->created_at->addMinutes($host->plan_id * 5 + 5)->humanize()]) ?>
+                    <i><?= lang('Host.waitingDeployHint', [$deploy->created_at->addMinutes($host->plan_id * 5 + 5)->humanize()]) ?></i>
                   </p>
                 <?php endif ?>
               </div>
@@ -35,7 +35,15 @@
       </form>
     <?php endforeach ?>
   </div>
-
+  <script>
+    document.querySelectorAll('.output-highlight').forEach(el => {
+      var code = el.innerHTML;
+      code = code.replace(/^#----- .+ -----#$/gm, '<b>$0</b>');
+      code = code.replace(/\[password\]/g, '<i class="text-muted">$0</i>');
+      code = code.replace(/^\$> .+/gm, '<span class="text-muted">$0</span>');
+      el.innerHTML = code;
+    });
+  </script>
 </body>
 
 </html>

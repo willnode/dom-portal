@@ -35,72 +35,72 @@ class VirtualMinShell
 		$cmd = "program=create-domain&user=$username&pass=$epassword" .
 			"&email=$email&domain=$domain&plan=$plan&limits-from-plan=" .
 			"&dir=&webmin=&virtualmin-nginx=&virtualmin-nginx-ssl=&unix=";
-		$this->execute($this->wrapWget($cmd, $server), " Create Host for $domain ");
+		return $this->execute($this->wrapWget($cmd, $server), " Create Host for $domain ");
 	}
 	public function upgradeHost($domain, $server, $newplan)
 	{
 		$cmd = "program=modify-domain&domain=$domain&apply-plan=$newplan";
-		$this->execute($this->wrapWget($cmd, $server));
+		return $this->execute($this->wrapWget($cmd, $server));
 	}
 	public function renameHost($domain, $server, $newusername)
 	{
 		$cmd = "program=modify-domain&domain=$domain&user=$newusername";
-		$this->execute($this->wrapWget($cmd, $server), " Rename hosting $domain ");
+		return $this->execute($this->wrapWget($cmd, $server), " Rename hosting $domain ");
 	}
 	public function cnameHost($domain, $server, $newdomain)
 	{
 		$cmd = "program=modify-domain&domain=$domain&newdomain=$newdomain";
-		$this->execute($this->wrapWget($cmd, $server), " Change domain for $domain ");
+		return $this->execute($this->wrapWget($cmd, $server), " Change domain for $domain ");
 	}
 	public function resetHost($domain, $server, $newpw)
 	{
 		$cmd = "program=modify-domain&domain=$domain&pass=$newpw";
-		$this->execute($this->wrapWget($cmd, $server), "Reset Host Password");
+		return $this->execute($this->wrapWget($cmd, $server), "Reset Host Password");
 	}
 	public function enableHost($domain, $server)
 	{
 		$cmd = "program=enable-domain&domain=$domain";
-		$this->execute($this->wrapWget($cmd, $server));
+		return $this->execute($this->wrapWget($cmd, $server));
 	}
 	public function disableHost($domain, $server, $why)
 	{
 		$cmd = "program=disable-domain&domain=$domain&why=" . urlencode($why);
-		$this->execute($this->wrapWget($cmd, $server));
+		return $this->execute($this->wrapWget($cmd, $server));
 	}
 	public function deleteHost($domain, $server)
 	{
 		$cmd = "program=delete-domain&domain=$domain";
-		$this->execute($this->wrapWget($cmd, $server), " Delete Host for $domain ");
+		return $this->execute($this->wrapWget($cmd, $server), " Delete Host for $domain ");
 	}
 	public function requestLetsEncrypt($domain, $server)
 	{
 		$cmd = "program=generate-letsencrypt-cert&domain=$domain&renew=2";
-		$this->execute($this->wrapWget($cmd, $server), " Let's Encrypt for $domain ");
+		return $this->execute($this->wrapWget($cmd, $server), " Let's Encrypt for $domain ");
 	}
 	public function enableFeature($domain, $server, $features)
 	{
 		$cmd = "program=enable-feature&domain=$domain" . implode('', array_map(function ($x) {
 			return "&$x=";
 		}, $features));
-		$this->execute($this->wrapWget($cmd, $server), " Enable Features for $domain ");
+		return $this->execute($this->wrapWget($cmd, $server), " Enable Features for $domain ");
 	}
 	public function adjustBandwidthHost($bw_mb, $domain, $server)
 	{
 		$bw_bytes = floor($bw_mb) * 1024 * 1024;
 		$cmd = "program=modify-domain&domain=$domain&bw=$bw_bytes";
-		$this->execute($this->wrapWget($cmd, $server), " Adjust Bandwidth $domain to $bw_bytes bytes ");
+		return $this->execute($this->wrapWget($cmd, $server), " Adjust Bandwidth $domain to $bw_bytes bytes ");
 	}
 	public function createDatabase($name, $type, $domain, $server)
 	{
 		$name = urlencode($name);
 		$cmd = "program=create-database&domain=$domain&name=$name&type=$type";
-		$this->execute($this->wrapWget($cmd, $server), " Create database $domain named $name ");
+		return $this->execute($this->wrapWget($cmd, $server), " Create database $domain named $name ");
 	}
 	public function modifyWebHome($home, $domain, $server)
 	{
 		$home = urlencode($home);
 		$cmd = "program=modify-web&domain=$domain&document-dir=$home";
-		$this->execute($this->wrapWget($cmd, $server), " Set home $domain named $home ");
+		return $this->execute($this->wrapWget($cmd, $server), " Set home $domain named $home ");
 	}
 	public function listDomainsInfo($server)
 	{

@@ -53,10 +53,7 @@ class TemplateDeployer
         $log .= 'execution time in UTC: ' . time() . "\n\n";
         if (!empty($config['root'])) {
             $log .= '#----- Configuring web root -----#' . "\n";
-            $res = (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server);
-            if ($debug)
-                $log .= $res;
-            $log .= "\ndone\n";
+            $log .= (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server);
         }
         if (!empty($path = $config['source']) && $ssh) {
             $log .= '#----- Fetching directory content from source -----#' . "\n";
@@ -135,10 +132,10 @@ class TemplateDeployer
                         break;
                     case 'ssl':
                         // SSL is enabled by default
-                        if ($config['root'] && $ssh) {
+                        if (isset($config['root']) && $ssh) {
                             $cmd = 'mkdir -m 0750 -p ~/' . sanitize_shell_arg_dir($config['root'] . '/.well-known');
                             if ($debug) {
-                                $cmd = "$> $cmd\n";
+                                $log .= "$> $cmd\n";
                             }
                             $log .= $ssh->exec($cmd);
                         }
