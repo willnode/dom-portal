@@ -40,7 +40,7 @@
       var code = el.innerHTML;
       code = code.replace(/^(#----- .+ -----#)$/gm, '<b>$1</b>');
       code = code.replace(/(\[password\])/g, '<i class="text-muted">$1</i>');
-      code = code.replace(/^(\$> .+)/gm, '<span class="text-muted">$1</span>');
+      code = code.replace(/^(\$&gt; .+)/gm, '<span class="text-muted">$1</span>');
       el.innerHTML = code;
     });
   </script>
