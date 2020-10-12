@@ -168,6 +168,9 @@ class VirtualMinShell
 		set_time_limit(300);
 		$secret = Services::request()->config->sudoNginxSecret;
 		$ch = curl_init("https://nginx-$server.domcloud.id/?secret=$secret&domain=$domain");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			'Content-Type: application/json'
+		]);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
 		$response = curl_exec($ch);

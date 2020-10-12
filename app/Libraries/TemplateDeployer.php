@@ -110,12 +110,13 @@ class TemplateDeployer
         }
         if (!empty($config['nginx'])) {
             $log .= '#----- APPLYING NGINX CONFIG -----#' . "\n";
-            $res = (new VirtualMinShell)->setNginxConfig($domain, $server, json_encode($config['nginx']));
+            $log .= '$> '.($nginx = json_encode($config['nginx']))."\n";
+            $res = (new VirtualMinShell)->setNginxConfig($domain, $server, $nginx);
             if ($res) {
-                $log .= "$res\nNginX config discarded.\n";
+                $log .= "$res\nExit status: config discarded.\n";
             } else {
                 $res = (new VirtualMinShell)->getNginxConfig($domain, $server);
-                $log .= "$res\nNginX config applied.\n";
+                $log .= "$res\nExit status: config applied.\n";
             }
         }
         if (!empty($config['features'])) {
