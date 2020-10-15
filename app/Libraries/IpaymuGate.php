@@ -10,7 +10,7 @@ class IpaymuGate
 	{
 		$url = Services::request()->config->ipaymuURL;
 		$key = Services::request()->config->ipaymuKey;
-		$secret = Services::request()->config->IpaymuSecret;
+		$secret = Services::request()->config->ipaymuSecret;
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, [

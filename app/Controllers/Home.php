@@ -32,7 +32,7 @@ class Home extends BaseController
 	{
 		if (
 			isset($_GET['id'], $_GET['challenge'], $_GET['secret']) &&
-			($_GET['secret'] == $this->request->config->IpaymuSecret &&
+			($_GET['secret'] == $this->request->config->ipaymuSecret &&
 				isset($_POST['trx_id'], $_POST['status'], $_POST['via']) &&
 				$_POST['status'] == 'berhasil' // iPaymu notification
 			)
@@ -195,7 +195,7 @@ class Home extends BaseController
 									$_GET = [];
 									$_GET['id'] = $invoice->id;
 									$_GET['challenge'] = $metadata->_challenge;
-									$_GET['secret'] = $this->request->config->IpaymuSecret;
+									$_GET['secret'] = $this->request->config->ipaymuSecret;
 									$_POST = [];
 									$_POST['trx_id'] = $metadata->_id;
 									$_POST['status'] = 'berhasil';

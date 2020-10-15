@@ -477,7 +477,7 @@ class User extends BaseController
 						'transaction_id' => $metadata->liquid,
 					]);
 				}
-				if (count($history) === 1) {
+				if (count($history) === 1 && $host->status === 'pending') {
 					(new HostModel())->delete($host->id);
 					return $this->response->redirect('user/host');
 				} else {
