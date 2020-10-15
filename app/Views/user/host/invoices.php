@@ -15,7 +15,7 @@
             <div class="input-group mb-3">
               <h3><?= ucfirst($host->status) ?></h3>
             </div>
-            <?php if ($host && $host->status === 'pending') : ?>
+            <?php if ($current && $current->status === 'pending') : ?>
               <p>
                 <?php $metadata = $current->metadata ?>
                 <?php $money = format_money($metadata->price) ?>
