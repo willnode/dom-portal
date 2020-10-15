@@ -490,9 +490,9 @@ class User extends BaseController
 					$current->id,
 					$metadata->price,
 					lang('Host.formatInvoiceAlt', [
-						"<b>$plan</b>",
-						"<b>$metadata->domain</b>",
-					]) . lang("Host.formatInvoiceSum", ["<b>$metadata->price</b>"]),
+						"$plan",
+						"$metadata->domain",
+					]) . lang("Host.formatInvoiceSum", ["$metadata->price"]),
 					$metadata->_challenge
 				);
 				if ($pay && isset($pay->sessionID)) {
