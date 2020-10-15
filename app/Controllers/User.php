@@ -316,6 +316,7 @@ class User extends BaseController
 	{
 		$shown = ($_GET['show'] ?? '') === 'password';
 		return view('user/host/see', [
+			'webminport' => $this->request->config->sudoWebminPort,
 			'host' => $host,
 			'id' => $host->id,
 			'slave' => $host->server->alias,

@@ -12,10 +12,10 @@
         <div class="col-md-6 col-xl-3">
           <div class="card-body d-flex flex-column h-100">
             <h2>Webmin</h2>
-            <p class="flex-grow-1">URL:<br><b style="user-select: all;">https://<?= $slave ?>.domcloud.id:8443</b><br>
+            <p class="flex-grow-1">URL:<br><b style="user-select: all;">https://<?= $slave ?>.domcloud.id:<?= $webminport ?></b><br>
               Username:<br><b style="user-select: all;"><?= esc($user) ?></b><br>
               Password:<br><b style="user-select: all;"><?= $pass ?></b></p>
-            <form target="_blank" action="https://<?= $slave ?>.domcloud.id:8443/session_login.cgi" method="POST">
+            <form target="_blank" action="https://<?= $slave ?>.domcloud.id:<?= $webminport ?>/session_login.cgi" method="POST">
               <input name="user" class="d-none" value="<?= esc($user) ?>">
               <input name="pass" class="d-none" value="<?= esc($rawpass) ?>">
               <p><small>
