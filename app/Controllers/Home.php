@@ -61,8 +61,8 @@ class Home extends BaseController
 					$liquid = (new LiquidModel())->atLogin($login->id);
 					$registrar = new LiquidRegistrar();
 					$registrar->confirmFundDomain($liquid->id, [
-						'amount' => ($metadata->years - 1) * $scheme->renew_idr +
-							($host->scheme_id ? $scheme->renew_idr : $scheme->price_idr),
+						'amount' => (($metadata->years - 1) * $scheme->renew_idr +
+							($host->scheme_id ? $scheme->renew_idr : $scheme->price_idr)) / 1000,
 						'description' => "Funds for " . ($metadata->domain ?? $host->domain),
 					]);
 					$registrar->confirmPurchaseDomain($liquid->id, [
@@ -136,7 +136,7 @@ class Home extends BaseController
 						);
 					}
 				}
-				$data->metadata = $metadata->toRawArray();
+				$data->metadata = $metadata;
 				(new PurchaseModel())->save($data);
 				if ($host->hasChanged()) {
 					(new HostModel())->save($host);
@@ -188,7 +188,7 @@ class Home extends BaseController
 							if ($metadata->price_unit === strtolower($data->targetCurrency) && $metadata->price <= $data->targetValue + 0.5) {
 								$metadata->_status = $data->status;
 								$metadata->_id = $data->id;
-								$invoice->metadata = $metadata->toRawArray();
+								$invoice->metadata = $metadata;
 								(new PurchaseModel())->save($invoice);
 								if ($invoice->status === 'pending' && $data->status === 'funds_converted') {
 									// Execute the fuckin payment. Imitate what iPaymu did
