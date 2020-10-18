@@ -22,6 +22,6 @@ use CodeIgniter\Entity;
  * @property string|null $_issued Timestamp when Purchase Issued
  * @property string|null $_invoiced Timestamp when Purchase Invoiced
  */
-class PurchaseMetadata
+class PurchaseMetadata extends Entity
 {
 }

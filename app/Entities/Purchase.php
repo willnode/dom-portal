@@ -18,12 +18,22 @@ class Purchase extends Entity
         'id' => 'integer',
         'host_id' => 'integer',
         'status' => 'string',
-        'metadata' => 'json',
     ];
 
     /** @return Host */
     public function getHost()
     {
         return (new HostModel())->find($this->attributes['host_id']);
+    }
+
+    public function getMetadata()
+    {
+        return new PurchaseMetadata(json_decode($this->attributes['metadata'], true));
+    }
+
+    /** @param PurchaseMetadata $x */
+    public function setMetadata($x)
+    {
+        $this->attributes['metadata'] = json_encode($x->toRawArray());
     }
 }

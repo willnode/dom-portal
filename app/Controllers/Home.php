@@ -75,9 +75,16 @@ class Home extends BaseController
 						'id' => $liquid->id,
 					]);
 					// Save
-					if ($metadata->domain)
-						$host->domain = $metadata->domain;
 					$host->scheme_id = $metadata->scheme;
+				}
+				if ($metadata->domain && $host->domain != $metadata->domain)
+				{
+					(new VirtualMinShell())->cnameHost(
+						$host->domain,
+						$host->server->alias,
+						$metadata->domain
+					);
+					$host->domain = $metadata->domain;
 				}
 				if ($metadata->plan) {
 					/** @var Plan */

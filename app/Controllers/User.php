@@ -162,7 +162,7 @@ class User extends BaseController
 						$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 						$hosting->status = 'pending';
 						$hosting->expiry_at = $metadata->expiration;
-						$payment->metadata = $metadata->toRawArray();
+						$payment->metadata = $metadata;
 					} else {
 						$this->request->setMethod('get');
 						return $this->createHost();
@@ -252,7 +252,7 @@ class User extends BaseController
 				"_status" => null,
 			]);
 			/** @var Plan */
-			$plan = (new PlanModel())->find($plan);
+			$plan = (new PlanModel())->find($metadata->plan);
 			if ($mode === 'new') {
 				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years", \time()));
 				$metadata->price = $plan->price_local * $metadata->years; {
@@ -290,7 +290,7 @@ class User extends BaseController
 			}
 			$metadata->price += ['idr' => 500, 'usd' => 0.05][$metadata->price_unit] * $metadata->addons;
 			$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
-			$payment->metadata = $metadata->toRawArray();
+			$payment->metadata = $metadata;
 			$payment->host_id = $host->id;
 			(new PurchaseModel())->save($payment);
 			return $this->response->redirect('/user/host/invoices/' . $host->id);
