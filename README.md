@@ -1,5 +1,9 @@
 # DOM Cloud Portal
 
+[![codecov](https://codecov.io/gh/domcloud/dom-portal/branch/master/graph/badge.svg?token=KVP6A2KFXW)](https://codecov.io/gh/domcloud/dom-portal)
+
+[![Build Status](https://travis-ci.com/domcloud/dom-portal.svg?branch=master)](https://travis-ci.com/domcloud/dom-portal)
+
 <p align=center><img src="http://portal.domcloud.id/logo.svg" alt="Logo" width=200px></p>
 
 This is the actual server code that runs on [portal.domcloud.id](https://portal.domcloud.id). Open sourced because I want to transparent and clear about how your data will be handled and what or how limitations applies for you.
