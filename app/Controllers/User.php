@@ -90,7 +90,7 @@ class User extends BaseController
 					'max_length[32]|is_unique[hosts.username]',
 				'server' => 'required|is_not_unique[servers.id]',
 				'password' => 'required|min_length[8]|regex_match[/^[^\'"\/\\\\:]+$/]',
-				'domain_mode' => empty($_POST['domain_mode']) ? 'permit_empty' : 'required|in_list[free,buy,custom]',
+				'domain_mode' => empty($this->request->getPost('domain_mode')) ? 'permit_empty' : 'required|in_list[free,buy,custom]',
 			])) {
 				$data = array_intersect_key(
 					$this->request->getPost(),
@@ -129,9 +129,9 @@ class User extends BaseController
 							"price_unit" => lang('Interface.currency'),
 							"template" => $data['template'] ?? '',
 							"expiration" => null,
-							"years" => intval($_POST['years']),
+							"years" => intval($this->request->getPost('years')),
 							"plan" => intval($data['plan']),
-							"addons" => intval($_POST['addons']),
+							"addons" => intval($this->request->getPost('addons')),
 							"liquid" => null,
 							"_challenge" => random_int(111111111, 999999999),
 							"_id" => null,
@@ -144,19 +144,19 @@ class User extends BaseController
 							$hosting->domain = $hosting->username . $server->domain;
 						} else if ($data['domain_mode'] === 'buy') {
 							/** @var Scheme */
-							$scheme = (new SchemeModel())->find($_POST['buy_scheme']);
-							$hosting->domain = $_POST['buy_cname'] . $scheme->alias;
-							$hosting->scheme_id = $_POST['buy_scheme'];
+							$scheme = (new SchemeModel())->find($this->request->getPost('buy_scheme'));
+							$hosting->domain = $this->request->getPost('buy_cname') . $scheme->alias;
+							$hosting->scheme_id = $this->request->getPost('buy_scheme');
 							$metadata->price += $scheme->price_local + $scheme->renew_local * ($metadata->years - 1); {
 								$rrr = $this->processNewDomainTransaction($hosting->domain, $metadata->years);
 								$hosting->liquid_id = $rrr->domain_id;
 								$metadata->liquid = $rrr->transaction_id;
 							}
 						} else if ($data['domain_mode'] === 'custom') {
-							$hosting->domain = $_POST['custom_cname'];
+							$hosting->domain = $this->request->getPost('custom_cname');
 						}
-						$metadata->expiration = $hosting->expiry_at = date('Y-m-d H:i:s', strtotime("+$metadata->years years", \time()));
-						$metadata->price += $plan->price_local * $_POST['years'];
+						$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years", \time()));
+						$metadata->price += $plan->price_local * $this->request->getPost('years');
 						$metadata->price += ['idr' => 500, 'usd' => 0.05][$metadata->price_unit] * $metadata->addons;
 						$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 						$hosting->status = 'pending';
@@ -221,13 +221,13 @@ class User extends BaseController
 				return $this->response->redirect('/user/host/invoices/' . $host->id);
 			}
 			// Anything goes out of rule... nice try hackers.
-			$mode = $_POST['mode'] ?? '';
+			$mode = $this->request->getPost('mode');
 			if (!$this->validate([
 				'mode' => $host->plan_id === 1 ? 'required|in_list[new]' : 'required|in_list[new,extend,upgrade,topup]',
 				'plan' => $mode === 'topup' ? 'permit_empty' : 'required|greater_than[1]|is_not_unique[plans.id]',
 				'years' => $mode === 'new' || $mode === 'extend' ? 'required|greater_than[0]|less_than[6]' : 'permit_empty',
-				'addons' => ($_POST['addons'] ?? null) ? 'required|integer|greater_than_equal_to[0]|less_than_equal_to[10000]' : 'permit_empty',
-			]) || ($mode === 'upgrade' && $_POST['plan'] <= $host->plan_id)) {
+				'addons' => ($this->request->getPost('addons')) ? 'required|integer|greater_than_equal_to[0]|less_than_equal_to[10000]' : 'permit_empty',
+			]) || ($mode === 'upgrade' && $this->request->getPost('plan') <= $host->plan_id)) {
 				return;
 			}
 			$payment = new Purchase([
@@ -238,10 +238,10 @@ class User extends BaseController
 				"price" => 0.0, // later
 				"price_unit" => lang('Interface.currency'),
 				"template" => null,
-				"expiration" => $host->expiry_at, // later
-				"years" => $mode === 'new' || $mode === 'extend' ?  intval($_POST['years']) : null,
-				"plan" => $mode === 'upgrade' || $mode === 'new' ? intval($_POST['plan']) : $host->plan_id,
-				"addons" => intval($_POST['addons'] ?? '0'),
+				"expiration" => $host->expiry_at->toDateTimeString(), // later
+				"years" => $mode === 'new' || $mode === 'extend' ?  intval($this->request->getPost('years')) : null,
+				"plan" => $mode === 'upgrade' || $mode === 'new' ? intval($this->request->getPost('plan')) : $host->plan_id,
+				"addons" => intval($this->request->getPost('addons') ?? '0'),
 				"liquid" => null, // later
 				"scheme" => null, // later
 				"_challenge" => random_int(111111111, 999999999),
@@ -257,7 +257,7 @@ class User extends BaseController
 				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years", \time()));
 				$metadata->price = $plan->price_local * $metadata->years; {
 					// Setup Domain too
-					$domain_mode = $_POST['domain_mode'] ?? 'free';
+					$domain_mode = $this->request->getPost('domain_mode') ?? 'free';
 					if (!$this->validate([
 						'custom_cname' => $domain_mode === 'custom' ? 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
 							'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosts.domain]' : 'permit_empty',
@@ -268,15 +268,15 @@ class User extends BaseController
 					}
 					if ($domain_mode == 'buy') {
 						/** @var Scheme */
-						$scheme = (new SchemeModel())->find($_POST['buy_scheme']);
-						$metadata->domain = $_POST['buy_cname'] . $scheme->alias;
+						$scheme = (new SchemeModel())->find($this->request->getPost('buy_scheme'));
+						$metadata->domain = $this->request->getPost('buy_cname') . $scheme->alias;
 						$metadata->scheme = $scheme->id;
 						$metadata->price += $scheme->price_local + $scheme->renew_local * ($metadata->years - 1);
 						$rrr = $this->processNewDomainTransaction($metadata->domain, $metadata->years);
 						$host->liquid_id = $rrr->domain_id;
 						$metadata->liquid = $rrr->transaction_id;
 					} else if ($domain_mode == 'custom') {
-						$metadata->domain = $_POST['custom_cname'];
+						$metadata->domain = $this->request->getPost('custom_cname');
 					}
 				}
 			} else if ($mode === 'extend') {
@@ -332,8 +332,8 @@ class User extends BaseController
 	{
 		if ($this->request->getMethod() === 'post') {
 			$domain = $host->domain;
-			if (!empty($_POST['sub'])) {
-				$domain = $_POST['sub'] . '.' . $host->domain;
+			if (!empty($this->request->getPost('sub'))) {
+				$domain = $this->request->getPost('sub') . '.' . $host->domain;
 			}
 			$heads = dns_get_record($domain, DNS_A | DNS_TXT | DNS_CNAME | DNS_MX | DNS_NS);
 			return $this->response->setJSON($heads);
@@ -357,11 +357,11 @@ class User extends BaseController
 	protected function sslHost($host)
 	{
 		if ($this->request->getMethod() === 'post') {
-			if (($_POST['action'] ?? '') == 'fix3') {
+			if (($this->request->getPost('action')) == 'fix3') {
 				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, ['ssl']);
 				(new VirtualMinShell())->requestLetsEncrypt($host->domain, $host->server->alias);
 				return $this->response->redirect('/user/host/ssl/' . $host->id);
-			} else if (($_POST['action'] ?? '') == 'fix4') {
+			} else if (($this->request->getPost('action')) == 'fix4') {
 				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, ['ssl']);
 				(new VirtualMinShell())->requestLetsEncrypt($host->domain, $host->server->alias);
 				return $this->response->redirect('/user/host/ssl/' . $host->id);
@@ -399,7 +399,7 @@ class User extends BaseController
 			])) {
 				return redirect()->back();
 			}
-			$username = strtolower($_POST['username']);
+			$username = strtolower($this->request->getPost('username'));
 			if (array_search($username, (new BannedNames())->names) !== FALSE) return;
 			(new VirtualMinShell())->renameHost(
 				$host->domain,
@@ -407,7 +407,7 @@ class User extends BaseController
 				$username
 			);
 			if ($host->plan_id === 1) {
-				$newcname = $username.$host->server->domain;
+				$newcname = $username . $host->server->domain;
 				(new VirtualMinShell())->cnameHost(
 					$host->domain,
 					$host->server->alias,
@@ -426,14 +426,14 @@ class User extends BaseController
 	protected function cnameHost($host)
 	{
 		if ($this->request->getMethod() === 'post' && !$host->liquid_id && $host->plan_id !== 1 && $host->status === 'active') {
-			if (isset($_POST['cname'])) {
+			if ($this->request->getPost('cname')) {
 				if (!$this->validate([
 					'cname' => 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
 						'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosting.domain]',
 				])) {
 					return;
 				}
-				$domain = strtolower($_POST['cname']);
+				$domain = strtolower($this->request->getPost('cname'));
 				$server = $host->server;
 				if (strpos($domain, $server->domain) !== false) {
 					return; // Nice try hackers
@@ -454,8 +454,8 @@ class User extends BaseController
 	}
 	protected function deployesHost($host)
 	{
-		if ($this->request->getMethod() === 'post' && isset($_POST['template'])) {
-			(new TemplateDeployer())->schedule($host->id, $host->domain, $_POST['template']);
+		if ($this->request->getMethod() === 'post' && $this->request->getPost('template')) {
+			(new TemplateDeployer())->schedule($host->id, $host->domain, $this->request->getPost('template'));
 			return $this->response->redirect('/user/host/deploys/' . $host->id);
 		}
 		return view('user/host/deployes', [
@@ -469,7 +469,7 @@ class User extends BaseController
 		/** @var Purchase[] */
 		$history = (new PurchaseModel())->atHost($host->id)->descending()->find();
 		$current = $history[0] ?? null;
-		if ($this->request->getMethod() === 'post' && !empty($action = $_POST['action']) && $current && $current->status === 'pending') {
+		if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending') {
 			$metadata = $current->metadata;
 			if ($action === 'cancel') {
 				if ($metadata->liquid) {
@@ -512,7 +512,7 @@ class User extends BaseController
 	/** @param Host $host */
 	protected function deleteHost($host)
 	{
-		if ($this->request->getMethod() === 'post' && $host->plan_id == 1 && ($_POST['wordpass'] ?? '') === $host->username) {
+		if ($this->request->getMethod() === 'post' && $host->plan_id == 1 && ($this->request->getPost('wordpass')) === $host->username) {
 			(new VirtualMinShell())->deleteHost($host->domain, $host->server->alias);
 			(new HostModel())->delete($host->id);
 			log_message('notice', VirtualMinShell::$output);
@@ -628,7 +628,7 @@ class User extends BaseController
 	}
 	protected function listDomain()
 	{
-		if (strtolower($_POST['action'] ?? '') === 'sync') {
+		if (strtolower($this->request->getPost('action')) === 'sync') {
 			return $this->syncDomain();
 		}
 		return view('user/domain/list', [
@@ -773,7 +773,7 @@ class User extends BaseController
 
 	public function status()
 	{
-		$id = $_GET['server'] ?? null;
+		$id = $this->request->getGet('server');
 		$servers = (new ServerModel())->findAll();
 		/** @var Server */
 		if ($id === null || !($server = (new ServerModel())->find($id))) {
@@ -783,30 +783,16 @@ class User extends BaseController
 			'page' => 'status',
 			'server' => $server,
 			'servers' => $servers,
-			'stat' => $server->stat->metadata,
-			'stat_update' => $server->stat->updated_at->humanize(),
+			'stat' => $server->stat ? $server->stat->metadata : null,
+			'stat_update' => $server->stat ? $server->stat->updated_at->humanize() : null,
 		]);
 	}
 
 	public function verify_email()
 	{
-		if ($this->request->getMethod() === 'post' && ($_POST['action'] === 'resend')) {
-			$data = $this->login;
-			if (!$data->otp) {
-				$data->otp = random_int(111111111, 999999999);
-				(new LoginModel())->save($data);
-			}
-			(new SendGridEmail())->send('verify_email', 'billing', [[
-				'to' => [[
-					'email' => $data->email,
-					'name' => $data->name,
-				]],
-				'dynamic_template_data' => [
-					'name' => $data->name,
-					'verify_url' => base_url('verify?code=' . urlencode(base64_encode($data->email . ':' . $data->otp))),
-				]
-			]]);
-			return $this->response->redirect("/$data->lang/login?msg=emailsent");
+		if ($this->request->getMethod() === 'post' && ($this->request->getPost('action') === 'resend')) {
+			$this->login->sendVerifyEmail();
+			return $this->response->redirect("/{$this->login->lang}/login?msg=emailsent");
 		}
 		return view('user/veremail', [
 			'email' => $this->login->email,
@@ -815,7 +801,7 @@ class User extends BaseController
 	public function profile()
 	{
 		if ($this->request->getMethod() === 'post') {
-			if (($_POST['action'] ?? '') === 'resend') {
+			if (($this->request->getPost('action')) === 'resend') {
 				return $this->verify_email();
 			} else
 			if ($this->validate([
@@ -853,7 +839,7 @@ class User extends BaseController
 				'passconf' => 'required|matches[password]',
 			])) {
 				$this->db->table('login')->update([
-					'password' => password_hash($_POST['password'], PASSWORD_BCRYPT)
+					'password' => password_hash($this->request->getPost('password'), PASSWORD_BCRYPT)
 				], [
 					'login_id' => $this->login->id
 				]);

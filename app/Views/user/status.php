@@ -9,7 +9,7 @@
   <div class="container">
     <h1 class="mb">Server Status @ <?= $server->description ?> (<?= $server->alias ?> &mdash; <?= $server->domain ?>)</h1>
     <div class="row">
-
+      <?php if ($stat) : ?>
       <div class="col-md-8">
         <div class="card">
           <div class="card-body">
@@ -83,6 +83,7 @@
           </div>
         </div>
       </div>
+      <?php endif ?>
     </div>
   </div>
 </body>

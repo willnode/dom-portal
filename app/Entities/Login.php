@@ -2,6 +2,8 @@
 
 namespace App\Entities;
 
+use App\Libraries\SendGridEmail;
+use App\Models\LoginModel;
 use CodeIgniter\Entity;
 
 /**
@@ -28,4 +30,23 @@ class Login extends Entity
         'email_verified_at' => '?timestamp',
         'trustiness' => 'int',
     ];
+
+    public function sendVerifyEmail()
+    {
+        if (!$this->otp) {
+            $this->otp = random_int(111111111, 999999999);
+            (new LoginModel())->save($this);
+        }
+        $code = urlencode(base64_encode($this->email . ':' . $this->otp));
+        (new SendGridEmail())->send('verify_email', 'billing', [[
+            'to' => [[
+                'email' => $this->email,
+                'name' => $this->name,
+            ]],
+            'dynamic_template_data' => [
+                'name' => $this->name,
+                'verify_url' => base_url("verify?code=$code"),
+            ]
+        ]]);
+    }
 }

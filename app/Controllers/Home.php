@@ -146,7 +146,6 @@ class Home extends BaseController
 				$data->metadata = $metadata;
 				(new PurchaseModel())->save($data);
 				if ($host->hasChanged()) {
-					var_dump($host);
 					(new HostModel())->save($host);
 				} {
 					// Email
@@ -176,7 +175,6 @@ class Home extends BaseController
 				return "OK";
 			}
 		}
-		var_dump($r);
 		throw new PageNotFoundException();
 	}
 
@@ -313,11 +311,8 @@ class Home extends BaseController
 				'g-recaptcha-response' => ENVIRONMENT === 'production' ? 'required' : 'permit_empty',
 			])) {
 				if (ENVIRONMENT !== 'production' || (new Recaptha())->verify($_POST['g-recaptcha-response'])) {
-					(new LoginModel())->register($this->request->getPost());
-					$_POST['action'] = 'resend';
-					$u = new User();
-					$u->initController($this->request, $this->response, $this->logger);
-					$u->verify_email();
+					$id = (new LoginModel())->register($this->request->getPost());
+					(new LoginModel())->find($id)->sendVerifyEmail();
 					return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
 				}
 			}

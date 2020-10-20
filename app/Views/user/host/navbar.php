@@ -1,5 +1,5 @@
 <ul class="nav nav-tabs mb-4">
-    <?php $path = explode('/', \Config\Services::request()->detectPath() ?? '')[2] ?>
+    <?php $path = explode('/', \Config\Services::request()->detectPath() ?? '')[2] ?? '' ?>
     <li class="nav-item">
         <a class="nav-link <?=$path == 'detail' ? 'active' : '' ?>" href="/user/host/detail/<?= $host->id ?>">Detail</a>
     </li>

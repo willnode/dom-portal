@@ -16,10 +16,11 @@
 	</testsuites>
 
 	<filter>
-		<whitelist addUncoveredFilesFromWhitelist="true" processUncoveredFilesFromWhitelist="true">
+		<whitelist>
 			<directory suffix=".php">./app</directory>
 			<exclude>
 				<directory suffix=".php">./app/Views</directory>
+				<directory suffix=".php">./app/Config</directory>
 				<file>./app/Config/Routes.php</file>
 			</exclude>
 		</whitelist>

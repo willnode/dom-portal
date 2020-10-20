@@ -12,14 +12,10 @@ use App\Models\HostModel;
 use App\Models\LoginModel;
 use CodeIgniter\Test\CIDatabaseTestCase;
 use Config\Services;
-use Faker\Factory;
-use Faker\Generator;
 
 class FunctionalTest extends CIDatabaseTestCase
 {
     protected $namespace  = null;
-
-    protected Generator $faker;
 
     public function testRegister()
     {
@@ -29,9 +25,9 @@ class FunctionalTest extends CIDatabaseTestCase
         ($home = new Home())->initController($req = Services::request(), Services::response(), Services::logger());
         $req->setMethod('post');
         $req->setGlobal('post', $login_data = [
-            'name' => $this->faker->name(),
-            'email' => $this->faker->email,
-            'password' => $this->faker->password(8),
+            'name' => 'Contoso User',
+            'email' => 'contoso@example.com',
+            'password' => 'mycontosouser',
         ]);
         $req->setGlobal('request', $login_data);
 
@@ -66,6 +62,7 @@ class FunctionalTest extends CIDatabaseTestCase
         $req->setGlobal('post', $login_data);
         $req->setGlobal('request', $login_data);
         $home->login() && $this->assertTrue(Services::session()->login === 1);
+
     }
 
     public function testCreateFreeAndUpgradeHost()
@@ -157,13 +154,26 @@ class FunctionalTest extends CIDatabaseTestCase
         ]);
         $home->notify();
         $this->assertTrue(($purchase = $host->purchase)->status === 'active');
-        var_dump(VirtualMinShell::$output);
+        $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
+            'program=enable-domain&domain=contoso.dom.my.id',
+            'program=modify-domain&domain=contoso.dom.my.id&apply-plan=Lite'
+        ]);
+        VirtualMinShell::$output = '';
     }
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->faker = (new Factory())->create();
         $this->db->resetDataCache();
+    }
+
+    protected function tearDown() : void
+    {
+        parent::tearDown();
+        $req = Services::request();
+        $req->setMethod('get');
+        $req->setGlobal('get', []);
+        $req->setGlobal('post', []);
+        $req->setGlobal('request', []);
     }
 }

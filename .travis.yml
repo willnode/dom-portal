@@ -1,16 +1,16 @@
 language: php
 cache:
   - $HOME/.composer/cache/files
-dist: trusty
+dist: bionic
 php:
   - '7.4'
 services:
   - mysql
+before_install:
+ - composer self-update
+ - mysql -e 'CREATE DATABASE portal_test_db;'
 before_script:
  - composer install --no-interaction --dev
 script:
  - phpunit
  - bash <(curl -s https://codecov.io/bash)
-before_install:
- - composer self-update
- - mysql -e 'CREATE DATABASE portal_test_db;'
