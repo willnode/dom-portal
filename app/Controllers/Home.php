@@ -261,12 +261,13 @@ class Home extends BaseController
 		}
 
 		if ($this->request->getMethod() === 'post') {
-			if (isset($_POST['email'], $_POST['password'])) {
+			$post = $this->request->getPost();
+			if (isset($post['email'], $post['password'])) {
 				$login = $this->db->table('login')->getWhere([
-					'email' => $_POST['email']
+					'email' => $post['email']
 				])->getRow();
 				if ($login && password_verify(
-					$_POST['password'],
+					$post['password'],
 					$login->password
 				)) {
 					$this->session->set('login', $login->id);

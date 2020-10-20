@@ -96,6 +96,7 @@ class Database extends \CodeIgniter\Database\Config
 			// so that we can test against multiple databases.
 			if ($group = getenv('DB'))
 			{
+				// @codeCoverageIgnoreStart
 				if (is_file(TESTPATH . 'travis/Database.php'))
 				{
 					require TESTPATH . 'travis/Database.php';
@@ -105,6 +106,7 @@ class Database extends \CodeIgniter\Database\Config
 						$this->tests = $dbconfig[$group];
 					}
 				}
+				// @codeCoverageIgnoreEnd
 			}
 		}
 	}

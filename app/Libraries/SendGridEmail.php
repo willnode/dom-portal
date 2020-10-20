@@ -10,7 +10,7 @@ class SendGridEmail
     public $sendGridSecret;
     public $sendGridTemplates;
     public $sendGridAsms;
-	public $sendGridFromName;
+    public $sendGridFromName;
     public $sendGridFromEmail;
 
     public function __construct()
@@ -45,11 +45,12 @@ class SendGridEmail
                     "group_id" => $this->sendGridAsms[$asm],
                     "groups_to_display" => array_values($this->sendGridAsms),
                 ]
-              ]
+            ]
         )); // Set the posted fields
 
         // execute!
-        curl_exec($ch);
+        if (ENVIRONMENT === 'production')
+            curl_exec($ch);
 
         log_message('notice',  $body);
     }

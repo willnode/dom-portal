@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server version:               10.4.13-MariaDB - mariadb.org binary distribution
--- Server OS:                    Win64
+-- Host:                         portal.domcloud.id
+-- Server version:               10.3.17-MariaDB - MariaDB Server
+-- Server OS:                    Linux
 -- HeidiSQL Version:             11.0.0.5919
 -- --------------------------------------------------------
 
@@ -11,14 +11,14 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping structure for table dbdom.hosts
+-- Dumping structure for table portal_db.hosts
 CREATE TABLE IF NOT EXISTS `hosts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `login_id` int(11) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
   `domain` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `status` enum('active','pending','starting','suspended','expired') NOT NULL DEFAULT 'active',
+  `status` enum('active','pending','starting','suspended','expired','removed') NOT NULL DEFAULT 'active',
   `liquid_id` int(11) DEFAULT NULL,
   `scheme_id` int(11) DEFAULT NULL,
   `server_id` int(11) NOT NULL,
@@ -35,11 +35,27 @@ CREATE TABLE IF NOT EXISTS `hosts` (
   KEY `FK_hosting_slaves` (`server_id`) USING BTREE,
   CONSTRAINT `FK_hosting_login` FOREIGN KEY (`login_id`) REFERENCES `login` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_hosting_slaves` FOREIGN KEY (`server_id`) REFERENCES `servers` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4;
 
 -- Data exporting was unselected.
 
--- Dumping structure for table dbdom.hosts__stat
+-- Dumping structure for table portal_db.hosts__deploys
+CREATE TABLE IF NOT EXISTS `hosts__deploys` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `host_id` int(11) NOT NULL DEFAULT 0,
+  `domain` varchar(255) NOT NULL DEFAULT '',
+  `template` text NOT NULL DEFAULT '',
+  `result` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_hosts__deploys_hosts` (`host_id`),
+  CONSTRAINT `FK_hosts__deploys_hosts` FOREIGN KEY (`host_id`) REFERENCES `hosts` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8mb4;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table portal_db.hosts__stat
 CREATE TABLE IF NOT EXISTS `hosts__stat` (
   `host_id` int(11) NOT NULL,
   `domain` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -60,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `hosts__stat` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table dbdom.liquid
+-- Dumping structure for table portal_db.liquid
 CREATE TABLE IF NOT EXISTS `liquid` (
   `id` int(11) NOT NULL,
   `login_id` int(11) NOT NULL,
@@ -79,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `liquid` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table dbdom.login
+-- Dumping structure for table portal_db.login
 CREATE TABLE IF NOT EXISTS `login` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -88,17 +104,18 @@ CREATE TABLE IF NOT EXISTS `login` (
   `password` char(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `otp` char(9) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `lang` enum('id','en') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'id',
+  `trustiness` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `email_verified_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `phone` (`phone`)
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
--- Dumping structure for table dbdom.plans
+-- Dumping structure for table portal_db.plans
 CREATE TABLE IF NOT EXISTS `plans` (
   `id` int(11) NOT NULL,
   `alias` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -115,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `plans` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table dbdom.purchases
+-- Dumping structure for table portal_db.purchases
 CREATE TABLE IF NOT EXISTS `purchases` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `host_id` int(11) DEFAULT NULL,
@@ -124,11 +141,11 @@ CREATE TABLE IF NOT EXISTS `purchases` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `FK_purchase_hosting` (`host_id`) USING BTREE,
   CONSTRAINT `FK_purchase_hosting` FOREIGN KEY (`host_id`) REFERENCES `hosts` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
--- Dumping structure for table dbdom.schemes
+-- Dumping structure for table portal_db.schemes
 CREATE TABLE IF NOT EXISTS `schemes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `alias` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -142,12 +159,13 @@ CREATE TABLE IF NOT EXISTS `schemes` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table dbdom.servers
+-- Dumping structure for table portal_db.servers
 CREATE TABLE IF NOT EXISTS `servers` (
   `id` int(11) NOT NULL,
   `alias` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ip` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `domain` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `scheme_id` int(11) NOT NULL,
   `capacity` int(11) NOT NULL DEFAULT 1,
   `public` int(11) NOT NULL DEFAULT 1,
@@ -157,7 +175,7 @@ CREATE TABLE IF NOT EXISTS `servers` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table dbdom.servers__stat
+-- Dumping structure for table portal_db.servers__stat
 CREATE TABLE IF NOT EXISTS `servers__stat` (
   `server_id` int(11) NOT NULL,
   `metadata` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -169,38 +187,17 @@ CREATE TABLE IF NOT EXISTS `servers__stat` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table dbdom.templates
+-- Dumping structure for table portal_db.templates
 CREATE TABLE IF NOT EXISTS `templates` (
-  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `metadata` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Data exporting was unselected.
-
--- Dumping structure for table dbdom.templates__index
-CREATE TABLE IF NOT EXISTS `templates__index` (
-  `domain` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `match` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `priority` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '100',
-  `target` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`domain`,`match`),
-  KEY `domain` (`domain`),
-  KEY `templates__index_ibfk_1` (`target`),
-  CONSTRAINT `templates__index_ibfk_1` FOREIGN KEY (`target`) REFERENCES `templates` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Data exporting was unselected.
-
--- Dumping structure for table dbdom.templates__repos
-CREATE TABLE IF NOT EXISTS `templates__repos` (
-  `type` enum('github') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `repo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `target` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  PRIMARY KEY (`type`,`repo`),
-  KEY `FK_templates__repos_templates` (`target`),
-  CONSTRAINT `FK_templates__repos_templates` FOREIGN KEY (`target`) REFERENCES `templates` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `lang` varchar(2) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `template` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `logo` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `color` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `lang` (`lang`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 

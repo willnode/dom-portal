@@ -55,10 +55,12 @@ class Modules
 	 */
 	public function shouldDiscover(string $alias)
 	{
+		// @codeCoverageIgnoreStart
 		if (! $this->enabled)
 		{
 			return false;
 		}
+		// @codeCoverageIgnoreEnd
 
 		$alias = strtolower($alias);
 
