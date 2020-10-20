@@ -6,10 +6,14 @@ use Config\Services;
 
 class VirtualMinShell
 {
-	static $output;
+	public static $output;
 
 	protected function execute($cmd, $title = '')
 	{
+		if (ENVIRONMENT === 'testing') {
+			VirtualMinShell::$output .= parse_url($cmd, PHP_URL_QUERY) . "\n";
+			return $cmd;
+		}
 		set_time_limit(300);
 		$username = Services::request()->config->sudoWebminUser;
 		$password = Services::request()->config->sudoWebminPass;

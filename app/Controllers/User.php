@@ -10,7 +10,6 @@ use App\Entities\Purchase;
 use App\Entities\PurchaseMetadata;
 use App\Entities\Scheme;
 use App\Entities\Server;
-use App\Entities\ServerStat;
 use App\Libraries\BannedNames;
 use App\Libraries\CountryCodes;
 use App\Libraries\LiquidRegistrar;
@@ -169,7 +168,7 @@ class User extends BaseController
 					}
 				} else {
 					// Free plan. Just create
-					$hosting->status = $data['template'] ? 'starting' : 'active';
+					$hosting->status = ($data['template'] ?? '') ? 'starting' : 'active';
 					$hosting->expiry_at = date('Y-m-d H:i:s', strtotime("+2 months", \time()));
 					$hosting->domain = $hosting->username . $server->domain;
 					(new VirtualMinShell())->createHost(
@@ -187,7 +186,7 @@ class User extends BaseController
 					if (isset($payment)) {
 						$payment->host_id = $id;
 						(new PurchaseModel())->insert($payment);
-					} else if ($data['template']) {
+					} else if ($data['template'] ?? '') {
 						(new TemplateDeployer())->schedule(
 							$id,
 							$hosting->domain,
@@ -197,6 +196,7 @@ class User extends BaseController
 					return $this->response->redirect('/user/host/invoices/' . $id);
 				}
 			}
+			return redirect()->back()->withInput()->with('errors', $this->validator->listErrors());
 		}
 		return view('user/host/create', [
 			'plans' => (new PlanModel())->find(),

@@ -18,6 +18,11 @@ class AddSchemes extends Migration
             PRIMARY KEY (`id`),
             UNIQUE KEY `scheme_alias` (`alias`)
           )");
+
+        $this->db->simpleQuery("INSERT INTO `schemes` VALUES
+            (1, '.com', 160000, 160000, 11, 11),
+            (2, '.org', 155000, 200000, 11, 14)
+        ");
     }
 
     public function down()

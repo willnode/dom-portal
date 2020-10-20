@@ -17,8 +17,8 @@ class AddServers extends Migration
             `scheme_id` int(11) NOT NULL,
             `capacity` int(11) NOT NULL DEFAULT 1,
             `public` int(11) NOT NULL DEFAULT 1,
-            PRIMARY KEY (`id`) USING BTREE,
-            UNIQUE KEY `slave_alias` (`alias`) USING BTREE
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `slave_alias` (`alias`)
         )");
 
         $this->db->query("CREATE TABLE IF NOT EXISTS `servers__stat` (
@@ -26,9 +26,13 @@ class AddServers extends Migration
             `metadata` text DEFAULT NULL,
             `created_at` timestamp NULL DEFAULT NULL,
             `updated_at` timestamp NULL DEFAULT NULL,
-            PRIMARY KEY (`server_id`) USING BTREE,
+            PRIMARY KEY (`server_id`),
             CONSTRAINT `FK_slaves__stat_slaves` FOREIGN KEY (`server_id`) REFERENCES `servers` (`id`) ON DELETE CASCADE
         )");
+
+        $this->db->simpleQuery("INSERT INTO `servers`  VALUES
+	        (1, 'sga', '0.0.0.0', '.dom.my.id', 'Singapore A', 1, 80, 1)
+        ");
     }
 
     public function down()

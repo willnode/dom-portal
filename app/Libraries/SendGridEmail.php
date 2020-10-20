@@ -12,6 +12,9 @@ class SendGridEmail
     public $sendGridAsms;
     public $sendGridFromName;
     public $sendGridFromEmail;
+    public static string $sentEmail;
+    public static string $sentBody;
+
 
     public function __construct()
     {
@@ -48,9 +51,12 @@ class SendGridEmail
             ]
         )); // Set the posted fields
 
-        // execute!
         if (ENVIRONMENT === 'production')
+            // execute!
             curl_exec($ch);
+
+        SendGridEmail::$sentEmail = $id;
+        SendGridEmail::$sentBody = $body;
 
         log_message('notice',  $body);
     }

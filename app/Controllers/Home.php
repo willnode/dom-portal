@@ -18,6 +18,7 @@ use App\Models\LoginModel;
 use App\Models\PlanModel;
 use App\Models\PurchaseModel;
 use App\Models\SchemeModel;
+use CodeIgniter\CodeIgniter;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use ErrorException;
 
@@ -231,8 +232,9 @@ class Home extends BaseController
 
 	public function verify()
 	{
-		if (!empty($_GET['code'])) {
-			$code = explode(':', base64_decode($_GET['code'], true));
+		$code = $this->request->getGet('code');
+		if ($code) {
+			$code = explode(':', base64_decode($code, true), 2);
 			if (count($code) == 2) {
 				$row = fetchOne('login', [
 					'email' => $code[0],
@@ -310,17 +312,8 @@ class Home extends BaseController
 				'g-recaptcha-response' => ENVIRONMENT === 'production' ? 'required' : 'permit_empty',
 			])) {
 				if (ENVIRONMENT !== 'production' || (new Recaptha())->verify($_POST['g-recaptcha-response'])) {
-					$data = array_intersect_key(
-						$this->request->getPost(),
-						array_flip(
-							['name', 'email', 'phone', 'password']
-						)
-					);
-					$data['lang'] = $this->request->getLocale();
-					$data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
-					$this->db->table('login')->insert($data);
+					(new LoginModel())->register($this->request->getPost());
 					$_POST['action'] = 'resend';
-					$this->session->login = $this->db->insertID();
 					$u = new User();
 					$u->initController($this->request, $this->response, $this->logger);
 					$u->verify_email();

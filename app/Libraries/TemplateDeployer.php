@@ -4,7 +4,6 @@ namespace App\Libraries;
 
 use App\Models\HostDeploysModel;
 use phpseclib\Net\SSH2;
-use Symfony\Component\Yaml\Yaml;
 
 class TemplateDeployer
 {
@@ -28,14 +27,6 @@ class TemplateDeployer
     public function deploy($server, $domain, $username, $password, $config, $timeout)
     {
         $timing = microtime(true);
-        // $config = [
-        //     'source' => '',
-        //     'directory' => '',
-        //     'root' => 'public_html',
-        //     'nginx' => [],
-        //     'features' => [],
-        //     'commands' => [],
-        // ];
         $log = '';
 
         $ssh = new SSH2($server . '.domcloud.id');
