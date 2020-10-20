@@ -28,7 +28,8 @@ class SendGridEmail
     public function send($id, $asm, $params)
     {
         if (!($template = $this->sendGridTemplates[$id][lang('Interface.code')] ?? '')) {
-            return;
+            if (ENVIRONMENT === 'production')
+                return;
         }
         $ch = curl_init($this->sendGridUrl);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
