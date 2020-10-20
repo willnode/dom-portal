@@ -12,8 +12,8 @@ class SendGridEmail
     public $sendGridAsms;
     public $sendGridFromName;
     public $sendGridFromEmail;
-    public static string $sentEmail;
-    public static string $sentBody;
+    public static string $sentEmail = '';
+    public static string $sentBody = '{}';
 
 
     public function __construct()

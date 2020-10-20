@@ -15,7 +15,7 @@ use Config\Services;
 use Faker\Factory;
 use Faker\Generator;
 
-class SignUpTest extends CIDatabaseTestCase
+class FunctionalTest extends CIDatabaseTestCase
 {
     protected $namespace  = null;
 
@@ -23,13 +23,10 @@ class SignUpTest extends CIDatabaseTestCase
 
     public function testRegister()
     {
-        // check database migration
+        // check database migration and prepare controller
         $this->assertTrue($this->db->tableExists('login'));
         $this->assertTrue($this->db->table('login')->countAllResults() === 0);
-        // prepare controller
-        $home = new Home();
-        $home->initController($req = Services::request(), Services::response(), Services::logger());
-        // prepare request
+        ($home = new Home())->initController($req = Services::request(), Services::response(), Services::logger());
         $req->setMethod('post');
         $req->setGlobal('post', $login_data = [
             'name' => $this->faker->name(),
@@ -37,18 +34,20 @@ class SignUpTest extends CIDatabaseTestCase
             'password' => $this->faker->password(8),
         ]);
         $req->setGlobal('request', $login_data);
-        // execute register
+
+        // execute register and check email sent
+
         $home->register();
-        // check user added
         /** @var Login */
         $login = (new LoginModel())->find(1);
         $this->assertTrue($login !== null);
-        // check email verification sent
         $this->assertTrue($login->otp !== null);
         $this->assertTrue(SendGridEmail::$sentEmail === 'verify_email');
         $sentEmail = json_decode(SendGridEmail::$sentBody)->personalizations[0]->to[0]->email ?? '';
         $this->assertTrue($sentEmail === $login->email);
-        // check email verification action
+
+        // okay, check if we can verify
+
         $req->setMethod('get');
         $req->setGlobal('get', $otp_data = [
             'code' => base64_encode("$login->email:$login->otp"),
@@ -60,7 +59,9 @@ class SignUpTest extends CIDatabaseTestCase
         $this->assertTrue($login->otp === null);
         $this->assertTrue($login->trustiness === 1);
         $this->assertTrue($login->email_verified_at !== null);
-        // check login
+
+        // now check login
+
         $req->setMethod('post');
         $req->setGlobal('post', $login_data);
         $req->setGlobal('request', $login_data);
@@ -74,9 +75,10 @@ class SignUpTest extends CIDatabaseTestCase
             'email' => 'contoso@example.com',
             'password' => 'mycontosouser',
         ], true, true);
-        $user = new User();
-        $user->initController($req = Services::request(), Services::response(), Services::logger());
-        // Check create
+        ($user = new User())->initController($req = Services::request(), Services::response(), Services::logger());
+
+        // Check create host
+
         $req->setMethod('post');
         $req->setGlobal('post', $post_data = [
             'plan' => 1,
@@ -89,7 +91,10 @@ class SignUpTest extends CIDatabaseTestCase
         /** @var Host */
         $host = (new HostModel())->find(1);
         $this->assertEquals(array_intersect_key($host->toRawArray(), array_flip(
-            ['id', 'login_id', 'username', 'domain', 'password', 'status', 'server_id', 'plan_id']
+            [
+                'id', 'login_id', 'username', 'domain', 'password',
+                'status', 'server_id', 'plan_id'
+            ]
         )), [
             'id' => 1,
             'login_id' => 1,
@@ -101,10 +106,58 @@ class SignUpTest extends CIDatabaseTestCase
             'plan_id' => 1,
         ]);
         $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
-            'program=create-domain&user=contoso&pass=mycontoso&email=contoso@example.com'.
-            '&domain=contoso.dom.my.id&plan=Freedom&limits-from-plan=&dir=&webmin='.
-            '&virtualmin-nginx=&virtualmin-nginx-ssl=&unix='
+            'program=create-domain&user=contoso&pass=mycontoso&email=contoso@example.com' .
+                '&domain=contoso.dom.my.id&plan=Freedom&limits-from-plan=&dir=&webmin=' .
+                '&virtualmin-nginx=&virtualmin-nginx-ssl=&unix='
         ]);
+        VirtualMinShell::$output = '';
+
+        // Okay, try rename
+
+
+
+        // Okay, try extend
+
+        $req->setMethod('post');
+        $req->setGlobal('post', $post_data = [
+            'mode' => 'new',
+            'plan' => 1,
+            'years' => 1,
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->host('upgrade', $host->id);
+        $newexp = (new HostModel())->find(1)->expiry_at;
+        $this->assertTrue(strtotime($host->expiry_at) <= strtotime($newexp));
+
+        // Okay, try upgrade
+
+        $req->setGlobal('post', $post_data = [
+            'mode' => 'new',
+            'plan' => 2,
+            'years' => 1,
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->host('upgrade', $host->id);
+        /** @var Host */
+        $host = (new HostModel())->find(1);
+        $this->assertTrue(($purchase = $host->purchase)->status === 'pending');
+
+        // Try to execute payment
+
+        ($home = new Home())->initController($req, Services::response(), Services::logger());
+        $req->setGlobal('get', [
+            'id' => $purchase->id,
+            'challenge' => $purchase->metadata->_challenge,
+            'secret' => $req->config->ipaymuSecret,
+        ]);
+        $req->setGlobal('post', [
+            'trx_id' => 123,
+            'via' => 'Test',
+            'status' => 'berhasil',
+        ]);
+        $home->notify();
+        $this->assertTrue(($purchase = $host->purchase)->status === 'active');
+        var_dump(VirtualMinShell::$output);
     }
 
     protected function setUp(): void

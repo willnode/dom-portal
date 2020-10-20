@@ -11,7 +11,7 @@ class App extends BaseConfig
 	public $sudoNginxSecret;
 	public $ipaymuURL;
 	public $ipaymuKey;
-	public $ipaymuSecret;
+	public $ipaymuSecret = '';
 	public $transferWiseURL;
 	public $transferWiseSecret;
 	public $transferWisePID;

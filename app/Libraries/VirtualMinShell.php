@@ -6,7 +6,7 @@ use Config\Services;
 
 class VirtualMinShell
 {
-	public static $output;
+	public static string $output = '';
 
 	protected function execute($cmd, $title = '')
 	{

@@ -213,7 +213,7 @@ class User extends BaseController
 	protected function upgradeHost($host)
 	{
 		if ($this->request->getMethod() === 'post') {
-			if (!($current = $host->purchase) && $_POST['plan'] === '1') {
+			if (!$host->purchase && $this->request->getPost('plan') === '1') {
 				// Preliminating check. If current is free then requesting free again:
 				// Just expand the expiry time and do nothing else.
 				$host->expiry_at = date('Y-m-d H:i:s', strtotime("+2 months", \time()));

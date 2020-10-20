@@ -31,16 +31,16 @@ class Home extends BaseController
 
 	public function notify()
 	{
+		$r = $this->request;
 		if (
-			isset($_GET['id'], $_GET['challenge'], $_GET['secret']) &&
-			($_GET['secret'] == $this->request->config->ipaymuSecret &&
-				isset($_POST['trx_id'], $_POST['status'], $_POST['via']) &&
-				$_POST['status'] == 'berhasil' // iPaymu notification
-			)
+			$r->getGet('id') && $r->getGet('challenge') &&
+			$r->getGet('secret') === $r->config->ipaymuSecret &&
+			$r->getPost('trx_id') && $r->getPost('via') &&
+			$r->getPost('status')  == 'berhasil'
 		) {
 			/** @var Purchase */
-			$data = (new PurchaseModel())->find($_GET['id']);
-			if ($data && $data->metadata->_challenge == $_GET['challenge']) {
+			$data = (new PurchaseModel())->find($r->getGet('id'));
+			if ($data && $data->metadata->_challenge == $r->getGet('challenge')) {
 
 				// At this point we process the purchase
 				// In case anything fails, at least we have record it.
@@ -49,9 +49,9 @@ class Home extends BaseController
 				$host = $data->host;
 				$login = $host->login;
 				$metadata = $data->metadata;
-				$metadata->_id = $_POST['trx_id'];
+				$metadata->_id = $r->getPost('trx_id');
 				$metadata->_invoiced = date('Y-m-d H:i:s');
-				$metadata->_via = $_POST['via'];
+				$metadata->_via = $r->getPost('via');
 				$metadata->_challenge = null;
 
 				log_message('notice', 'PURCHASE: ' . json_encode($metadata));
@@ -78,8 +78,7 @@ class Home extends BaseController
 					// Save
 					$host->scheme_id = $metadata->scheme;
 				}
-				if ($metadata->domain && $host->domain != $metadata->domain)
-				{
+				if ($metadata->domain && $host->domain != $metadata->domain) {
 					(new VirtualMinShell())->cnameHost(
 						$host->domain,
 						$host->server->alias,
@@ -147,6 +146,7 @@ class Home extends BaseController
 				$data->metadata = $metadata;
 				(new PurchaseModel())->save($data);
 				if ($host->hasChanged()) {
+					var_dump($host);
 					(new HostModel())->save($host);
 				} {
 					// Email
@@ -176,6 +176,7 @@ class Home extends BaseController
 				return "OK";
 			}
 		}
+		var_dump($r);
 		throw new PageNotFoundException();
 	}
 

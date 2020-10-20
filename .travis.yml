@@ -1,6 +1,7 @@
 language: php
 cache:
   - $HOME/.composer/cache/files
+dist: trusty
 php:
   - '7.4'
 services:
