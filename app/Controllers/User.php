@@ -14,9 +14,7 @@ use App\Entities\Server;
 use App\Libraries\BannedNames;
 use App\Libraries\CountryCodes;
 use App\Libraries\DigitalRegistra;
-use App\Libraries\LiquidRegistrar;
 use App\Libraries\IpaymuGate;
-use App\Libraries\SendGridEmail;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\VirtualMinShell;
 use App\Models\DomainModel;
@@ -94,11 +92,11 @@ class User extends BaseController
 			])->run($input['bio']))
 				return null;
 			/** @var Scheme */
-			$scheme = (new SchemeModel())->find($this->request->getPost('buy_scheme'));
+			$scheme = (new SchemeModel())->find($input['scheme']);
 			$domain = new Domain([
 				'name' => $input['name'] . $scheme->alias,
 				'login_id' => $this->login->id,
-				'scheme_id' => $scheme->alias,
+				'scheme_id' => $scheme->id,
 				'status' => 'pending',
 			]);
 			$model = new DomainModel();
@@ -330,7 +328,6 @@ class User extends BaseController
 		return view('user/host/upgrade', [
 			'data' => $host,
 			'purchase' => $host->purchase,
-			'liquid' => (new LiquidModel())->atLogin($this->login->id),
 			'schemes' => (new SchemeModel())->find(),
 			'plans' => (new PlanModel())->find(),
 		]);
@@ -775,7 +772,7 @@ class User extends BaseController
 	public function delete()
 	{
 		$ok = $this->db->table('hosts')->where(['login_id' => $this->login->id])->countAll() === 0;
-		$ok = $ok && count(($liquid = (new LiquidModel())->atLogin($this->login->id))->domains ?? []) === 0;
+		$ok = $ok && $this->db->table('domains')->where(['login_id' => $this->login->id])->countAll() === 0;
 		if ($ok && $this->request->getMethod() === 'post' && strpos($this->request->getPost('wordpass'), 'Y') !== FALSE) {
 			(new LoginModel())->delete($this->login->id);
 			$this->session->destroy();

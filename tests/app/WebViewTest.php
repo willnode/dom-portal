@@ -58,7 +58,9 @@ class WebViewTest extends CIDatabaseTestCase
         // server page
         $this->assertTrue($user->status()->getStatusCode() === 302);
         $req->setGlobal('get', ['server' => 1]);
+        $this->assertTrue(is_string($user->profile()));
         $this->assertTrue(is_string($user->status()));
+        $this->assertTrue(is_string($user->delete()));
 
         // hosts page
         (new HostModel())->insert([
@@ -71,13 +73,16 @@ class WebViewTest extends CIDatabaseTestCase
             'expiry_at' => date('Y-m-d H:i:s'),
         ]);
         $req->setGlobal('get', []);
-        $this->assertTrue(is_string($user->host('list')));
-        // $this->assertTrue(is_string($user->host('create')));
-        foreach ([
-            'detail', 'see', 'nginx', 'invoices', // 'upgrade',
-            'dns', 'ssl', 'rename', 'cname', 'delete', 'deploys',
-        ] as $page) {
-            $this->assertTrue(is_string($user->host($page, 1)));
+        foreach (['en', 'id'] as $lang) {
+            $req->setLocale($lang);
+            $this->assertTrue(is_string($user->host('list')));
+            $this->assertTrue(is_string($user->host('create')));
+            foreach ([
+                'detail', 'see', 'nginx', 'invoices', 'upgrade',
+                'dns', 'ssl', 'rename', 'cname', 'delete', 'deploys',
+            ] as $page) {
+                $this->assertTrue(is_string($user->host($page, 1)));
+            }
         }
     }
 

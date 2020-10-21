@@ -81,8 +81,8 @@ class DigitalRegistra
 			'domain' => $domain->name,
 			'api_id' => $domain->id,
 			'periode' => $years,
-			'ns1' => $server ? 'nsp' . $server->alias : 'ns1.mysrsx.com',
-			'ns2' => $server ? 'nss' . $server->alias : 'ns2.mysrsx.net',
+			'ns1' => $server ? 'nsp' . $server->domain : 'ns1.mysrsx.com',
+			'ns2' => $server ? 'nss' . $server->domain : 'ns2.mysrsx.net',
 			'fname' => $bio['fname'],
 			'lname' => $bio['lname'] ?? '',
 			'company' => $bio['company'],
@@ -92,7 +92,7 @@ class DigitalRegistra
 			'state' => $bio['state'],
 			'country' => $bio['country'],
 			'postcode' => $bio['postal'],
-			'phonenumber' => trim($bio['phone'], ' +'),
+			'phonenumber' => trim($bio['tel'], ' +'),
 			'email' => $bio['email'],
 			'user_username' => $login->email,
 			'user_fname' => $user['fname'] ?? $bio['fname'],
@@ -107,7 +107,7 @@ class DigitalRegistra
 			'autoactive' => 'on',
 			'category' => $scheme->category,
 		], function ($x) {
-			return !$x;
+			return $x;
 		});
 	}
 

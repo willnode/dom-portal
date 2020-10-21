@@ -62,7 +62,6 @@ class FunctionalTest extends CIDatabaseTestCase
         $req->setGlobal('post', $login_data);
         $req->setGlobal('request', $login_data);
         $home->login() && $this->assertTrue(Services::session()->login === 1);
-
     }
 
     public function testCreateFreeAndUpgradeHost()
@@ -161,13 +160,97 @@ class FunctionalTest extends CIDatabaseTestCase
         VirtualMinShell::$output = '';
     }
 
+    public function testCreateHostWithDomain()
+    {
+        (new LoginModel())->register([
+            'name' => 'Contoso User',
+            'email' => 'contoso@example.com',
+            'password' => 'mycontosouser',
+        ], true, true);
+        ($user = new User())->initController($req = Services::request(), Services::response(), Services::logger());
+
+
+        // Check create host
+
+        $req->setMethod('post');
+        $req->setGlobal('post', $post_data = [
+            'plan' => 2,
+            'server' => 1,
+            'username' => 'contoso',
+            'password' => 'mycontoso',
+            'years' => 1,
+            'addons' => 0,
+            'domain' => [
+                'scheme' => 1,
+                'name' => 'example',
+                'bio' => [
+                    'fname' => 'Contoso',
+                    'company' => 'Contoso Company',
+                    'email' => 'contoso@example.com',
+                    'tel' => '15556667',
+                    'country' => 'US',
+                    'state' => 'California',
+                    'city' => 'Vancouver',
+                    'postal' => '11101',
+                    'address1' => 'St. John',
+                ]
+            ]
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->host('create');
+        /** @var Host */
+        $host = (new HostModel())->find(1);
+        $this->assertTrue(isset($host, $host->purchase, $host->domain_detail));
+        $meta = $host->purchase->metadata;
+        $this->assertEquals($meta->toRawArray(), [
+            'type' => "hosting",
+            'price' => 16.5,
+            'price_unit' => "usd",
+            'template' => "",
+            'expiration' =>  $meta->expiration,
+            'years' =>  1,
+            'plan' => 2,
+            'addons' => 0,
+            '_challenge' =>  $meta->_challenge,
+            '_id' => NULL,
+            '_via' =>  NULL,
+            '_issued' => $meta->_issued,
+            '_invoiced' => null,
+            '_status' => null,
+            'registrar' => [
+                'domain' => "example.com",
+                'periode' => 1,
+                'ns1' => "nsp.dom.my.id",
+                'ns2' => "nss.dom.my.id",
+                'fname' => "Contoso",
+                'company' => "Contoso Company",
+                'address1' => "St. John",
+                'city' => "Vancouver",
+                'state' => "California",
+                'country' => "US",
+                'postcode' => "11101",
+                'phonenumber' => "15556667",
+                'email' => "contoso@example.com",
+                'user_username' => "contoso@example.com",
+                'user_fname' => "Contoso",
+                'user_company' => "Contoso Company",
+                'user_address' => "St. John",
+                'user_city' => "Vancouver",
+                'user_province' => "California",
+                'user_country' => "US",
+                'user_postal_code' => "11101",
+                'autoactive' => "on",
+            ]
+        ]);
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->db->resetDataCache();
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         parent::tearDown();
         $req = Services::request();

@@ -108,7 +108,6 @@
                     </div>
                   </div>
                   <div id="dm-buy" class="d-none">
-                    <?php if ($liquid) : ?>
                       <div class="mb-3">
                         <label class="form-label"><?= lang('Host.findDomain') ?></label>
                         <div class="input-group">
@@ -137,14 +136,6 @@
                       <p id="buy-status-error" class="alert alert-danger d-none">
                         <?= lang('Host.findUnavailable') ?>
                       </p>
-                    <?php else : ?>
-                      <p class="alert alert-danger">
-                        <small>
-                          <?= lang('Host.findNeedData') ?>
-                          <br><a href="/user/domain?then=reload" target="_blank"><?= lang('Host.findNeedDataAction') ?></a>.
-                        </small>
-                      </p>
-                    <?php endif ?>
                   </div>
                   <div id="dm-custom" class="d-none">
                     <div class="mb-3">
@@ -217,7 +208,7 @@
     <?= json_encode($plans) ?>
   </script>
   <script id="schemes" type="application/json">
-    <?= $liquid ? json_encode($schemes) : 'null' ?>
+    <?= json_encode($schemes) ?>
   </script>
   <script>
     const plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.id] = b, a), {});

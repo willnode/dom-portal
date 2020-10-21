@@ -4,22 +4,16 @@ namespace App\Controllers;
 
 use App\Entities\Plan;
 use App\Entities\Purchase;
-use App\Entities\Scheme;
 use App\Libraries\DigitalRegistra;
-use App\Libraries\LiquidRegistrar;
 use App\Libraries\Recaptha;
 use App\Libraries\SendGridEmail;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\TransferWiseGate;
 use App\Libraries\VirtualMinShell;
-use App\Models\HostDeployModel;
 use App\Models\HostModel;
-use App\Models\LiquidModel;
 use App\Models\LoginModel;
 use App\Models\PlanModel;
 use App\Models\PurchaseModel;
-use App\Models\SchemeModel;
-use CodeIgniter\CodeIgniter;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use ErrorException;
 
