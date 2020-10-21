@@ -13,12 +13,12 @@ use CodeIgniter\Entity;
  * @property int $renew_local
  * @property int $renew_idr
  * @property int $renew_usd
+ * @property string $category
  */
 class Scheme extends Entity
 {
     protected $casts = [
         'id' => 'integer',
-        'alias' => 'string',
         'price_idr' => 'integer',
         'renew_idr' => 'integer',
         'price_usd' => 'integer',

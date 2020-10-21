@@ -13,6 +13,7 @@ class IpaymuGate
 		$secret = Services::request()->config->ipaymuSecret;
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 100);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, [
 			'key' => $key,
 			'action' => 'payment',

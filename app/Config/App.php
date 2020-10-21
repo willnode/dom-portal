@@ -18,10 +18,9 @@ class App extends BaseConfig
 	public $recapthaURL;
 	public $recapthaSite;
 	public $recapthaSecret;
-	public $liquidURL;
-	public $liquidCustomer;
-	public $liquidID;
-	public $liquidKey;
+	public $srsxURL;
+	public $srsxUsername;
+	public $srsxPassword;
 	public $sendGridFromName;
 	public $sendGridFromEmail;
 	public $sendGridSecret;

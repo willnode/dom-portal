@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Entities\Domain;
 use App\Entities\Host;
 use App\Entities\Liquid;
 use App\Entities\Login;
@@ -12,12 +13,14 @@ use App\Entities\Scheme;
 use App\Entities\Server;
 use App\Libraries\BannedNames;
 use App\Libraries\CountryCodes;
+use App\Libraries\DigitalRegistra;
 use App\Libraries\LiquidRegistrar;
 use App\Libraries\IpaymuGate;
 use App\Libraries\SendGridEmail;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\VirtualMinShell;
-use App\Models\HostDeploysModel;
+use App\Models\DomainModel;
+use App\Models\HostDeployModel;
 use App\Models\HostModel;
 use App\Models\LiquidModel;
 use App\Models\LoginModel;
@@ -64,39 +67,78 @@ class User extends BaseController
 			'page' => 'hosting',
 		]);
 	}
-	protected function processNewDomainTransaction($domain, $years)
+	/**
+	 * @param PurchaseMetadata $metadata
+	 * @param mixed $input
+	 * @param Server $server
+	 * @return Domain|string|null if valid, return final domain object/string
+	 */
+	protected function processNewDomainTransaction($metadata, $input, $server = null)
 	{
-		$liq = (new LiquidModel())->atLogin($this->login->id);
-		$liqc = $liq->default_contacts;
-		$liquid['domain_name'] = $domain;
-		$liquid['customer_id'] = $liq->id;
-		$liquid['years'] = $years;
-		$liquid['registrant_contact_id'] = $liqc->registrant_contact->contact_id;
-		$liquid['billing_contact_id'] = $liqc->billing_contact->contact_id;
-		$liquid['admin_contact_id'] = $liqc->admin_contact->contact_id;
-		$liquid['tech_contact_id'] = $liqc->tech_contact->contact_id;
-		$liquid['purchase_privacy_protection'] = '0';
-		$liquid['invoice_option'] = 'only_add';
-		return (new LiquidRegistrar())->issuePurchaseDomain($liquid);
+		if (!is_array($input)) {
+			return null;
+		} elseif ($this->validator->setRules([
+			'scheme' => 'required|is_not_unique[schemes.id]',
+			'name' => 'required|regex_match[/^[-\w]+$/]',
+		])->run($input)) {
+			if (!is_array($input['bio'] ?? null) || !$this->validator->setRules([
+				'fname' => 'required|max_length[32]',
+				'company' => 'required|max_length[32]',
+				'email' => 'required|valid_email|max_length[63]',
+				'tel' => 'required|max_length[15]',
+				'country' => 'required|max_length[3]',
+				'state' => 'required|max_length[32]',
+				'city' => 'required|max_length[32]',
+				'postal' => 'required|max_length[8]',
+				'address1' => 'required|max_length[255]',
+			])->run($input['bio']))
+				return null;
+			/** @var Scheme */
+			$scheme = (new SchemeModel())->find($this->request->getPost('buy_scheme'));
+			$domain = new Domain([
+				'name' => $input['name'] . $scheme->alias,
+				'login_id' => $this->login->id,
+				'scheme_id' => $scheme->alias,
+				'status' => 'pending',
+			]);
+			$model = new DomainModel();
+			if (!$model->save($domain)) return null;
+			$metadata->price += $scheme->price_local + $scheme->renew_local * ($metadata->years - 1);
+			$metadata->registrar = (new DigitalRegistra())->normalizeDomainInput(
+				$input['bio'],
+				$input['user'] ?? [],
+				$metadata->years,
+				$domain,
+				$domain->scheme,
+				$server,
+				$this->login
+			);
+			$domain->id = $model->getInsertID();
+			return $domain;
+		} elseif ($this->validator->setRules([
+			'custom' => 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
+				'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosts.domain]'
+		])->run($input)) {
+			return $metadata->domain = $input['custom'];
+		} else return null;
 	}
 	protected function createHost()
 	{
+		$r = $this->request;
 		$count = $this->db->table('hosts')->where('login_id', $this->login->id)->countAllResults();
 		$ok = $count < ($this->login->trustiness === 0 ? 1 : ($this->login->trustiness * 5));
-		if ($ok && $this->request->getMethod() === 'post') {
+		if ($ok && $r->getMethod() === 'post') {
 			if ($this->validate([
 				'plan' => 'required|is_not_unique[plans.id]',
 				'username' => 'required|alpha_dash|min_length[5]|' .
 					'max_length[32]|is_unique[hosts.username]',
 				'server' => 'required|is_not_unique[servers.id]',
 				'password' => 'required|min_length[8]|regex_match[/^[^\'"\/\\\\:]+$/]',
-				'domain_mode' => empty($this->request->getPost('domain_mode')) ? 'permit_empty' : 'required|in_list[free,buy,custom]',
 			])) {
 				$data = array_intersect_key(
-					$this->request->getPost(),
-					array_flip(['plan', 'username', 'server', 'template', 'password', 'domain_mode'])
+					$r->getPost(),
+					array_flip(['plan', 'username', 'server', 'template', 'password'])
 				);
-				if (empty($data['domain_mode'])) $data['domain_mode'] = 'free';
 				/** @var Plan */
 				$plan = (new PlanModel())->find($data['plan']);
 				/** @var Server */
@@ -108,14 +150,9 @@ class User extends BaseController
 					'password' => $data['password'],
 					'server_id' => $data['server'],
 					'plan_id' => $data['plan'],
-					'scheme_id' => null,
 				]);
-				if ($plan->price_local != 0) {
+				if ($plan->price_local !== 0) {
 					if ($this->validate([
-						'custom_cname' => $data['domain_mode'] === 'custom' ? 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
-							'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosts.domain]' : 'permit_empty',
-						'buy_cname' => $data['domain_mode'] === 'buy' ? 'required|regex_match[/^[-\w]+$/]' : 'permit_empty',
-						'buy_scheme' => $data['domain_mode'] === 'buy' ? 'required|is_not_unique[schemes.id]' : 'permit_empty',
 						'years' => 'required|integer|greater_than[0]|less_than[6]',
 						'addons' => 'required|integer|greater_than_equal_to[0]|less_than_equal_to[10000]',
 					])) {
@@ -129,10 +166,9 @@ class User extends BaseController
 							"price_unit" => lang('Interface.currency'),
 							"template" => $data['template'] ?? '',
 							"expiration" => null,
-							"years" => intval($this->request->getPost('years')),
+							"years" => intval($r->getPost('years')),
 							"plan" => intval($data['plan']),
-							"addons" => intval($this->request->getPost('addons')),
-							"liquid" => null,
+							"addons" => intval($r->getPost('addons')),
 							"_challenge" => random_int(111111111, 999999999),
 							"_id" => null,
 							"_via" => null,
@@ -140,30 +176,25 @@ class User extends BaseController
 							"_invoiced" => null,
 							"_status" => null,
 						]);
-						if ($data['domain_mode'] === 'free') {
-							$hosting->domain = $hosting->username . $server->domain;
-						} else if ($data['domain_mode'] === 'buy') {
-							/** @var Scheme */
-							$scheme = (new SchemeModel())->find($this->request->getPost('buy_scheme'));
-							$hosting->domain = $this->request->getPost('buy_cname') . $scheme->alias;
-							$hosting->scheme_id = $this->request->getPost('buy_scheme');
-							$metadata->price += $scheme->price_local + $scheme->renew_local * ($metadata->years - 1); {
-								$rrr = $this->processNewDomainTransaction($hosting->domain, $metadata->years);
-								$hosting->liquid_id = $rrr->domain_id;
-								$metadata->liquid = $rrr->transaction_id;
-							}
-						} else if ($data['domain_mode'] === 'custom') {
-							$hosting->domain = $this->request->getPost('custom_cname');
-						}
-						$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years", \time()));
-						$metadata->price += $plan->price_local * $this->request->getPost('years');
-						$metadata->price += ['idr' => 500, 'usd' => 0.05][$metadata->price_unit] * $metadata->addons;
+						$metadata->price += $plan->price_local * $r->getPost('years');
 						$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
-						$hosting->status = 'pending';
+						$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
+						$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
+						if ($newdomain = $this->processNewDomainTransaction($metadata, $r->getPost('domain'), $server)) {
+							if ($newdomain instanceof Domain) {
+								$payment->domain_id = $newdomain->id;
+								$hosting->domain = $newdomain->name;
+							} else {
+								$hosting->domain = $newdomain;
+							}
+						} else {
+							$hosting->domain = $hosting->username . $server->domain;
+						}
 						$hosting->expiry_at = $metadata->expiration;
+						$hosting->status = 'pending';
 						$payment->metadata = $metadata;
 					} else {
-						$this->request->setMethod('get');
+						$r->setMethod('get');
 						return $this->createHost();
 					}
 				} else {
@@ -202,10 +233,11 @@ class User extends BaseController
 			'plans' => (new PlanModel())->find(),
 			'servers' => (new ServerModel())->find(),
 			'schemes' => (new SchemeModel())->find(),
-			'liquid' => (new LiquidModel())->atLogin($this->login->id),
 			'templates' => (new TemplatesModel())->atLang($this->login->lang)->findAll(),
 			'trustiness' => $this->login->trustiness,
+			'email' => $this->login->email,
 			'validation' => $this->validator,
+			'codes' => CountryCodes::$codes,
 			'ok' => $ok,
 		]);
 	}
@@ -460,7 +492,7 @@ class User extends BaseController
 		}
 		return view('user/host/deployes', [
 			'host' => $host,
-			'deploys' => (new HostDeploysModel())->atHost($host->id)->find(),
+			'deploys' => (new HostDeployModel())->atHost($host->id)->find(),
 		]);
 	}
 	/** @param Host $host */
@@ -472,11 +504,6 @@ class User extends BaseController
 		if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending') {
 			$metadata = $current->metadata;
 			if ($action === 'cancel') {
-				if ($metadata->liquid) {
-					(new LiquidRegistrar())->cancelPurchaseDomain((new LiquidModel())->atLogin($this->login->id)->id, [
-						'transaction_id' => $metadata->liquid,
-					]);
-				}
 				if (count($history) === 1 && $host->status === 'pending') {
 					(new HostModel())->delete($host->id);
 					return $this->response->redirect('user/host');
@@ -512,7 +539,7 @@ class User extends BaseController
 	/** @param Host $host */
 	protected function deleteHost($host)
 	{
-		if ($this->request->getMethod() === 'post' && $host->plan_id == 1 && ($this->request->getPost('wordpass')) === $host->username) {
+		if ($this->request->getMethod() === 'post' && $host->plan_id === 1 && ($this->request->getPost('wordpass')) === $host->username) {
 			(new VirtualMinShell())->deleteHost($host->domain, $host->server->alias);
 			(new HostModel())->delete($host->id);
 			log_message('notice', VirtualMinShell::$output);
@@ -571,19 +598,19 @@ class User extends BaseController
 				return $this->response->setJSON(['status' => 'invalid']);
 			}
 			$domain = $name . $scheme->alias;
-			$response = (new LiquidRegistrar())->isDomainAvailable($domain);
+			$response = (new DigitalRegistra())->domainCheck($domain);
 			// possible values: error, regthroughothers, available
 			$status = 'error';
-			if (isset($response[0]->{$domain}->status)) {
-				$status = $response[0]->{$domain}->status;
-			} else if (isset($response[0]->{""}->status)) {
-				$status = $response[0]->{""}->status;
+			if ($response === 'Domain Available') {
+				$status = 'available';
+			} else if ($status instanceof string) {
+				$status = $status;
 			}
 			return $this->response->setJSON([
 				'status' => $status,
 				'domain' => $domain,
-				'price' => $scheme->scheme_price,
-				'renew' => $scheme->scheme_renew,
+				'price' => $scheme->price_local,
+				'renew' => $scheme->renew_local,
 			]);
 		}
 		return $this->response->setJSON(['status' => 'invalid']);
@@ -591,60 +618,51 @@ class User extends BaseController
 
 	protected function createDomain()
 	{
-		if ($this->request->getMethod() === 'post') {
+		$r = $this->request;
+		if ($r->getMethod() === 'post') {
 			if ($this->validate([
-				'domain_name' => 'required|regex_match[/^[-\w]+$/]',
-				'domain_scheme' => 'required|is_not_unique[schemes.id]',
 				'years' => 'required|greater_than[0]|less_than[6]',
-				'registrant_contact_id' => 'required|integer',
-				'billing_contact_id' => 'required|integer',
-				'admin_contact_id' => 'required|integer',
-				'tech_contact_id' => 'required|integer',
 			])) {
-				$post = array_intersect_key(
-					$this->request->getPost(),
-					array_flip([
-						'domain_name', 'domain_scheme', 'years', 'registrant_contact_id',
-						'billing_contact_id', 'admin_contact_id', 'tech_contact_id',
-						'purchase_privacy_protection'
-					])
-				);
-				/** @var Scheme */
-				$scheme = (new SchemeModel())->find($post['domain_scheme']);
-				if ($scheme->price_local == 0) return;
-				$post['domain_name'] .= $scheme->alias;
-				unset($post['domain_scheme']);
-				$post['customer_id'] = $this->liquid->id;
-				$post['invoice_option'] = 'only_add';
-				log_message('notice', $rrr = (new LiquidRegistrar())->issuePurchaseDomain($post));
-				return $this->syncDomain();
+				$payment = new Purchase([
+					'status' => 'pending',
+				]);
+				$metadata = new PurchaseMetadata([
+					"type" => "hosting",
+					"price" => 0.0,
+					"price_unit" => lang('Interface.currency'),
+					"expiration" => null,
+					"years" => intval($r->getPost('years')),
+					"_challenge" => random_int(111111111, 999999999),
+					"_id" => null,
+					"_via" => null,
+					"_issued" => date('Y-m-d H:i:s'),
+					"_invoiced" => null,
+					"_status" => null,
+				]);
+				$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
+				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
+				if ($newdomain = $this->processNewDomainTransaction($metadata, $r->getPost('domain'))) {
+					if ($newdomain instanceof Domain) {
+						$payment->metadata = $metadata;
+						$payment->domain_id = $newdomain->id;
+						(new PurchaseModel())->save($payment);
+					}
+				}
 			}
 		}
 
 		return view('user/domain/create', [
 			'schemes' => $this->db->table('schemes')->get()->getResult(),
-			'contacts' => $this->liquid->contacts,
 		]);
 	}
 	protected function listDomain()
 	{
-		if (strtolower($this->request->getPost('action')) === 'sync') {
-			return $this->syncDomain();
-		}
 		return view('user/domain/list', [
-			'liquid' => $this->liquid,
+			'list' => (new DomainModel())->atLogin($this->login->id),
 			'page' => 'domain',
 		]);
 	}
 
-	protected function loginDomain()
-	{
-		return view('user/domain/login', [
-			'user' => $this->login->email,
-			'pass' => $this->liquid->password,
-			'uri' => $this->request->config->liquidCustomer,
-		]);
-	}
 	protected function detailDomain($domain)
 	{
 		return view('user/domain/detail', [
@@ -660,115 +678,21 @@ class User extends BaseController
 	{
 		return view('user/domain/domain', []);
 	}
-	protected function introDomain()
-	{
-		if ($this->request->getMethod() === 'post') {
-			if ($this->validate([
-				'name' => 'required',
-				'email' => 'required|valid_email',
-				'password' => 'required|min_length[8]',
-				'company' => 'required',
-				'tel_no' => 'required',
-				'tel_cc_no' => 'required|integer',
-				'address_line_1' => 'required',
-				'city' => 'required',
-				'state' => 'required',
-				'country_code' => 'required',
-				'zipcode' => 'required',
-			])) {
-				$post = array_intersect_key(
-					$this->request->getPost(),
-					array_flip([
-						'name', 'email', 'password', 'company', 'tel_no', 'tel_cc_no',
-						'alt_tel_no', 'alt_tel_cc_no', 'address_line_1', 'address_line_2', 'address_line_1',
-						'city', 'state', 'country_code', 'zipcode'
-					])
-				);
-				$data = (new LiquidRegistrar())->createCustomer($post);
-				if (isset($data->customer_id)) {
-					$this->db->table('liquid')->insert([
-						'id' => $data->customer_id,
-						'password' => $post['password'],
-						'login_id' => $this->login->id,
-					]);
-					$s = $this->syncDomain();
-					return ($_GET['then'] ?? '') !== 'reload' ? $s :
-						'<!doctype html><body><script>window.opener.location.reload();window.close();</script></body>';
-				}
-				return view('user/host/output', [
-					'output' => json_encode($data),
-					'link' => '/user/domain/',
-				]);
-			}
-		}
-		return view('user/domain/intro', [
-			'page' => 'domain',
-			'data' => $this->login,
-			'codes' => CountryCodes::$codes,
-		]);
-	}
-	protected function topupDomain()
-	{
 
-		return view('user/domain/topup', [
-			'data' => $this->liquid
-		]);
-	}
-	protected function syncDomain()
-	{
-		$liquid = new LiquidRegistrar();
-		// get ID matches email
-		$data = $liquid->getCustomerWithEmail($this->login->email);
-		if ($data && count($data) > 0) {
-			$customer = $data[0];
-			$liquid_id = $customer->customer_id;
-			$contacts = $liquid->getListOfContacts($liquid_id);
-			$domains = $liquid->getListOfDomains($liquid_id);
-			$liquid_pending_transactions = $liquid->getPendingTransactions($liquid_id);
-			$liquid_default_contacts = $liquid->getDefaultContacts($liquid_id);
-
-			$this->db->table('liquid')->update([
-				'id' => $liquid_id,
-				'customer' => json_encode($customer),
-				'domains' => json_encode($domains),
-				'contacts' => json_encode($contacts),
-				'pending_transactions' => json_encode($liquid_pending_transactions),
-				'default_contacts' => json_encode($liquid_default_contacts),
-			], [
-				'login_id' => $this->login->id,
-			]);
-		} else {
-			$this->db->table('liquid')->delete([
-				'login_id' => $this->login->id,
-			]);
-		}
-		return $this->response->redirect('/user/domain');
-	}
 
 	/** @var Liquid */
 	protected $liquid;
 
 	public function domain($page = 'list', $id = 0)
 	{
-		if (!$this->login->email_verified_at) {
-			return $this->verify_email();
+		if ($page == 'list') {
+			return $this->listDomain();
+		} else if ($page == 'check') {
+			return $this->checkDomain();
+		} else if ($page == 'create') {
+			return $this->createDomain();
 		}
-		if ($this->liquid = (new LiquidModel())->atLogin($this->login->id)) {
-			if ($page == 'list') {
-				return $this->listDomain();
-			} else if ($page == 'check') {
-				return $this->checkDomain();
-			} else if ($page == 'login') {
-				return $this->loginDomain();
-			} else if ($page == 'create') {
-				return $this->createDomain();
-			} else if ($page == 'topup') {
-				return $this->topupDomain();
-			}
-			return $this->response->redirect('/user/domain');
-		} else {
-			return $this->introDomain();
-		}
+		return $this->response->redirect('/user/domain');
 	}
 
 	public function status()
@@ -853,10 +777,6 @@ class User extends BaseController
 		$ok = $this->db->table('hosts')->where(['login_id' => $this->login->id])->countAll() === 0;
 		$ok = $ok && count(($liquid = (new LiquidModel())->atLogin($this->login->id))->domains ?? []) === 0;
 		if ($ok && $this->request->getMethod() === 'post' && strpos($this->request->getPost('wordpass'), 'Y') !== FALSE) {
-			if ($liquid) {
-				(new LiquidRegistrar())->deleteCustomer($liquid->id);
-				(new LiquidModel())->delete($liquid->id);
-			}
 			(new LoginModel())->delete($this->login->id);
 			$this->session->destroy();
 			return $this->response->redirect('/');

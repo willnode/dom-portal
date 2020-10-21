@@ -10,7 +10,7 @@ before_install:
  - composer self-update
  - mysql -e 'CREATE DATABASE portal_test_db;'
 before_script:
- - composer install --no-interaction --dev
+ - composer install --no-interaction --quiet
 script:
  - phpunit
  - bash <(curl -s https://codecov.io/bash)

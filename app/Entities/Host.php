@@ -2,11 +2,11 @@
 
 namespace App\Entities;
 
+use App\Models\DomainModel;
 use App\Models\HostStatModel;
 use App\Models\LoginModel;
 use App\Models\PlanModel;
 use App\Models\PurchaseModel;
-use App\Models\SchemeModel;
 use App\Models\ServerModel;
 use CodeIgniter\Entity;
 use CodeIgniter\I18n\Time;
@@ -16,15 +16,14 @@ use CodeIgniter\I18n\Time;
  * @property int $login_id
  * @property string $username
  * @property string $domain
+ * @property Domain|null $domain_detail
  * @property string $password
  * @property string $status
  * @property int $liquid_id
- * @property int $scheme_id
  * @property int $server_id
  * @property int $plan_id
  * @property int $addons
  * @property int $notification Notification Flag 1=about expire, 2=rollover mode, 4=disabled
- * @property Scheme $scheme
  * @property Plan $plan
  * @property Server $server
  * @property Purchase $purchase
@@ -51,16 +50,15 @@ class Host extends Entity
         'status' => 'string',
         'liquid_id' => 'integer',
         'server_id' => 'integer',
-        'scheme_id' => '?integer',
         'plan_id' => 'integer',
         'addons' => 'integer',
         'notification' => 'integer',
     ];
 
-    /** @return Scheme */
-    public function getScheme()
+    /** @return Domain|null */
+    public function getDomainDetail()
     {
-        return (new SchemeModel())->find($this->attributes['scheme_id']);
+        return (new DomainModel())->atDomain($this->attributes['domain']);
     }
 
     /** @return Plan */
@@ -87,7 +85,7 @@ class Host extends Entity
         return (new PurchaseModel())->atHost($this->attributes['id'])->descending()->findAll(1)[0] ?? null;
     }
 
-    /** @return Login|null */
+    /** @return Login */
     public function getLogin()
     {
         return (new LoginModel())->find($this->attributes['login_id']);

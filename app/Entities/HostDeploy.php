@@ -13,7 +13,7 @@ use CodeIgniter\Entity;
  * @property string $result
  * @property Host $host
  */
-class HostDeploys extends Entity
+class HostDeploy extends Entity
 {
     protected $casts = [
         'id' => 'integer',

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Entities\Host;
 use CodeIgniter\Model;
 
 class HostModel extends Model

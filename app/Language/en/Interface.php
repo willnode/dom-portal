@@ -39,7 +39,7 @@
 	'phoneAlt' => 'Alternative Phone Number',
 	'password' => 'Password',
 	'passwordAgain' => 'Password (Again)',
-	'companyName' => 'Company Name',
+	'companyName' => 'Company / Organization Name',
 	'company' => 'Company',
 	'credit' => 'Credit',
 	'optional' => '(Optional)',

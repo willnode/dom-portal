@@ -2,10 +2,10 @@
 
 namespace App\Commands;
 
-use App\Entities\HostDeploys;
+use App\Entities\HostDeploy;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\VirtualMinShell;
-use App\Models\HostDeploysModel;
+use App\Models\HostDeployModel;
 use App\Models\HostModel;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
@@ -21,8 +21,8 @@ class FetchTemplate extends BaseCommand
     public function run(array $params)
     {
         set_time_limit(30 * 60);
-        /** @var HostDeploys */
-        $deploy = (new HostDeploysModel())->find($params[0]);
+        /** @var HostDeploy */
+        $deploy = (new HostDeployModel())->find($params[0]);
         if ($deploy) {
             $host = $deploy->host;
             $template = Yaml::parse($deploy->template);
@@ -46,7 +46,7 @@ class FetchTemplate extends BaseCommand
                     $deploy->template = str_replace($tpass, '****', $deploy->template);
                 }
             }
-            (new HostDeploysModel())->save($deploy);
+            (new HostDeployModel())->save($deploy);
         }
     }
 }

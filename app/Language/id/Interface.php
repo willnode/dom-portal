@@ -39,7 +39,7 @@
 	'phoneAlt' => 'Nomor HP Alternatif',
 	'password' => 'Password',
 	'passwordAgain' => 'Password (Lagi)',
-	'companyName' => 'Nama Bisnis / Perusahaan',
+	'companyName' => 'Nama Organisasi / Perusahaan',
 	'company' => 'Perusahaan',
 	'credit' => 'Kredit',
 	'optional' => '(Opsional)',

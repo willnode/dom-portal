@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS `hosts` (
 
 -- Data exporting was unselected.
 
--- Dumping structure for table portal_db.hosts__deploys
-CREATE TABLE IF NOT EXISTS `hosts__deploys` (
+-- Dumping structure for table portal_db.hosts__deploy
+CREATE TABLE IF NOT EXISTS `hosts__deploy` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `host_id` int(11) NOT NULL DEFAULT 0,
   `domain` varchar(255) NOT NULL DEFAULT '',

@@ -7,16 +7,19 @@ use CodeIgniter\Entity;
 
 /**
  * @property int $id
- * @property int $host_id
+ * @property int|null $host_id
+ * @property int|null $domain_id
  * @property string $status
  * @property PurchaseMetadata $metadata
- * @property Host $host
+ * @property Host|null $host
+ * @property Domain|null $domain
  */
 class Purchase extends Entity
 {
     protected $casts = [
         'id' => 'integer',
-        'host_id' => 'integer',
+        'host_id' => 'integer?',
+        'domain_id' => 'integer?',
         'status' => 'string',
     ];
 

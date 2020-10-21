@@ -20,6 +20,7 @@ class VirtualMinShell
 		if ($title !== NULL)
 			VirtualMinShell::$output .= 'HOSTING: ' . $title . ' (' . $cmd . ')' . "\n";
 		$ch = curl_init($cmd);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 100);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
 		$response = curl_exec($ch);

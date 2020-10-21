@@ -36,6 +36,7 @@ class SendGridEmail
             'Content-Type: application/json',
             'Authorization: Bearer ' . $this->sendGridSecret
         ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 100);
         curl_setopt($ch, CURLOPT_POST, 1); // Specify the request method as POST
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body = json_encode(
             [

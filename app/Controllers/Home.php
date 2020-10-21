@@ -5,13 +5,14 @@ namespace App\Controllers;
 use App\Entities\Plan;
 use App\Entities\Purchase;
 use App\Entities\Scheme;
+use App\Libraries\DigitalRegistra;
 use App\Libraries\LiquidRegistrar;
 use App\Libraries\Recaptha;
 use App\Libraries\SendGridEmail;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\TransferWiseGate;
 use App\Libraries\VirtualMinShell;
-use App\Models\HostDeploysModel;
+use App\Models\HostDeployModel;
 use App\Models\HostModel;
 use App\Models\LiquidModel;
 use App\Models\LoginModel;
@@ -46,8 +47,6 @@ class Home extends BaseController
 				// In case anything fails, at least we have record it.
 
 				$data->status = 'active';
-				$host = $data->host;
-				$login = $host->login;
 				$metadata = $data->metadata;
 				$metadata->_id = $r->getPost('trx_id');
 				$metadata->_invoiced = date('Y-m-d H:i:s');
@@ -56,98 +55,85 @@ class Home extends BaseController
 
 				log_message('notice', 'PURCHASE: ' . json_encode($metadata));
 
-				if ($metadata->liquid && $metadata->scheme) {
-					/** @var Scheme */
-					$scheme = (new SchemeModel())->find($metadata->scheme);
-					$liquid = (new LiquidModel())->atLogin($login->id);
-					$registrar = new LiquidRegistrar();
-					$registrar->confirmFundDomain($liquid->id, [
-						'amount' => (($metadata->years - 1) * $scheme->renew_idr +
-							($host->scheme_id ? $scheme->renew_idr : $scheme->price_idr)) / 1000,
-						'description' => "Funds for " . ($metadata->domain ?? $host->domain),
-					]);
-					$registrar->confirmPurchaseDomain($liquid->id, [
-						'transaction_id' => $metadata->liquid,
-					]);
-					$this->db->table('liquid')->update([
-						'cache_domains' => json_encode($registrar->getListOfDomains($liquid->id)),
-						'pending_transactions' => json_encode($registrar->getPendingTransactions($liquid->id)),
-					], [
-						'id' => $liquid->id,
-					]);
-					// Save
-					$host->scheme_id = $metadata->scheme;
+				if ($metadata->registrar) {
+					(new DigitalRegistra())->domainRegister($metadata->registrar);
 				}
-				if ($metadata->domain && $host->domain != $metadata->domain) {
-					(new VirtualMinShell())->cnameHost(
-						$host->domain,
-						$host->server->alias,
-						$metadata->domain
-					);
-					$host->domain = $metadata->domain;
-				}
-				if ($metadata->plan) {
-					/** @var Plan */
-					$plan = (new PlanModel())->find($metadata->plan);
-					if ($host->status === 'pending') {
-						// First time creation
-						(new VirtualMinShell())->createHost(
-							$host->username,
-							$host->password,
-							$login->email,
+				if ($data->host_id) {
+
+					$host = $data->host;
+					$login = $host->login;
+
+					if ($metadata->domain && $host->domain != $metadata->domain) {
+						(new VirtualMinShell())->cnameHost(
 							$host->domain,
 							$host->server->alias,
-							$plan->alias
+							$metadata->domain
 						);
-						if ($metadata->template) {
-							(new TemplateDeployer())->schedule(
-								$host->id,
+						$host->domain = $metadata->domain;
+					}
+					if ($metadata->plan) {
+						/** @var Plan */
+						$plan = (new PlanModel())->find($metadata->plan);
+						if ($host->status === 'pending') {
+							// First time creation
+							(new VirtualMinShell())->createHost(
+								$host->username,
+								$host->password,
+								$login->email,
 								$host->domain,
-								$metadata->template
+								$host->server->alias,
+								$plan->alias
+							);
+							if ($metadata->template) {
+								(new TemplateDeployer())->schedule(
+									$host->id,
+									$host->domain,
+									$metadata->template
+								);
+							}
+						} else {
+							// Re-enable and upgrade
+							(new VirtualMinShell())->enableHost(
+								$host->domain,
+								$host->server->alias
+							);
+							(new VirtualMinShell())->upgradeHost(
+								$host->domain,
+								$host->server->alias,
+								$plan->alias,
 							);
 						}
-					} else {
-						// Re-enable and upgrade
-						(new VirtualMinShell())->enableHost(
+						$host->expiry_at = $metadata->expiration;
+						$host->plan = $metadata->plan;
+						$host->status = 'active';
+						$host->addons += $plan->net * 1024 / 12;
+						if ($login->trustiness < $metadata->plan) {
+							$login->trustiness = $metadata->plan;
+							(new LoginModel())->save($login);
+						}
+					}
+					if ($metadata->addons) {
+						$host->addons += $metadata->addons * 1024;
+						// Add more bandwidth
+						(new VirtualMinShell())->adjustBandwidthHost(
+							($host->addons + ($plan->net * 1024 / 12)),
 							$host->domain,
 							$host->server->alias
 						);
-						(new VirtualMinShell())->upgradeHost(
-							$host->domain,
-							$host->server->alias,
-							$plan->alias,
-						);
+						if (!$metadata->plan) {
+							// Re-enable (in case disabled by bandwidth)
+							(new VirtualMinShell())->enableHost(
+								$host->domain,
+								$host->server->alias
+							);
+						}
 					}
-					$host->expiry_at = $metadata->expiration;
-					$host->plan = $metadata->plan;
-					$host->status = 'active';
-					$host->addons += $plan->net * 1024 / 12;
-					if ($login->trustiness < $metadata->plan) {
-						$login->trustiness = $metadata->plan;
-						(new LoginModel())->save($login);
-					}
-				}
-				if ($metadata->addons) {
-					$host->addons += $metadata->addons * 1024;
-					// Add more bandwidth
-					(new VirtualMinShell())->adjustBandwidthHost(
-						($host->addons + ($plan->net * 1024 / 12)),
-						$host->domain,
-						$host->server->alias
-					);
-					if (!$metadata->plan) {
-						// Re-enable (in case disabled by bandwidth)
-						(new VirtualMinShell())->enableHost(
-							$host->domain,
-							$host->server->alias
-						);
+					if ($host->hasChanged()) {
+						(new HostModel())->save($host);
 					}
 				}
 				$data->metadata = $metadata;
-				(new PurchaseModel())->save($data);
-				if ($host->hasChanged()) {
-					(new HostModel())->save($host);
-				} {
+				(new PurchaseModel())->save($data); {
 					// Email
 					$plan = (new PlanModel())->find($metadata->plan)->alias;
 					$desc = ($metadata->liquid ? lang('Host.formatInvoiceAlt', [

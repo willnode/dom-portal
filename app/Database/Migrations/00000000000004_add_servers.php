@@ -8,7 +8,7 @@ class AddServers extends Migration
 {
     public function up()
     {
-        $this->db->query("CREATE TABLE `servers` (
+        $this->db->simpleQuery("CREATE TABLE `servers` (
             `id` int(11) NOT NULL,
             `alias` varchar(255) NOT NULL,
             `ip` varchar(255) NOT NULL,
@@ -21,7 +21,7 @@ class AddServers extends Migration
             UNIQUE KEY `slave_alias` (`alias`)
         )");
 
-        $this->db->query("CREATE TABLE IF NOT EXISTS `servers__stat` (
+        $this->db->simpleQuery("CREATE TABLE IF NOT EXISTS `servers__stat` (
             `server_id` int(11) NOT NULL,
             `metadata` text DEFAULT NULL,
             `created_at` timestamp NULL DEFAULT NULL,

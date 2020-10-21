@@ -14,11 +14,11 @@
             <?= lang('Host.deleteWarn') ?>
           </div>
           <p><?= lang('Host.deleteHint') ?></p>
-          <p>"<?= $host->username ?>"</p>
+          <p>"<span style="user-select: all;"><?= $host->username ?></span>"</p>
           <form method="POST">
             <?= csrf_field() ?>
-            <input type="text" name="wordpass" class="form-control" required>
-            <input type="submit" value="Hapus Host" class="mt-2 form-control btn btn-danger">
+            <input type="text" name="wordpass" class="form-control text-center" required>
+            <input type="submit" value="<?= lang('Host.deleteTitle') ?>" class="mt-2 form-control btn btn-danger">
           </form>
         </div>
       </div>

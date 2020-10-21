@@ -6,15 +6,20 @@ class PurchaseModel extends Model
 {
     protected $table         = 'purchases';
     protected $allowedFields = [
-        'id', 'host_id', 'status', 'challenge', 'metadata',
+        'id', 'host_id', 'domain_id', 'status', 'challenge', 'metadata',
     ];
     protected $primaryKey = 'id';
     protected $returnType = 'App\Entities\Purchase';
 
-
     public function atHost($id)
     {
         $this->builder()->where('host_id', $id);
+        return $this;
+    }
+
+    public function atDomain($id)
+    {
+        $this->builder()->where('domain_id', $id);
         return $this;
     }
 

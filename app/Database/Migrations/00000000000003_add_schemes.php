@@ -8,7 +8,7 @@ class AddSchemes extends Migration
 {
     public function up()
     {
-        $this->db->query("CREATE TABLE `schemes` (
+        $this->db->simpleQuery("CREATE TABLE `schemes` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `alias` varchar(64) DEFAULT NULL,
             `price_idr` int(11) DEFAULT NULL,

@@ -31,3 +31,9 @@
     </div>
   </div>
 </nav>
+
+<noscript>
+    <div class="container my-4 alert alert-danger text-center">
+        Please enable Javascript in your browser.
+    </div>
+</noscript>

@@ -10,25 +10,28 @@
       <h1><?= lang('Host.newHost') ?></h1>
       <?= $validation ? $validation->listErrors() : '' ?>
       <form method="POST" name="box">
-				<?= csrf_field() ?>
+        <?= csrf_field() ?>
         <div class="row">
           <div class="col-lg-4">
             <div class="card my-2">
               <div class="card-body">
+                <!-- Username -->
                 <div class="mb-3">
                   <label class="form-label" for="username"><?= lang('Host.portalUsername') ?></label>
-                  <input class="form-control" id="username" minlength="5" maxlength="32" name="username" placeholder="<?= lang('Host.portalUsernameHint') ?>" pattern="^[a-zA-Z][-a-zA-Z0-9]+$" oninput="recalculate()" required>
+                  <input class="form-control" id="username" minlength="5" maxlength="32" name="username" placeholder="<?= lang('Host.portalUsernameHint') ?>" pattern="^[a-zA-Z][-a-zA-Z0-9]+$" oninput="recalculate()" required autofocus autocomplete="off">
                 </div>
+                <!-- Password -->
                 <div class="mb-3">
                   <label class="form-label" for="name"><?= lang('Host.portalPassword') ?></label>
                   <div class="input-group">
-                    <input class="form-control" id="password" oninput="this.type = 'password'" name="password" type="password" minlength="8" autocomplete="one-time-code" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$">
+                    <input class="form-control" id="password" oninput="this.type = 'password'" name="password" type="password" minlength="8" autocomplete="one-time-code" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$" oninput="recalculate()">
                     <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
                   </div>
                   <small class="form-text text-muted">
                     <?= lang('Interface.passwordNotice') ?>.
                   </small>
                 </div>
+                <!-- Server -->
                 <div class="mb-3">
                   <label class="form-label" for="server"><?= lang('Host.slaveServer') ?></label>
                   <select class="form-select" id="server" name="server" required>
@@ -39,6 +42,7 @@
                     <?php endforeach ?>
                   </select>
                 </div>
+                <!-- Template -->
                 <div class="mb-3">
                   <div class="d-flex mb-2">
                     <label class="form-label" for="template"><?= lang('Host.template') ?></label>
@@ -76,7 +80,7 @@
                     <label for="addons">Data Add-ons (GB)</label>
                   </div>
                   <div class="col">
-                    <input type="number" disabled class="form-control" name="addons" name="addons" value="0" min="0" max="10000" step="10" onchange="recalculate()">
+                    <input type="number" disabled class="form-control" id="addons" name="addons" value="0" min="0" max="10000" step="10" onchange="recalculate()">
                   </div>
                 </div>
                 <p>
@@ -87,69 +91,66 @@
                 <h3 class="card-title"><?= lang('Interface.domain') ?></h3>
                 <div class="mb-3">
                   <label class="form-label" for="domain_mode"><?= lang('Host.selectDomainKind') ?></label>
-                  <select name="domain_mode" id="domain_mode" disabled class="form-select" onchange="recalculate()" required>
+                  <select id="domain_mode" disabled class="form-select" onchange="recalculate()" required>
                     <option value="free" selected><?= lang('Host.useFreeDomain') ?></option>
                     <option value="buy"><?= lang('Host.buyNewDomain') ?></option>
                     <option value="custom"><?= lang('Host.useExistingDomain') ?></option>
                   </select>
                 </div>
-                <div id="dm-free">
+                <fieldset id="dm-free">
                   <div class="mb-3">
-                    <input class="form-control" id="free_cname" value=".dom.my.id" disabled>
+                    <input class="form-control" id="free_cname" value="" disabled>
                     <small class="form-text text-muted">
                       <?= lang('Host.freeDomainHint') ?>
                       <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                     </small>
                   </div>
-                </div>
-                <div id="dm-buy" class="d-none">
-                  <?php if ($liquid) : ?>
-                    <div class="mb-3">
-                      <label class="form-label"><?= lang('Host.findDomain') ?></label>
-                      <div class="input-group">
-                        <input name="buy_cname" id="buy_cname" class="form-control" pattern="^[-a-zA-Z0-9]+$" required oninput="recalculate()">
-                        <select class="form-select" name="buy_scheme" id="buy_scheme" required style="max-width: 120px" onchange="recalculate()">
-                          <?php foreach ($schemes as $s) : if ($s->price_idr) : ?>
-                              <option value="<?= $s->id ?>"><?= $s->alias ?></option>
-                          <?php endif;
-                          endforeach; ?>
-                        </select>
-                        <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
-                      </div>
-                      <small class="form-text text-muted">
-                        <a href="https://dom.my.id/domain" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
-                      </small>
-                    </div>
-                    <p id="buy-status-prompt" class="alert alert-primary">
-                      <?= lang('Host.findReady') ?>
-                    </p>
-                    <p id="buy-status-available" class="alert alert-success d-none">
-                      <?= lang('Host.findAvailable') ?>
-                    </p>
-                    <p id="buy-status-loading" class="alert alert-warning d-none">
-                      <?= lang('Host.findWait') ?>
-                    </p>
-                    <p id="buy-status-error" class="alert alert-danger d-none">
-                      <?= lang('Host.findUnavailable') ?>
-                    </p>
-                  <?php else : ?>
-                    <p class="alert alert-danger">
-                      <small>
-                        <?= lang('Host.findNeedData') ?>
-                        <br><a href="/user/domain?then=reload" target="_blank"><?= lang('Host.findNeedDataAction') ?></a>.
-                      </small>
-                    </p>
-                  <?php endif ?>
-                </div>
-                <div id="dm-custom" class="d-none">
+                </fieldset>
+                <fieldset disabled id="dm-buy" class="d-none">
                   <div class="mb-3">
-                    <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="<?= lang('Host.enterCustomDomain') ?>" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
+                    <label class="form-label d-flex align-items-center"><?= lang('Host.findDomain') ?>
+                      <button type="button" id="domainBioModalBtn" class="ml-auto btn btn-sm btn-warning" data-toggle="modal" data-target="#domainBioModal">
+                        Isi Biodata Domain
+                      </button>
+                    </label>
+                    <div class="input-group">
+                      <input id="domain_bio" hidden name="domain[bio]" required>
+                      <input id="domain_available" hidden <?= ENVIRONMENT === 'production' ? 'required' : '' ?>>
+                      <input id="domain_name" name="domain[name]" class="form-control" pattern="^[-a-zA-Z0-9]+$" required oninput="recalculate()">
+                      <select class="form-select" name="domain[scheme]" id="domain_scheme" required style="max-width: 120px" onchange="recalculate()">
+                        <?php foreach ($schemes as $s) : if ($s->price_local) : ?>
+                            <option value="<?= $s->id ?>"><?= $s->alias ?></option>
+                        <?php endif;
+                        endforeach; ?>
+                      </select>
+                      <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
+                    </div>
+                    <small class="form-text text-muted">
+                      <a href="https://dom.my.id/domain" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
+                    </small>
+                  </div>
+                  <p id="buy-status-prompt" class="alert alert-primary">
+                    <?= lang('Host.findReady') ?>
+                  </p>
+                  <p id="buy-status-available" class="alert alert-success d-none">
+                    <?= lang('Host.findAvailable') ?>
+                  </p>
+                  <p id="buy-status-loading" class="alert alert-warning d-none">
+                    <?= lang('Host.findWait') ?>
+                  </p>
+                  <p id="buy-status-error" class="alert alert-danger d-none">
+                    <?= lang('Host.findUnavailable') ?>
+                  </p>
+                </fieldset>
+                <fieldset disabled id="dm-custom" class="d-none">
+                  <div class="mb-3">
+                    <input class="form-control" id="custom_cname" name="domain[custom]" oninput="recalculate()" required placeholder="<?= lang('Host.enterCustomDomain') ?>" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
                     <small class="form-text text-muted">
                       <?= lang('Host.useExistingHint') ?>
                       <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                     </small>
                   </div>
-                </div>
+                </fieldset>
               </div>
             </div>
           </div>
@@ -196,7 +197,7 @@
                     <div class="ml-auto" id="specbwb">- GiB</div>
                   </div>
                 </div>
-                <input type="submit" id="submitBtn" value="<?= lang('Host.orderNow') ?>" class="form-control btn-lg btn btn-primary mt-3">
+                <input type="submit" id="submitBtn" value="<?= lang('Host.orderNow') ?>" class="form-control btn-lg btn btn-primary mt-3" disabled>
               </div>
             </div>
           </div>
@@ -238,6 +239,137 @@
       </div>
     </div>
 
+
+    <!-- Modal Domain Bio -->
+    <div class="modal fade" id="domainBioModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <form class="modal-content" name="domainBio">
+          <div class="modal-header">
+            <h5 class="modal-title">Masukkan Biodata</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <fieldset class="mb-3 card">
+              <div class="card-header">
+                Biodata Publik / Pemilik Domain
+              </div>
+              <div class="card-body">
+                <div class="mb-1">
+                  <label for=""><?= lang('Interface.fullName') ?></label>
+                  <div class="row g-1 align-items-center">
+                    <div class="col">
+                      <input class="form-control" name="domain[bio][fname]" required>
+                    </div>
+                    <div class="col">
+                      <input class="form-control" name="domain[bio][lname]">
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-1">
+                  <label for=""><?= lang('Interface.companyName') ?></label>
+                  <input class="form-control" name="domain[bio][company]" required>
+                </div>
+                <div class="row g-1 mb-1">
+                  <div class="col">
+                    <label for="name"><?= lang('Interface.email') ?></label>
+                    <input type="email" class="form-control" id="email" name="domain[bio][email]" autocomplete="email" required>
+                  </div>
+                  <div class="col">
+                    <label for="name"><?= lang('Interface.phone') ?></label>
+                    <div class="input-group">
+                      <input class="form-control" name="domain[bio][tel]" autocomplete="tel" required>
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-1">
+                  <label for="">Alamat</label>
+                  <div class="row g-1 mb-1">
+                    <div class="col">
+                      <select name="domain[bio][country]" autocomplete="country" class="ccode form-select" required>
+                        <option disabled selected><?= lang('Domain.country') ?></option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <input class="form-control" autocomplete="address-level1" name="domain[bio][state]" placeholder="<?= lang('Domain.state') ?>" required>
+                    </div>
+                  </div>
+                  <div class="row g-1 mb-1">
+                    <div class="col">
+                      <input class="form-control" autocomplete="address-level2" name="domain[bio][city]" placeholder="<?= lang('Domain.city') ?>" required>
+                    </div>
+                    <div class="col">
+                      <input class="form-control" autocomplete="postal-code" name="domain[bio][postal]" placeholder="<?= lang('Domain.zipCode') ?>" required>
+                    </div>
+                  </div>
+                  <input class="form-control mb-1" autocomplete="address-line1" name="domain[bio][address1]" placeholder="Address 1" required>
+                  <input class="form-control mb-1" autocomplete="address-line2" name="domain[bio][address2]" placeholder="Address 2">
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="mb-3">
+              <label>
+                <input type="checkbox" checked onclick="$('#domainuserform').toggleClass('d-none', event.target.checked).prop('disabled', event.target.checked)"> Domain yang saya pesan merupakan milik sendiri
+              </label>
+            </div>
+
+            <fieldset disabled id="domainuserform" class="mb-3 d-none card">
+              <div class="card-header">
+                Biodata Pribadi / Penanggung-jawab Domain
+              </div>
+              <div class="card-body">
+                <div class="mb-1">
+                  <label for=""><?= lang('Interface.fullName') ?></label>
+                  <div class="row g-1 align-items-center">
+                    <div class="col">
+                      <input class="form-control" name="domain[user][fname]" required>
+                    </div>
+                    <div class="col">
+                      <input class="form-control" name="domain[user][lname]">
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-1">
+                  <label for=""><?= lang('Interface.companyName') ?></label>
+                  <input class="form-control" name="domain[user][company]" required>
+                </div>
+                <div class="mb-1">
+                  <label for="">Alamat</label>
+                  <div class="row g-1 mb-1">
+                    <div class="col">
+                      <select name="domain[user][country]" autocomplete="country" class="ccode form-select" required>
+                        <option disabled selected><?= lang('Domain.country') ?></option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <input class="form-control" autocomplete="address-level1" name="domain[user][state]" placeholder="<?= lang('Domain.state') ?>" required>
+                    </div>
+                  </div>
+                  <div class="row g-1 mb-1">
+                    <div class="col">
+                      <input class="form-control" autocomplete="address-level2" name="domain[user][city]" placeholder="<?= lang('Domain.city') ?>" required>
+                    </div>
+                    <div class="col">
+                      <input class="form-control" autocomplete="postal-code" name="domain[user][postal]" placeholder="<?= lang('Domain.zipCode') ?>" required>
+                    </div>
+                  </div>
+                  <input class="form-control mb-1" autocomplete="address-line1" name="domain[user][address1]" placeholder="Address 1" required>
+                  <input class="form-control mb-1" autocomplete="address-line2" name="domain[user][address2]" placeholder="Address 2">
+                </div>
+              </div>
+            </fieldset>
+
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary"><?= lang('Interface.save') ?></button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= lang('Interface.back') ?></button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script>
       function submitT(t) {
         fetch($(t).data('template')).then(x => x.text().then(y => window.box.template.value = y));
@@ -247,7 +379,6 @@
         document.getElementById('password').value = genRandPass(12);
         document.getElementById('password').type = 'text';
       }
-      useRandPass();
 
       function genRandPass(pLength) {
 
@@ -274,21 +405,20 @@
 
         return password;
       }
-
-      var fromTag = new URLSearchParams(location.search).get('from');
-      if (fromTag && ('' + fromTag).startsWith('http')) {
-        fetch(fromTag).then(x => x.text().then(y => window.box.template.value = y));
-      }
     </script>
     <script id="plans" type="application/json">
       <?= json_encode($plans) ?>
     </script>
     <script id="schemes" type="application/json">
-      <?= $liquid ? json_encode($schemes) : 'null' ?>
+      <?= json_encode($schemes) ?>
+    </script>
+    <script id="ccodes" type="application/json">
+      <?= json_encode($codes) ?>
     </script>
     <script>
       const plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.id] = b, a), {});
       const schemes = (x => x && x.reduce((a, b) => (a[b.id] = b, a), {}))(JSON.parse(document.getElementById('schemes').innerHTML));
+      const ccodes = JSON.parse(document.getElementById('ccodes').innerHTML);
       const currency = '<?= lang('Interface.currency') ?>';
       const digits = '<?= lang('Interface.currency') === 'usd' ? 2 : 0 ?>';
       const formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
@@ -297,21 +427,41 @@
         maximumFractionDigits: digits,
         minimumFractionDigits: digits,
       });
+
+      window.addEventListener('DOMContentLoaded', (event) => {
+        recalculate();
+        useRandPass();
+        $('.ccode').append(ccodes.map(x => `<option value="${x.country}">${x.name}</option>`).join(''));
+        var fromTag = new URLSearchParams(location.search).get('from');
+        if (fromTag && ('' + fromTag).startsWith('http')) {
+          fetch(fromTag).then(x => x.text()).then(y => window.box.template.value = y);
+        }
+      });
+
       window.box.onsubmit = (e) => {
         $('#submitBtn').prop('disabled', true).val('⏳ <?= lang('Interface.processing') ?>...');
       }
+      window.domainBio.onsubmit = (e) => {
+        $('#domain_bio').val(JSON.stringify($(window.domainBio).serializeArray()));
+        recalculate();
+        $('#domainBioModal').modal('hide');
+        $('#domainBioModalBtn').toggleClass('btn-warning', false).toggleClass('btn-outline-primary', true).text('Biodata Terisi ☑');
+        e.preventDefault();
+        return false;
+      }
+
       let activedomain = null;
 
       function checkDomain() {
-        const name = window.box.buy_cname;
-        const scheme = window.box.buy_scheme;
+        const name = window.box.domain_name;
+        const scheme = window.box.domain_scheme;
         if (name.reportValidity && !name.reportValidity()) {
           return;
         }
         activedomain = null;
-        recalculate();
         $('#buy-status-available,#buy-status-error,#buy-status-prompt').toggleClass('d-none', true);
         $('#buy-status-loading').toggleClass('d-none', false);
+        recalculate();
 
         fetch(`/user/domain/check?name=${name.value}&scheme=${scheme.value}`).then(r =>
           r.json()).then(r => {
@@ -333,40 +483,36 @@
           'idr': 5000
         } [currency];
         var bww = {
-          'usd': 0.05,
-          'idr': 500
+          'usd': 0.1,
+          'idr': 1000
         } [currency];
+        /**@type HTMLFormElement */
         var form = window.box;
         var dommod = form.domain_mode.value;
         var unit = parseInt(plans[form.plan.value]['price_' + currency]);
         var years = unit === 0 ? 1 / 6 : Math.min(5, parseInt(form.years.value));
         var addons = unit === 0 ? 0 : Math.min(10000, parseInt(form.addons.value));
         var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
-        // Domain Calc
         var scheme = 0;
-        if (dommod === 'buy' && form.buy_scheme) {
-          scheme = parseInt(schemes[form.buy_scheme.value]['price_' + currency]);
-          if (years > 1) {
-            scheme += parseInt(schemes[form.buy_scheme.value]['renew_' + currency]) * (years - 1)
-          }
-        }
+
         // Alter UI
         if (unit == 0) {
+          form.free_cname.value = form.username.value + '.dom.my.id';
           dommod = form.domain_mode.value = 'free';
-          scheme = 0;
         }
-        $('#dm-free').toggleClass('d-none', dommod !== 'free');
-        $('#dm-buy').toggleClass('d-none', dommod !== 'buy');
-        $('#dm-custom').toggleClass('d-none', dommod !== 'custom');
-        form.free_cname.value = form.username.value + '.dom.my.id';
-        form.domain_mode.disabled = unit === 0;
-        form.years.disabled = unit === 0;
-        form.addons.disabled = unit === 0;
-        form.custom_cname.disabled = dommod !== 'custom';
-        if (form.buy_cname) {
-          form.buy_cname.disabled = dommod !== 'buy';
-          form.buy_scheme.disabled = dommod !== 'buy';
+
+        $('#dm-free').toggleClass('d-none', dommod !== 'free').prop('disabled', dommod !== 'free');
+        $('#dm-buy').toggleClass('d-none', dommod !== 'buy').prop('disabled', dommod !== 'buy');
+        $('#dm-custom').toggleClass('d-none', dommod !== 'custom').prop('disabled', dommod !== 'custom');
+
+        if (dommod === 'buy') {
+          var schdata = schemes[form.domain_scheme.value];
+          $('#domain_available').val(activedomain === window.box.domain_name + schdata.alias ? '1' : '');
+          scheme = schdata[`price_${currency}`] + schdata[`renew_${currency}`] * (years - 1);
         }
+
+        $('#domain_mode,#years,#addons').prop('disabled', unit == 0);
+        $('#submitBtn').prop('disabled', !form.checkValidity());
 
         // Show values
         if (unit == 0) {

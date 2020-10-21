@@ -2,7 +2,7 @@
 
 namespace App\Libraries;
 
-use App\Models\HostDeploysModel;
+use App\Models\HostDeployModel;
 use phpseclib\Net\SSH2;
 
 class TemplateDeployer
@@ -12,7 +12,7 @@ class TemplateDeployer
         if (!($template = trim($template))) {
             return;
         }
-        $did = (new HostDeploysModel())->insert([
+        $did = (new HostDeployModel())->insert([
             'host_id' => $host_id,
             'template' => $template,
             'domain' => $domain,

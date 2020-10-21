@@ -92,7 +92,7 @@
 	'formatInvoiceSum' => ' for {0} ',
 
 	'deleteTitle' => 'Delete Host',
-	'deleteWarn' => 'ATTENTION! Host deletions are permanent and we can\'t reverse the action.',
+	'deleteWarn' => 'ATTENTION! Host deletions are permanent and we can\'t reverse the action. Please be certain.',
 	'deleteHint' => 'Please enter your hosting username to agree to host deletion.',
 	'deleteDisabled' => 'You cannot delete this host as long as it\'s not reached the expiry time.',
 	'cnameTitle' => 'Changing the Domain Name of Host',
