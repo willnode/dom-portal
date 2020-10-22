@@ -19,8 +19,8 @@ class Purchase extends Entity
 {
     protected $casts = [
         'id' => 'integer',
-        'host_id' => 'integer?',
-        'domain_id' => 'integer?',
+        'host_id' => '?integer',
+        'domain_id' => '?integer',
         'status' => 'string',
     ];
 

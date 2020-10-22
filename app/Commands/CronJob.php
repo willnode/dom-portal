@@ -13,6 +13,9 @@ use App\Models\ServerStatModel;
 use CodeIgniter\CLI\BaseCommand;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @codeCoverageIgnore
+ */
 class CronJob extends BaseCommand
 {
     protected $group       = 'demo';

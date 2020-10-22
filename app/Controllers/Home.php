@@ -17,6 +17,7 @@ use App\Models\PlanModel;
 use App\Models\PurchaseModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use ErrorException;
+use Exception;
 
 class Home extends BaseController
 {
@@ -85,11 +86,13 @@ class Home extends BaseController
 								$plan->alias
 							);
 							if ($metadata->template) {
+								// @codeCoverageIgnoreStart
 								(new TemplateDeployer())->schedule(
 									$host->id,
 									$host->domain,
 									$metadata->template
 								);
+								// @codeCoverageIgnoreEnd
 							}
 						} else {
 							// Re-enable and upgrade
@@ -104,7 +107,7 @@ class Home extends BaseController
 							);
 						}
 						$host->expiry_at = $metadata->expiration;
-						$host->plan = $metadata->plan;
+						$host->plan_id = $metadata->plan;
 						$host->status = 'active';
 						$host->addons += $plan->net * 1024 / 12;
 						if ($login->trustiness < $metadata->plan) {
@@ -114,6 +117,7 @@ class Home extends BaseController
 					}
 					if ($metadata->addons) {
 						$host->addons += $metadata->addons * 1024;
+						isset($plan) || ($plan = $host->plan);
 						// Add more bandwidth
 						(new VirtualMinShell())->adjustBandwidthHost(
 							($host->addons + ($plan->net * 1024 / 12)),
@@ -135,8 +139,8 @@ class Home extends BaseController
 				$data->metadata = $metadata;
 				(new PurchaseModel())->save($data); {
 					// Email
-					$plan = (new PlanModel())->find($metadata->plan)->alias;
-					$desc = ($metadata->liquid ? lang('Host.formatInvoiceAlt', [
+					$plan = $plan->alias;
+					$desc = ($metadata->domain ? lang('Host.formatInvoiceAlt', [
 						$plan,
 						$metadata->domain,
 					]) : lang('Host.formatInvoice', [
@@ -223,15 +227,9 @@ class Home extends BaseController
 
 	public function verify()
 	{
-		$code = $this->request->getGet('code');
-		if ($code) {
-			$code = explode(':', base64_decode($code, true), 2);
-			if (count($code) == 2) {
-				$row = fetchOne('login', [
-					'email' => $code[0],
-					'otp' => $code[1],
-				]);
-				if ($row) {
+		if ($code = $this->request->getGet('code')) {
+			if (count($code = explode(':', base64_decode($code, true), 2)) === 2) {
+				if (($row = (new LoginModel())->atEmail($code[0])) && $row->otp === $code[1]) {
 					$this->db->table('login')->update([
 						'email_verified_at' => date('Y-m-d H:i:s'),
 						'otp' => null,
@@ -250,15 +248,13 @@ class Home extends BaseController
 	public function login()
 	{
 		if ($this->session->has('login')) {
-			return $this->response->redirect('/user');
+			return $this->response->redirect('/user'); // @codeCoverageIgnore
 		}
 
 		if ($this->request->getMethod() === 'post') {
 			$post = $this->request->getPost();
 			if (isset($post['email'], $post['password'])) {
-				$login = $this->db->table('login')->getWhere([
-					'email' => $post['email']
-				])->getRow();
+				$login = (new LoginModel())->atEmail($post['email']);
 				if ($login && password_verify(
 					$post['password'],
 					$login->password
@@ -267,7 +263,7 @@ class Home extends BaseController
 					return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
 				}
 			}
-			$m = lang('Interface.wrongLogin');
+			$m = lang('Interface.wrongLogin'); // @codeCoverageIgnore
 		}
 		return view('static/login', [
 			'message' => $m ?? (($_GET['msg'] ?? '') === 'emailsent' ? lang('Interface.emailSent') : null)
@@ -279,6 +275,9 @@ class Home extends BaseController
 		return $this->response->redirect('/user/host/create?from=' . urlencode($this->request->getGet('from')));
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function logout()
 	{
 		if ($this->session->login) {
@@ -308,7 +307,7 @@ class Home extends BaseController
 					return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
 				}
 			}
-			return redirect()->back()->withInput()->with('errors', $this->validator->listErrors());
+			return redirect()->back()->withInput()->with('errors', $this->validator->listErrors()); // @codeCoverageIgnore
 		}
 	}
 
@@ -319,31 +318,25 @@ class Home extends BaseController
 			'g-recaptcha-response' => ENVIRONMENT === 'production' ? 'required' : 'permit_empty',
 		])) {
 			if (ENVIRONMENT !== 'production' || (new Recaptha())->verify($_POST['g-recaptcha-response'])) {
-				$data = fetchOne('login', ['email' => $_POST['email']]);
-				if ($data) {
+				if ($login = (new LoginModel())->atEmail($this->request->getPost('email'))) {
 
-					if (!$data->otp) {
-						$data->otp = random_int(111111111, 999999999);
-						$this->db->table('login')->update([
-							'otp' => $data->otp
-						], [
-							'login_id' => $data->login_id
-						]);
+					if (!$login->otp) {
+						$login->otp = random_int(111111111, 999999999);
+						(new LoginModel())->save($login);
 					}
 
-					$em = \Config\Services::email();
-					$em->setTo($data->email);
-					$em->setSubject('Reset Password Akun | DOM Cloud');
-					$em->setMessage(view('static/reset_email', [
-						'name' => $data->name,
-						'link' => base_url('forgot_reset?code=' . urlencode(base64_encode($data->email . ':' . $data->otp)))
-					]));
-					if (!$em->send()) {
-						log_message('critical', $em->printDebugger());
-						throw new ErrorException("Unable to send message");
-					}
-					$this->session->destroy();
-					return $this->response->redirect('/id/login?msg=emailsent');
+					(new SendGridEmail())->send('receipt_email', 'billing', [[
+						'to' => [[
+							'email' => $login->email,
+							'name' => $login->name,
+						]],
+						'dynamic_template_data' => [
+							'name' => $login->name,
+							'reset_url' => base_url('reset?code=' . urlencode(base64_encode($login->email . ':' . $login->otp))),
+						]
+					]]);
+
+					return $this->response->redirect(href('login?msg=emailsent'));
 				}
 			}
 		}
@@ -353,30 +346,22 @@ class Home extends BaseController
 		]);
 	}
 
-	public function forgot_reset()
+	public function reset()
 	{
-		if (!empty($_GET['code'])) {
-			$code = explode(':', base64_decode($_GET['code'], true));
-			if (count($code) == 2) {
-				$row = fetchOne('login', [
-					'email' => $code[0],
-					'otp' => $code[1],
-				]);
-				if ($row) {
+		if ($code = $this->request->getGet('code')) {
+			if (count($code = explode(':', base64_decode($code, true))) == 2) {
+				if (($login = (new LoginModel())->atEmail($code[0])) && $login->otp === $code[1]) {
 					if ($this->request->getMethod() === 'post' && $this->validate([
 						'password' => 'required|min_length[8]',
 						'passconf' => 'required|matches[password]',
 					])) {
-						$this->db->table('login')->update([
-							'password' => password_hash($_POST['password'], PASSWORD_BCRYPT),
-							'email_verified_at' => date('Y-m-d H:i:s'),
-							'otp' => null,
-						], ['email' => $code[0]]);
-						$_POST['email'] = $code[0];
-						return $this->login();
-					} else {
-						return view('static/forgot_reset');
+						$login->password = password_hash($this->request->getPost('password'), PASSWORD_BCRYPT);
+						$login->email_verified_at = date('Y-m-d H:i:s');
+						$login->otp = null;
+						(new LoginModel())->save($login);
+						return $this->response->redirect(href('login'));
 					}
+					return view('static/forgot_reset');
 				}
 			}
 		}

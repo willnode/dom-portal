@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Entities\Login;
 use CodeIgniter\HTTP\Request;
 use CodeIgniter\Model;
 use Config\Services;
@@ -16,6 +17,14 @@ class LoginModel extends Model
     protected $returnType = 'App\Entities\Login';
     protected $useTimestamps = true;
 
+    /** @return Login|null */
+    public function atEmail($email)
+    {
+        $this->builder()->where('email', $email);
+        return $this->find()[0] ?? null;
+    }
+
+    /** @return int|null */
     public function register($data, $thenLogin = true, $autoVerified = false)
     {
         $data = array_intersect_key($data, array_flip(

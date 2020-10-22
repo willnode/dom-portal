@@ -285,7 +285,7 @@ class User extends BaseController
 				"template" => null,
 				"expiration" => $host->expiry_at->toDateTimeString(), // later
 				"years" => $mode === 'new' || $mode === 'extend' ?  intval($req->getPost('years')) : null,
-				"plan" => $mode === 'upgrade' || $mode === 'new' ? intval($req->getPost('plan')) : $host->plan_id,
+				"plan" => $mode === 'upgrade' || $mode === 'new' ? intval($req->getPost('plan')) : null,
 				"addons" => intval($req->getPost('addons')),
 				"_challenge" => random_int(111111111, 999999999),
 				"_id" => null,
@@ -312,8 +312,8 @@ class User extends BaseController
 			$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 			$payment->metadata = $metadata;
 			$payment->host_id = $host->id;
-			// Setup Domain too
 			if ($mode === 'new')
+				// Setup Domain too
 				$this->checkNewDomainTransaction($this->request, $payment, $host);
 			(new PurchaseModel())->save($payment);
 			return $this->response->redirect('/user/host/invoices/' . $host->id);
@@ -657,7 +657,6 @@ class User extends BaseController
 	{
 		return view('user/domain/detail', [
 			'data' => $domain,
-			'hosting' => fetchOne('hosting', ['domain' => $domain->domain_id])
 		]);
 	}
 	protected function invoiceDomain($id)

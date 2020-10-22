@@ -4,10 +4,6 @@ namespace App\Database;
 
 use App\Controllers\Home;
 use App\Controllers\User;
-use App\Entities\Host;
-use App\Entities\Login;
-use App\Libraries\SendGridEmail;
-use App\Libraries\VirtualMinShell;
 use App\Models\HostModel;
 use App\Models\HostStatModel;
 use App\Models\LoginModel;
@@ -33,7 +29,7 @@ class WebViewTest extends CIDatabaseTestCase
             $this->assertTrue($th instanceof PageNotFoundException);
         }
         try {
-            $this->assertEmpty($home->forgot_reset());
+            $this->assertEmpty($home->reset());
         } catch (\Throwable $th) {
             $this->assertTrue($th instanceof PageNotFoundException);
         }
@@ -101,7 +97,6 @@ class WebViewTest extends CIDatabaseTestCase
             }
         }
     }
-
 
     protected function setUp(): void
     {

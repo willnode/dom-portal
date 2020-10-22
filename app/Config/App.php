@@ -27,6 +27,7 @@ class App extends BaseConfig
 	public $sendGridTemplates = [
 		'verify_email' => [ 'id' => '', 'en' => '' ], // verify_url
 		'receipt_email' => [ 'id' => '', 'en' => '' ],
+		'recover_email' => [ 'id' => '', 'en' => '' ],
 		'notify_updates' => [ 'id' => '', 'en' => '' ],
 		'warn_bandwidth' => [ 'id' => '', 'en' => '' ],
 		'warn_disk' => [ 'id' => '', 'en' => '' ],
@@ -39,6 +40,7 @@ class App extends BaseConfig
 		'billing' => '',
 		'depletion' => '',
 		'features' => '',
+		'rollover' => '',
 	];
 
 	/*

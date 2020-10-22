@@ -4,14 +4,14 @@ namespace App\Commands;
 
 use App\Entities\HostDeploy;
 use App\Libraries\TemplateDeployer;
-use App\Libraries\VirtualMinShell;
 use App\Models\HostDeployModel;
 use App\Models\HostModel;
 use CodeIgniter\CLI\BaseCommand;
-use CodeIgniter\CLI\CLI;
-use Config\Database;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @codeCoverageIgnore
+ */
 class FetchTemplate extends BaseCommand
 {
     protected $group       = 'demo';

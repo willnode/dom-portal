@@ -4,13 +4,13 @@ namespace App\Libraries;
 
 use Config\Services;
 
+/**
+ * @codeCoverageIgnore
+ */
 class VirtualMinShell
 {
 	public static string $output = '';
 
-	/**
-	 * @codeCoverageIgnore
-	 */
 	protected function execute($cmd, $title = '')
 	{
 		if (ENVIRONMENT === 'testing') {
@@ -110,6 +110,7 @@ class VirtualMinShell
 		$cmd = "program=modify-web&domain=$domain&document-dir=$home";
 		return $this->execute($this->wrapWget($cmd, $server), " Set home $domain named $home ");
 	}
+
 	public function listDomainsInfo($server)
 	{
 		$cmd = "program=list-domains&multiline=&toplevel=";
@@ -137,6 +138,7 @@ class VirtualMinShell
 		}
 		return $result;
 	}
+
 	public function listBandwidthInfo($server)
 	{
 		$cmd = "program=list-bandwidth&all-domains=";
@@ -164,6 +166,7 @@ class VirtualMinShell
 		}
 		return $result;
 	}
+
 	public function listSystemInfo($server)
 	{
 		$cmd = "program=info";

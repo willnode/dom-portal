@@ -4,7 +4,9 @@ namespace App\Libraries;
 
 use App\Models\HostDeployModel;
 use phpseclib\Net\SSH2;
-
+/**
+ * @codeCoverageIgnore
+ */
 class TemplateDeployer
 {
     public function schedule($host_id, $domain, $template)

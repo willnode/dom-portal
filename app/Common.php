@@ -24,12 +24,6 @@ function href($url)
     return base_url($req->getLocale() . '/' . $url);
 }
 
-function fetchOne($table, $where)
-{
-    $db = Database::connect();
-    return $db->table($table)->where($where)->get()->getRow();
-}
-
 function format_money($money, $currency = null)
 {
     $money = floatval($money);

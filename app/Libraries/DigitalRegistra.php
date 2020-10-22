@@ -9,11 +9,11 @@ use App\Entities\Server;
 use Config\Services;
 use SimpleXMLElement;
 
+/**
+ * @codeCoverageIgnore
+ */
 class DigitalRegistra
 {
-	/**
-	 * @codeCoverageIgnore
-	 */
 	protected function callApi($route, $post = [])
 	{
 		$url = Services::request()->config->srsxURL;

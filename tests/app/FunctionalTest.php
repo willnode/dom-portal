@@ -55,13 +55,44 @@ class FunctionalTest extends CIDatabaseTestCase
         $this->assertTrue($login->otp === null);
         $this->assertTrue($login->trustiness === 1);
         $this->assertTrue($login->email_verified_at !== null);
+        (Services::session())->remove('login');
+
+        // okay, check if we can reset password
+
+        $req->setMethod('post');
+        $req->setGlobal('post', $otp_data = [
+            'email' => $login->email,
+        ]);
+        $req->setGlobal('request', $otp_data);
+        $home->forgot();
+        /** @var Login */
+        $login = (new LoginModel())->find(1);
+        $this->assertTrue($login->otp !== null);
+        $req->setMethod('get');
+        $req->setGlobal('get', $otp_data = [
+            'code' => base64_encode("$login->email:$login->otp"),
+        ]);
+        $this->assertTrue(is_string($home->reset()));
+        $req->setMethod('post');
+        $req->setGlobal('post', $otp_data = [
+            'password' => $login_data['password'],
+            'passconf' => $login_data['password'],
+        ]);
+        $req->setGlobal('request', $otp_data);
+        $home->reset();
+        /** @var Login */
+        $login = (new LoginModel())->find(1);
+        $this->assertTrue($login->otp === null);
+        (Services::session())->remove('login');
 
         // now check login
 
         $req->setMethod('post');
         $req->setGlobal('post', $login_data);
         $req->setGlobal('request', $login_data);
-        $home->login() && $this->assertTrue(Services::session()->login === 1);
+        $home->login();
+
+        $this->assertTrue(Services::session()->login === 1);
     }
 
     public function testCreateFreeAndUpgradeHost()
@@ -123,7 +154,7 @@ class FunctionalTest extends CIDatabaseTestCase
         ]);
         VirtualMinShell::$output = '';
 
-        // Okay, try extend
+        // Okay, try extend (free)
 
         $req->setMethod('post');
         $req->setGlobal('post', $post_data = [
@@ -151,6 +182,42 @@ class FunctionalTest extends CIDatabaseTestCase
         /** @var Host */
         $host = (new HostModel())->find(1);
         $this->assertTrue(($purchase = $host->purchase)->status === 'pending');
+        // Try to execute payment
+
+        ($home = new Home())->initController($req, Services::response(), Services::logger());
+        $req->setGlobal('get', [
+            'id' => $purchase->id,
+            'challenge' => $purchase->metadata->_challenge,
+            'secret' => $req->config->ipaymuSecret,
+        ]);
+        $req->setGlobal('post', [
+            'trx_id' => 123,
+            'via' => 'Test',
+            'status' => 'berhasil',
+        ]);
+        $home->notify();
+        /** @var Host */
+        $host = (new HostModel())->find(1);
+        $this->assertTrue($host->plan_id === 2);
+        $this->assertTrue(($purchase = $host->purchase)->status === 'active');
+        $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
+            'program=modify-domain&domain=emily.dom.my.id&newdomain=emily.com',
+            'program=enable-domain&domain=emily.com',
+            'program=modify-domain&domain=emily.com&apply-plan=Lite'
+        ]);
+        VirtualMinShell::$output = '';
+
+        // Okay, try add more addons
+
+        $req->setGlobal('post', $post_data = [
+            'mode' => 'topup',
+            'addons' => 10,
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->host('upgrade', $host->id);
+        /** @var Host */
+        $host = (new HostModel())->find(1);
+        $this->assertTrue(($purchase = $host->purchase)->status === 'pending');
 
         // Try to execute payment
 
@@ -168,9 +235,8 @@ class FunctionalTest extends CIDatabaseTestCase
         $home->notify();
         $this->assertTrue(($purchase = $host->purchase)->status === 'active');
         $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
-            'program=modify-domain&domain=emily.dom.my.id&newdomain=emily.com',
+            'program=modify-domain&domain=emily.com&bw=21474836480',
             'program=enable-domain&domain=emily.com',
-            'program=modify-domain&domain=emily.com&apply-plan=Lite'
         ]);
         VirtualMinShell::$output = '';
     }
