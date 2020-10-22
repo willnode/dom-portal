@@ -180,21 +180,23 @@ class FunctionalTest extends CIDatabaseTestCase
             'password' => 'mycontoso',
             'years' => 1,
             'addons' => 5,
-            'domain' => json_encode([
+            'domain' => [
                 'scheme' => 1,
                 'name' => 'example',
-                'bio' => [
-                    'fname' => 'Contoso',
-                    'company' => 'Contoso Company',
-                    'email' => 'contoso@example.com',
-                    'tel' => '15556667',
-                    'country' => 'US',
-                    'state' => 'California',
-                    'city' => 'Vancouver',
-                    'postal' => '11101',
-                    'address1' => 'St. John',
-                ]
-            ])
+                'bio' => json_encode([
+                    'owner' => [
+                        'fname' => 'Contoso',
+                        'company' => 'Contoso Company',
+                        'email' => 'contoso@example.com',
+                        'tel' => '15556667',
+                        'country' => 'US',
+                        'state' => 'California',
+                        'city' => 'Vancouver',
+                        'postal' => '11101',
+                        'address1' => 'St. John',
+                    ]
+                ])
+            ]
         ]);
         $req->setGlobal('request', $post_data);
         $user->host('create');
@@ -265,7 +267,6 @@ class FunctionalTest extends CIDatabaseTestCase
         $domain = $host->domain_detail;
         $meta = $purchase->metadata;
         $this->assertTrue($domain->status === 'active', $host->status === 'active');
-
     }
 
     protected function setUp(): void

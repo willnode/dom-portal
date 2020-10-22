@@ -25,7 +25,7 @@
                   <label class="form-label" for="name"><?= lang('Host.portalPassword') ?></label>
                   <div class="input-group">
                     <input class="form-control" id="password" oninput="this.type = 'password'" name="password" type="password" minlength="8" autocomplete="one-time-code" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$" oninput="recalculate()">
-                    <input type="button" class="btn btn-success" onclick="useRandPass()" value="Random">
+                    <input type="button" class="btn btn-success" onclick="generateRandomPassword()" value="Random">
                   </div>
                   <small class="form-text text-muted">
                     <?= lang('Interface.passwordNotice') ?>.
@@ -221,7 +221,7 @@
             <div class="row g-2" style="color: white; fill: white">
               <?php foreach ($templates as $t) : ?>
                 <div class="col-md-6 my-1">
-                  <div class="btn btn-block btn-dark text-center" style="background-color: <?= $t->color ?>;" onclick="submitT(this)" data-dismiss="modal" data-template="<?= $t->template ?>">
+                  <div class="btn btn-block btn-dark text-center" style="background-color: <?= $t->color ?>;" onclick="submitTemplate(this)" data-dismiss="modal" data-template="<?= $t->template ?>">
                     <div class="w-50 mx-auto my-2"><?= $t->logo ?></div>
                     <p class="mb-0"><?= $t->name ?></p>
                   </div>
@@ -239,171 +239,27 @@
       </div>
     </div>
 
-
-    <!-- Modal Domain Bio -->
-    <div class="modal fade" id="domainBioModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <form class="modal-content" name="domainBio">
-          <div class="modal-header">
-            <h5 class="modal-title">Masukkan Biodata</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <fieldset class="mb-3 card">
-              <div class="card-header">
-                Biodata Publik / Pemilik Domain
-              </div>
-              <div class="card-body">
-                <div class="mb-1">
-                  <label for=""><?= lang('Interface.fullName') ?></label>
-                  <div class="row g-1 align-items-center">
-                    <div class="col">
-                      <input class="form-control" name="domain.bio.fname" required>
-                    </div>
-                    <div class="col">
-                      <input class="form-control" name="domain.bio.lname">
-                    </div>
-                  </div>
-                </div>
-                <div class="mb-1">
-                  <label for=""><?= lang('Interface.companyName') ?></label>
-                  <input class="form-control" name="domain.bio.company" required>
-                </div>
-                <div class="row g-1 mb-1">
-                  <div class="col">
-                    <label for="name"><?= lang('Interface.email') ?></label>
-                    <input type="email" class="form-control" id="email" name="domain.bio.email" autocomplete="email" required>
-                  </div>
-                  <div class="col">
-                    <label for="name"><?= lang('Interface.phone') ?></label>
-                    <div class="input-group">
-                      <input class="form-control" name="domain.bio.tel" autocomplete="tel" required>
-                    </div>
-                  </div>
-                </div>
-                <div class="mb-1">
-                  <label for="">Alamat</label>
-                  <div class="row g-1 mb-1">
-                    <div class="col">
-                      <select name="domain.bio.country" autocomplete="country" class="ccode form-select" required>
-                        <option disabled selected><?= lang('Domain.country') ?></option>
-                      </select>
-                    </div>
-                    <div class="col">
-                      <input class="form-control" autocomplete="address-level1" name="domain.bio.state" placeholder="<?= lang('Domain.state') ?>" required>
-                    </div>
-                  </div>
-                  <div class="row g-1 mb-1">
-                    <div class="col">
-                      <input class="form-control" autocomplete="address-level2" name="domain.bio.city" placeholder="<?= lang('Domain.city') ?>" required>
-                    </div>
-                    <div class="col">
-                      <input class="form-control" autocomplete="postal-code" name="domain.bio.postal" placeholder="<?= lang('Domain.zipCode') ?>" required>
-                    </div>
-                  </div>
-                  <input class="form-control mb-1" autocomplete="address-line1" name="domain.bio.address1" placeholder="Address 1" required>
-                  <input class="form-control mb-1" autocomplete="address-line2" name="domain.bio.address2" placeholder="Address 2">
-                </div>
-              </div>
-            </fieldset>
-
-            <div class="mb-3">
-              <label>
-                <input type="checkbox" checked onclick="$('#domainuserform').toggleClass('d-none', event.target.checked).prop('disabled', event.target.checked)"> Domain yang saya pesan merupakan milik sendiri
-              </label>
-            </div>
-
-            <fieldset disabled id="domainuserform" class="mb-3 d-none card">
-              <div class="card-header">
-                Biodata Pribadi / Penanggung-jawab Domain
-              </div>
-              <div class="card-body">
-                <div class="mb-1">
-                  <label for=""><?= lang('Interface.fullName') ?></label>
-                  <div class="row g-1 align-items-center">
-                    <div class="col">
-                      <input class="form-control" name="domain.user.fname" required>
-                    </div>
-                    <div class="col">
-                      <input class="form-control" name="domain.user.lname">
-                    </div>
-                  </div>
-                </div>
-                <div class="mb-1">
-                  <label for=""><?= lang('Interface.companyName') ?></label>
-                  <input class="form-control" name="domain.user.company" required>
-                </div>
-                <div class="mb-1">
-                  <label for="">Alamat</label>
-                  <div class="row g-1 mb-1">
-                    <div class="col">
-                      <select name="domain.user.country" autocomplete="country" class="ccode form-select" required>
-                        <option disabled selected><?= lang('Domain.country') ?></option>
-                      </select>
-                    </div>
-                    <div class="col">
-                      <input class="form-control" autocomplete="address-level1" name="domain.user.state" placeholder="<?= lang('Domain.state') ?>" required>
-                    </div>
-                  </div>
-                  <div class="row g-1 mb-1">
-                    <div class="col">
-                      <input class="form-control" autocomplete="address-level2" name="domain.user.city" placeholder="<?= lang('Domain.city') ?>" required>
-                    </div>
-                    <div class="col">
-                      <input class="form-control" autocomplete="postal-code" name="domain.user.postal" placeholder="<?= lang('Domain.zipCode') ?>" required>
-                    </div>
-                  </div>
-                  <input class="form-control mb-1" autocomplete="address-line1" name="domain.user.address1" placeholder="Address 1" required>
-                  <input class="form-control mb-1" autocomplete="address-line2" name="domain.user.address2" placeholder="Address 2">
-                </div>
-              </div>
-            </fieldset>
-
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary"><?= lang('Interface.save') ?></button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= lang('Interface.back') ?></button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <?= view('user/modals/domainbio') ?>
 
     <script>
-      function submitT(t) {
+      function submitTemplate(t) {
         fetch($(t).data('template')).then(x => x.text().then(y => window.box.template.value = y));
       }
 
-      function useRandPass() {
-        document.getElementById('password').value = genRandPass(12);
-        document.getElementById('password').type = 'text';
+      function generateRandomPassword(id) {
+        id = id || "password";
+        document.getElementById(id).value = randomPassword(12);
+        document.getElementById(id).type = "text";
       }
 
-      function genRandPass(pLength) {
-
-        var keyListLower = "abcdefghijklmnopqrstuvwxyz",
-          keyListUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-          keyListInt = "123456789",
-          keyListSpec = "+()@_",
-          password = '';
-        var len = Math.ceil(pLength / 3) - 1;
-        var lenSpec = pLength - 3 * len;
-
-        for (i = 0; i < len; i++) {
-          password += keyListLower.charAt(Math.floor(Math.random() * keyListLower.length));
-          password += keyListUpper.charAt(Math.floor(Math.random() * keyListUpper.length));
-          password += keyListInt.charAt(Math.floor(Math.random() * keyListInt.length));
-        }
-
-        for (i = 0; i < lenSpec; i++)
-          password += keyListSpec.charAt(Math.floor(Math.random() * keyListSpec.length));
-
-        password = password.split('').sort(function() {
-          return 0.5 - Math.random()
-        }).join('');
-
-        return password;
+      function randomPassword(r) {
+        var s = "+()@_",
+          n = "",
+          h = Math.ceil(r / 3) - 1;
+        for (i = 0; i < h; i++)["abcdefghijklmnopqrstuvwxyz", "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+          "123456789"].forEach(r => n += r[Math.trunc(Math.random() * r.length)]);
+        for (i = r - 3 * h; i-- > 0;) n += s[Math.floor(Math.random() * s.length)];
+        return n.split("").sort(() => .5 - Math.random()).join("")
       }
     </script>
     <script id="plans" type="application/json">
@@ -412,27 +268,8 @@
     <script id="schemes" type="application/json">
       <?= json_encode($schemes) ?>
     </script>
-    <script id="ccodes" type="application/json">
-      <?= json_encode($codes) ?>
-    </script>
     <script>
-      // https://unpkg.com/json-unflat@1.0.1/index.js
-      function unflatten(n) {
-        var t = {},
-          r = function(r) {
-            var a, f = r.split(".");
-            f.map(function(i, u) {
-              0 == u && (a = t), a[i] ? a = a[i] : f.length === u + 1 ? a[i] = n[r] : (a[i] = {}, a = a[i])
-            })
-          };
-        for (var a in n) r(a);
-        return t
-      }
-    </script>
-    <script>
-      const plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.id] = b, a), {});
-      const schemes = (x => x && x.reduce((a, b) => (a[b.id] = b, a), {}))(JSON.parse(document.getElementById('schemes').innerHTML));
-      const ccodes = JSON.parse(document.getElementById('ccodes').innerHTML);
+      let plans, schemes, activedomain = null;
       const currency = '<?= lang('Interface.currency') ?>';
       const digits = '<?= lang('Interface.currency') === 'usd' ? 2 : 0 ?>';
       const formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
@@ -443,9 +280,10 @@
       });
 
       window.addEventListener('DOMContentLoaded', (event) => {
+        plans = JSON.parse($('#plans').html()).reduce((a, b) => (a[b.id] = b, a), {});
+        schemes = JSON.parse($('#schemes').html()).reduce((a, b) => (a[b.id] = b, a), {});
+        generateRandomPassword();
         recalculate();
-        useRandPass();
-        $('.ccode').append(ccodes.map(x => `<option value="${x.country}">${x.name}</option>`).join(''));
         var fromTag = new URLSearchParams(location.search).get('from');
         if (fromTag && ('' + fromTag).startsWith('http')) {
           fetch(fromTag).then(x => x.text()).then(y => window.box.template.value = y);
@@ -455,16 +293,6 @@
       window.box.onsubmit = (e) => {
         $('#submitBtn').prop('disabled', true).val('⏳ <?= lang('Interface.processing') ?>...');
       }
-      window.domainBio.onsubmit = (e) => {
-        $('#domain_bio').val(JSON.stringify(unflatten($(window.domainBio).serializeArray().reduce((m, o) => [m[o.name] = o.value, m][1], {})).domain));
-        recalculate();
-        $('#domainBioModal').modal('hide');
-        $('#domainBioModalBtn').toggleClass('btn-warning', false).toggleClass('btn-outline-primary', true).text('Biodata Terisi ☑');
-        e.preventDefault();
-        return false;
-      }
-
-      let activedomain = null;
 
       function checkDomain() {
         const name = window.box.domain_name;
@@ -500,24 +328,30 @@
           'usd': 0.1,
           'idr': 1000
         } [currency];
-        /**@type HTMLFormElement */
+
         var form = window.box;
         var dommod = form.domain_mode.value;
-        var unit = parseInt(plans[form.plan.value]['price_' + currency]);
-        var years = unit === 0 ? 1 / 6 : Math.min(5, parseInt(form.years.value));
-        var addons = unit === 0 ? 0 : Math.min(10000, parseInt(form.addons.value));
+        var plan = plans[form.plan.value];
+        var unit = parseInt(plan[`price_${currency}`]);
+        var years = Math.min(5, parseInt(form.years.value));
+        var addons = Math.min(10000, parseInt(form.addons.value));
         var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
         var scheme = 0;
 
-        // Alter UI
+        // Alter for free
         if (unit == 0) {
           form.free_cname.value = form.username.value + '.dom.my.id';
           dommod = form.domain_mode.value = 'free';
+          addons = 0;
+          years = 1 / 6;
         }
 
-        $('#dm-free').toggleClass('d-none', dommod !== 'free').prop('disabled', dommod !== 'free');
-        $('#dm-buy').toggleClass('d-none', dommod !== 'buy').prop('disabled', dommod !== 'buy');
-        $('#dm-custom').toggleClass('d-none', dommod !== 'custom').prop('disabled', dommod !== 'custom');
+        $('#dm-free').toggleClass('d-none', dommod !== 'free')
+          .prop('disabled', dommod !== 'free');
+        $('#dm-buy').toggleClass('d-none', dommod !== 'buy')
+          .prop('disabled', dommod !== 'buy');
+        $('#dm-custom').toggleClass('d-none', dommod !== 'custom')
+          .prop('disabled', dommod !== 'custom');
 
         if (dommod === 'buy') {
           var schdata = schemes[form.domain_scheme.value];
@@ -544,10 +378,9 @@
           $('#outtip').text(formatter.format(tip));
           $('#outbill').text(formatter.format(unit * years + addons * bww + scheme + tip));
         }
-        $('#specdisk').text(plans[form.plan.value]['disk'] + ' MiB');
-        $('#specbwt').text(plans[form.plan.value]['net'] * Math.max(years, 1) + ' GiB');
-        $('#specbwb').text(plans[form.plan.value]['net'] / 12 * Math.floor(years) + addons + ' GiB');
-
+        $('#specdisk').text(plan['disk'] + ' MiB');
+        $('#specbwt').text(plan['net'] * Math.max(years, 1) + ' GiB');
+        $('#specbwb').text(plan['net'] / 12 * Math.floor(years) + addons + ' GiB');
         $('#outexp').text(exp.toISOString().substr(0, 10));
       }
     </script>

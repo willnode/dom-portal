@@ -78,7 +78,7 @@ class User extends BaseController
 			'scheme' => 'required|is_not_unique[schemes.id]',
 			'name' => 'required|regex_match[/^[-\w]+$/]',
 		])->run($input)) {
-			if (!is_array($input['bio'] ?? null) || !$this->validator->setRules([
+			if (empty($input['bio']) || !$this->validator->setRules([
 				'fname' => 'required|max_length[32]',
 				'company' => 'required|max_length[32]',
 				'email' => 'required|valid_email|max_length[63]',
@@ -88,7 +88,7 @@ class User extends BaseController
 				'city' => 'required|max_length[32]',
 				'postal' => 'required|max_length[8]',
 				'address1' => 'required|max_length[255]',
-			])->run($input['bio']))
+			])->run(($bio = json_decode($input['bio'], true))['owner']))
 				return null;
 			/** @var Scheme */
 			$scheme = (new SchemeModel())->find($input['scheme']);
@@ -102,8 +102,8 @@ class User extends BaseController
 			if (!$model->save($domain)) return null;
 			$metadata->price += $scheme->price_local + $scheme->renew_local * ($metadata->years - 1);
 			$metadata->registrar = (new DigitalRegistra())->normalizeDomainInput(
-				$input['bio'],
-				$input['user'] ?? [],
+				$bio['owner'],
+				$bio['user'] ?? [],
 				$metadata->years,
 				$domain,
 				$domain->scheme,
@@ -177,8 +177,7 @@ class User extends BaseController
 						$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 						$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
 						$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
-						$postdomain = json_decode($r->getPost('domain') ?: '[]', true);
-						if ($newdomain = $this->processNewDomainTransaction($metadata, $postdomain, $server)) {
+						if ($newdomain = $this->processNewDomainTransaction($metadata, $r->getPost('domain'), $server)) {
 							if ($newdomain instanceof Domain) {
 								$payment->domain_id = $newdomain->id;
 								$hosting->domain = $newdomain->name;
