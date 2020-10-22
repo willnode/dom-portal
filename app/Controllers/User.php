@@ -353,12 +353,14 @@ class User extends BaseController
 	protected function dnsHost($host)
 	{
 		if ($this->request->getMethod() === 'post') {
+			// @codeCoverageIgnoreStart
 			$domain = $host->domain;
 			if (!empty($this->request->getPost('sub'))) {
 				$domain = $this->request->getPost('sub') . '.' . $host->domain;
 			}
 			$heads = dns_get_record($domain, DNS_A | DNS_TXT | DNS_CNAME | DNS_MX | DNS_NS);
 			return $this->response->setJSON($heads);
+			// @codeCoverageIgnoreEnd
 		}
 		return view('user/host/dns', [
 			'host' => $host
@@ -368,17 +370,20 @@ class User extends BaseController
 	protected function nginxHost($host)
 	{
 		if ($this->request->getMethod() === 'post') {
+			// @codeCoverageIgnoreStart
 			$nginx = (new VirtualMinShell())->getNginxConfig($host->domain, $host->server->alias);
 			return $this->response->setContentType('application/nginx')->setBody($nginx);
+			// @codeCoverageIgnoreEnd
 		}
 		return view('user/host/nginx', [
 			'host' => $host
 		]);
 	}
-	/** @param Host $host */
+	/** @param Host $host  */
 	protected function sslHost($host)
 	{
 		if ($this->request->getMethod() === 'post') {
+			// @codeCoverageIgnoreStart
 			if (($this->request->getPost('action')) == 'fix3') {
 				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, ['ssl']);
 				(new VirtualMinShell())->requestLetsEncrypt($host->domain, $host->server->alias);
@@ -391,7 +396,6 @@ class User extends BaseController
 			$t = [0, 0, 0, 0];
 			$domain = $host->domain;
 			$heads = @get_headers("http://$domain/");
-			// CLI::write(json_encode($heads));
 			if ($heads) {
 				$t[0] = 1;
 				if (array_search("Location: https://$domain/", $heads)) {
@@ -407,12 +411,13 @@ class User extends BaseController
 				}
 			}
 			return $this->response->setJSON($t);
+			// @codeCoverageIgnoreEnd
 		}
 		return view('user/host/ssl', [
 			'host' => $host
 		]);
 	}
-	/** @param Host $host */
+	/**  @param Host $host */
 	protected function renameHost($host)
 	{
 		if ($this->request->getMethod() === 'post' && $host->status === 'active') {
@@ -451,14 +456,14 @@ class User extends BaseController
 			if ($this->request->getPost('cname')) {
 				if (!$this->validate([
 					'cname' => 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
-						'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosting.domain]',
+						'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosts.domain]',
 				])) {
 					return; // @codeCoverageIgnore
 				}
 				$domain = strtolower($this->request->getPost('cname'));
 				$server = $host->server;
 				if (strpos($domain, $server->domain) !== false) {
-					return; // Nice try hackers
+					return; // @codeCoverageIgnore
 				}
 				(new VirtualMinShell())->cnameHost(
 					$host->domain,
@@ -477,8 +482,10 @@ class User extends BaseController
 	protected function deployesHost($host)
 	{
 		if ($this->request->getMethod() === 'post' && $this->request->getPost('template')) {
+			// @codeCoverageIgnoreStart
 			(new TemplateDeployer())->schedule($host->id, $host->domain, $this->request->getPost('template'));
 			return $this->response->redirect('/user/host/deploys/' . $host->id);
+			// @codeCoverageIgnoreEnd
 		}
 		return view('user/host/deployes', [
 			'host' => $host,
@@ -491,7 +498,9 @@ class User extends BaseController
 		/** @var Purchase[] */
 		$history = (new PurchaseModel())->atHost($host->id)->descending()->find();
 		$current = $history[0] ?? null;
-		if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending') {
+		if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending')
+		{
+			// @codeCoverageIgnoreStart
 			$metadata = $current->metadata;
 			if ($action === 'cancel') {
 				if (count($history) === 1 && $host->status === 'pending') {
@@ -519,6 +528,7 @@ class User extends BaseController
 				}
 				return $this->response->redirect('/user/host/invoices/' . $host->id);
 			}
+			// @codeCoverageIgnoreEnd
 		}
 		return view('user/host/invoices', [
 			'host' => $host,

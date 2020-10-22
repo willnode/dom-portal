@@ -23,7 +23,10 @@ class HostDeploy extends Entity
         'result' => 'string',
     ];
 
-    /** @return Host */
+    /**
+     * @codeCoverageIgnore
+     * @return Host
+     * */
     public function getHost()
     {
         return (new HostModel())->find($this->attributes['host_id']);

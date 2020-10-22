@@ -17,10 +17,13 @@ class HostModel extends Model
     public function atLogin($id)
     {
         if ($id !== 1)
-            $this->builder()->where('login_id', $id);
+            $this->builder()->where('login_id', $id); // @codeCoverageIgnore
         return $this;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function atServer($id)
     {
         $this->builder()->where('server_id', $id);

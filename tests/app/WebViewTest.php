@@ -95,6 +95,9 @@ class WebViewTest extends CIDatabaseTestCase
             ] as $page) {
                 $this->assertTrue(is_string($user->host($page, 1)));
             }
+            $this->assertTrue(is_string($user->domain('list')));
+            $this->assertTrue(is_string($user->domain('create')));
+
         }
     }
 

@@ -41,5 +41,6 @@ class LoginModel extends Model
             }
             return $this->insertID;
         }
+        return null; // @codeCoverageIgnore
     }
 }

@@ -182,6 +182,7 @@ class FunctionalTest extends CIDatabaseTestCase
         /** @var Host */
         $host = (new HostModel())->find(1);
         $this->assertTrue(($purchase = $host->purchase)->status === 'pending');
+
         // Try to execute payment
 
         ($home = new Home())->initController($req, Services::response(), Services::logger());
@@ -204,6 +205,22 @@ class FunctionalTest extends CIDatabaseTestCase
             'program=modify-domain&domain=emily.dom.my.id&newdomain=emily.com',
             'program=enable-domain&domain=emily.com',
             'program=modify-domain&domain=emily.com&apply-plan=Lite'
+        ]);
+        VirtualMinShell::$output = '';
+
+        // Okay, try to change domain
+
+
+        $req->setGlobal('post', $post_data = [
+            'cname' => 'emily.me'
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->host('cname', 1);
+        /** @var Host */
+        $host = (new HostModel())->find(1);
+        $this->assertTrue($host->domain === 'emily.me');
+        $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
+            'program=modify-domain&domain=emily.com&newdomain=emily.me',
         ]);
         VirtualMinShell::$output = '';
 
@@ -235,8 +252,8 @@ class FunctionalTest extends CIDatabaseTestCase
         $home->notify();
         $this->assertTrue(($purchase = $host->purchase)->status === 'active');
         $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
-            'program=modify-domain&domain=emily.com&bw=21474836480',
-            'program=enable-domain&domain=emily.com',
+            'program=modify-domain&domain=emily.me&bw=21474836480',
+            'program=enable-domain&domain=emily.me',
         ]);
         VirtualMinShell::$output = '';
     }

@@ -9,9 +9,7 @@ use App\Entities\Server;
 use Config\Services;
 use SimpleXMLElement;
 
-/**
- * @codeCoverageIgnore
- */
+
 class DigitalRegistra
 {
 	protected function callApi($route, $post = [])
@@ -21,6 +19,7 @@ class DigitalRegistra
 		$pass = Services::request()->config->srsxPassword;
 
 		if (ENVIRONMENT === 'production') {
+			// @codeCoverageIgnoreStart
 			// execute!
 			$ch = curl_init($url . $route);
 			$post['username'] = $user;
@@ -39,13 +38,16 @@ class DigitalRegistra
 			} else {
 				return '';
 			}
+			// @codeCoverageIgnoreEnd
 		} else {
 			$post['url'] = $route;
 			return $post;
 		}
 	}
 
-
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function domainCheck($domain)
 	{
 		return $this->callApi('/domain/check', ['domain' => $domain]);
@@ -113,17 +115,23 @@ class DigitalRegistra
 			return $x;
 		});
 	}
-
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function domainInfo($domain, $api_id)
 	{
 		return $this->callApi('/domain/check', ['domain' => $domain, 'api_id' => $api_id]);
 	}
-
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function domainRenew($domain, $api_id, $periode)
 	{
 		return $this->callApi('/domain/renew', ['domain' => $domain, 'api_id' => $api_id], $periode);
 	}
-
+	/**
+	 * @codeCoverageIgnore
+	 */
 	protected function xml2array($xmlObject, $out = array())
 	{
 		foreach ((array) $xmlObject as $index => $node)

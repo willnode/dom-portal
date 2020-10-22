@@ -13,6 +13,9 @@ class HostDeployModel extends Model
     protected $returnType = 'App\Entities\HostDeploy';
     protected $useTimestamps = true;
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function atHost($id)
     {
         $this->builder()->where('host_id', $id);

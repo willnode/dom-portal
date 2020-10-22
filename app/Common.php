@@ -45,6 +45,9 @@ function format_bytes($bytes, $precision = 1)
     return number_format($bytes, $precision) . ' ' . $units[$pow];
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function sanitize_shell_arg_dir($dir)
 {
     return implode('/', array_map(function ($x) {
