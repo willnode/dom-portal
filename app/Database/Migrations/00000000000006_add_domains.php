@@ -13,6 +13,7 @@ class AddDomains extends Migration
             `login_id` INT(11) NOT NULL,
             `name` VARCHAR(64) NOT NULL,
             `scheme_id` INT(11) NULL DEFAULT NULL,
+            `status` ENUM('pending','active','expired') NULL DEFAULT 'pending',
             `created_at` TIMESTAMP NULL DEFAULT NULL,
             `updated_at` TIMESTAMP NULL DEFAULT NULL,
             PRIMARY KEY (`id`),

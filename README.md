@@ -1,8 +1,9 @@
 # DOM Cloud Portal
 
 [![codecov](https://codecov.io/gh/domcloud/dom-portal/branch/master/graph/badge.svg?token=KVP6A2KFXW)](https://codecov.io/gh/domcloud/dom-portal)
-
 [![Build Status](https://travis-ci.com/domcloud/dom-portal.svg?branch=master)](https://travis-ci.com/domcloud/dom-portal)
+![Uptime Robot ratio (30 days)](https://img.shields.io/uptimerobot/ratio/m786188407-1d0bd21c51b4159f15ad894f)
+![License](https://img.shields.io/github/license/domcloud/dom-portal)
 
 <p align=center><img src="http://portal.domcloud.id/logo.svg" alt="Logo" width=200px></p>
 

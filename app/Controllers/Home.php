@@ -10,6 +10,7 @@ use App\Libraries\SendGridEmail;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\TransferWiseGate;
 use App\Libraries\VirtualMinShell;
+use App\Models\DomainModel;
 use App\Models\HostModel;
 use App\Models\LoginModel;
 use App\Models\PlanModel;
@@ -49,8 +50,15 @@ class Home extends BaseController
 
 				log_message('notice', 'PURCHASE: ' . json_encode($metadata));
 
-				if ($metadata->registrar) {
-					(new DigitalRegistra())->domainRegister($metadata->registrar);
+				if ($data->domain_id && $metadata->registrar) {
+					$domain = $data->domain;
+					if ($domain->status === 'pending') {
+						(new DigitalRegistra())->domainRegister($metadata->registrar);
+						$domain->status = 'active';
+						(new DomainModel())->save($domain);
+					} else {
+
+					}
 				}
 				if ($data->host_id) {
 

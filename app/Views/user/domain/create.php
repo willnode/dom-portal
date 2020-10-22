@@ -20,8 +20,8 @@
                 <div class="input-group">
                   <input name="domain_name" id="domain_name" class="form-control" pattern="^[-\w]+$" required oninput="updateStat()">
                   <select class="form-select" name="domain_scheme" id="domain_scheme" required style="max-width: 120px" onchange="updateStat()">
-                    <?php foreach ($schemes as $s) : if ($s->scheme_price !== '0') : ?>
-                        <option value="<?= $s->scheme_id ?>"><?= $s->scheme_alias ?></option>
+                    <?php foreach ($schemes as $s) : if ($s->price_local !== 0) : ?>
+                        <option value="<?= $s->id ?>"><?= $s->alias ?></option>
                     <?php endif;
                     endforeach; ?>
                   </select>
@@ -44,41 +44,6 @@
                 </div>
               </div>
               <hr>
-              <div class="mb-3">
-                <label>Kontak</label>
-                <div class="input-group mb-2">
-                  <div class="input-group-text">Registrar</div>
-                  <select name="registrant_contact_id" class="form-select" required>
-                    <?php foreach ($contacts as $c) : ?>
-                      <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
-                    <?php endforeach ?>
-                  </select>
-                </div>
-                <div class="input-group mb-2">
-                  <div class="input-group-text">Billing</div>
-                  <select name="billing_contact_id" class="form-select" required>
-                    <?php foreach ($contacts as $c) : ?>
-                      <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
-                    <?php endforeach ?>
-                  </select>
-                </div>
-                <div class="input-group mb-2">
-                  <div class="input-group-text">Admin</div>
-                  <select name="admin_contact_id" class="form-select" required>
-                    <?php foreach ($contacts as $c) : ?>
-                      <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
-                    <?php endforeach ?>
-                  </select>
-                </div>
-                <div class="input-group mb-2">
-                  <div class="input-group-text">Tech</div>
-                  <select name="tech_contact_id" class="form-select" required>
-                    <?php foreach ($contacts as $c) : ?>
-                      <option value="<?= $c->contact_id ?>"><?= $c->contact_id ?> | <?= $c->country_code ?> | <?= $c->email ?></option>
-                    <?php endforeach ?>
-                  </select>
-                </div>
-              </div>
 
             </div>
           </div>

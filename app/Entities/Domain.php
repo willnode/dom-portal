@@ -11,6 +11,7 @@ use CodeIgniter\Entity;
  * @property int $id
  * @property int $login_id
  * @property string $name
+ * @property string $status
  * @property int $scheme_id
  * @property Scheme $scheme
  * @property Login $login

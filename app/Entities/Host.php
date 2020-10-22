@@ -58,7 +58,7 @@ class Host extends Entity
     /** @return Domain|null */
     public function getDomainDetail()
     {
-        return (new DomainModel())->atDomain($this->attributes['domain']);
+        return (new DomainModel())->atDomain($this->attributes['domain'])->findAll()[0] ?? null;
     }
 
     /** @return Plan */

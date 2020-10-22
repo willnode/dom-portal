@@ -179,8 +179,8 @@ class FunctionalTest extends CIDatabaseTestCase
             'username' => 'contoso',
             'password' => 'mycontoso',
             'years' => 1,
-            'addons' => 0,
-            'domain' => [
+            'addons' => 5,
+            'domain' => json_encode([
                 'scheme' => 1,
                 'name' => 'example',
                 'bio' => [
@@ -194,23 +194,26 @@ class FunctionalTest extends CIDatabaseTestCase
                     'postal' => '11101',
                     'address1' => 'St. John',
                 ]
-            ]
+            ])
         ]);
         $req->setGlobal('request', $post_data);
         $user->host('create');
         /** @var Host */
         $host = (new HostModel())->find(1);
         $this->assertTrue(isset($host, $host->purchase, $host->domain_detail));
-        $meta = $host->purchase->metadata;
+        $purchase = $host->purchase;
+        $domain = $host->domain_detail;
+        $meta = $purchase->metadata;
+        $this->assertTrue($domain->status === 'pending' && $host->status === 'pending');
         $this->assertEquals($meta->toRawArray(), [
             'type' => "hosting",
-            'price' => 16.5,
+            'price' => 17,
             'price_unit' => "usd",
             'template' => "",
             'expiration' =>  $meta->expiration,
             'years' =>  1,
             'plan' => 2,
-            'addons' => 0,
+            'addons' => 5,
             '_challenge' =>  $meta->_challenge,
             '_id' => NULL,
             '_via' =>  NULL,
@@ -242,6 +245,27 @@ class FunctionalTest extends CIDatabaseTestCase
                 'autoactive' => "on",
             ]
         ]);
+
+        // Try to execute payment
+
+        ($home = new Home())->initController($req, Services::response(), Services::logger());
+        $req->setGlobal('get', [
+            'id' => $purchase->id,
+            'challenge' => $meta->_challenge,
+            'secret' => $req->config->ipaymuSecret,
+        ]);
+        $req->setGlobal('post', [
+            'trx_id' => 123,
+            'via' => 'Test',
+            'status' => 'berhasil',
+        ]);
+        $home->notify();
+        $host = (new HostModel())->find(1);
+        $purchase = $host->purchase;
+        $domain = $host->domain_detail;
+        $meta = $purchase->metadata;
+        $this->assertTrue($domain->status === 'active', $host->status === 'active');
+
     }
 
     protected function setUp(): void

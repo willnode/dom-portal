@@ -260,26 +260,26 @@
                   <label for=""><?= lang('Interface.fullName') ?></label>
                   <div class="row g-1 align-items-center">
                     <div class="col">
-                      <input class="form-control" name="domain[bio][fname]" required>
+                      <input class="form-control" name="domain.bio.fname" required>
                     </div>
                     <div class="col">
-                      <input class="form-control" name="domain[bio][lname]">
+                      <input class="form-control" name="domain.bio.lname">
                     </div>
                   </div>
                 </div>
                 <div class="mb-1">
                   <label for=""><?= lang('Interface.companyName') ?></label>
-                  <input class="form-control" name="domain[bio][company]" required>
+                  <input class="form-control" name="domain.bio.company" required>
                 </div>
                 <div class="row g-1 mb-1">
                   <div class="col">
                     <label for="name"><?= lang('Interface.email') ?></label>
-                    <input type="email" class="form-control" id="email" name="domain[bio][email]" autocomplete="email" required>
+                    <input type="email" class="form-control" id="email" name="domain.bio.email" autocomplete="email" required>
                   </div>
                   <div class="col">
                     <label for="name"><?= lang('Interface.phone') ?></label>
                     <div class="input-group">
-                      <input class="form-control" name="domain[bio][tel]" autocomplete="tel" required>
+                      <input class="form-control" name="domain.bio.tel" autocomplete="tel" required>
                     </div>
                   </div>
                 </div>
@@ -287,24 +287,24 @@
                   <label for="">Alamat</label>
                   <div class="row g-1 mb-1">
                     <div class="col">
-                      <select name="domain[bio][country]" autocomplete="country" class="ccode form-select" required>
+                      <select name="domain.bio.country" autocomplete="country" class="ccode form-select" required>
                         <option disabled selected><?= lang('Domain.country') ?></option>
                       </select>
                     </div>
                     <div class="col">
-                      <input class="form-control" autocomplete="address-level1" name="domain[bio][state]" placeholder="<?= lang('Domain.state') ?>" required>
+                      <input class="form-control" autocomplete="address-level1" name="domain.bio.state" placeholder="<?= lang('Domain.state') ?>" required>
                     </div>
                   </div>
                   <div class="row g-1 mb-1">
                     <div class="col">
-                      <input class="form-control" autocomplete="address-level2" name="domain[bio][city]" placeholder="<?= lang('Domain.city') ?>" required>
+                      <input class="form-control" autocomplete="address-level2" name="domain.bio.city" placeholder="<?= lang('Domain.city') ?>" required>
                     </div>
                     <div class="col">
-                      <input class="form-control" autocomplete="postal-code" name="domain[bio][postal]" placeholder="<?= lang('Domain.zipCode') ?>" required>
+                      <input class="form-control" autocomplete="postal-code" name="domain.bio.postal" placeholder="<?= lang('Domain.zipCode') ?>" required>
                     </div>
                   </div>
-                  <input class="form-control mb-1" autocomplete="address-line1" name="domain[bio][address1]" placeholder="Address 1" required>
-                  <input class="form-control mb-1" autocomplete="address-line2" name="domain[bio][address2]" placeholder="Address 2">
+                  <input class="form-control mb-1" autocomplete="address-line1" name="domain.bio.address1" placeholder="Address 1" required>
+                  <input class="form-control mb-1" autocomplete="address-line2" name="domain.bio.address2" placeholder="Address 2">
                 </div>
               </div>
             </fieldset>
@@ -324,39 +324,39 @@
                   <label for=""><?= lang('Interface.fullName') ?></label>
                   <div class="row g-1 align-items-center">
                     <div class="col">
-                      <input class="form-control" name="domain[user][fname]" required>
+                      <input class="form-control" name="domain.user.fname" required>
                     </div>
                     <div class="col">
-                      <input class="form-control" name="domain[user][lname]">
+                      <input class="form-control" name="domain.user.lname">
                     </div>
                   </div>
                 </div>
                 <div class="mb-1">
                   <label for=""><?= lang('Interface.companyName') ?></label>
-                  <input class="form-control" name="domain[user][company]" required>
+                  <input class="form-control" name="domain.user.company" required>
                 </div>
                 <div class="mb-1">
                   <label for="">Alamat</label>
                   <div class="row g-1 mb-1">
                     <div class="col">
-                      <select name="domain[user][country]" autocomplete="country" class="ccode form-select" required>
+                      <select name="domain.user.country" autocomplete="country" class="ccode form-select" required>
                         <option disabled selected><?= lang('Domain.country') ?></option>
                       </select>
                     </div>
                     <div class="col">
-                      <input class="form-control" autocomplete="address-level1" name="domain[user][state]" placeholder="<?= lang('Domain.state') ?>" required>
+                      <input class="form-control" autocomplete="address-level1" name="domain.user.state" placeholder="<?= lang('Domain.state') ?>" required>
                     </div>
                   </div>
                   <div class="row g-1 mb-1">
                     <div class="col">
-                      <input class="form-control" autocomplete="address-level2" name="domain[user][city]" placeholder="<?= lang('Domain.city') ?>" required>
+                      <input class="form-control" autocomplete="address-level2" name="domain.user.city" placeholder="<?= lang('Domain.city') ?>" required>
                     </div>
                     <div class="col">
-                      <input class="form-control" autocomplete="postal-code" name="domain[user][postal]" placeholder="<?= lang('Domain.zipCode') ?>" required>
+                      <input class="form-control" autocomplete="postal-code" name="domain.user.postal" placeholder="<?= lang('Domain.zipCode') ?>" required>
                     </div>
                   </div>
-                  <input class="form-control mb-1" autocomplete="address-line1" name="domain[user][address1]" placeholder="Address 1" required>
-                  <input class="form-control mb-1" autocomplete="address-line2" name="domain[user][address2]" placeholder="Address 2">
+                  <input class="form-control mb-1" autocomplete="address-line1" name="domain.user.address1" placeholder="Address 1" required>
+                  <input class="form-control mb-1" autocomplete="address-line2" name="domain.user.address2" placeholder="Address 2">
                 </div>
               </div>
             </fieldset>
@@ -416,6 +416,20 @@
       <?= json_encode($codes) ?>
     </script>
     <script>
+      // https://unpkg.com/json-unflat@1.0.1/index.js
+      function unflatten(n) {
+        var t = {},
+          r = function(r) {
+            var a, f = r.split(".");
+            f.map(function(i, u) {
+              0 == u && (a = t), a[i] ? a = a[i] : f.length === u + 1 ? a[i] = n[r] : (a[i] = {}, a = a[i])
+            })
+          };
+        for (var a in n) r(a);
+        return t
+      }
+    </script>
+    <script>
       const plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.id] = b, a), {});
       const schemes = (x => x && x.reduce((a, b) => (a[b.id] = b, a), {}))(JSON.parse(document.getElementById('schemes').innerHTML));
       const ccodes = JSON.parse(document.getElementById('ccodes').innerHTML);
@@ -442,7 +456,7 @@
         $('#submitBtn').prop('disabled', true).val('⏳ <?= lang('Interface.processing') ?>...');
       }
       window.domainBio.onsubmit = (e) => {
-        $('#domain_bio').val(JSON.stringify($(window.domainBio).serializeArray()));
+        $('#domain_bio').val(JSON.stringify(unflatten($(window.domainBio).serializeArray().reduce((m, o) => [m[o.name] = o.value, m][1], {})).domain));
         recalculate();
         $('#domainBioModal').modal('hide');
         $('#domainBioModalBtn').toggleClass('btn-warning', false).toggleClass('btn-outline-primary', true).text('Biodata Terisi ☑');
@@ -507,7 +521,8 @@
 
         if (dommod === 'buy') {
           var schdata = schemes[form.domain_scheme.value];
-          $('#domain_available').val(activedomain === window.box.domain_name + schdata.alias ? '1' : '');
+          $('#domain_available').val(activedomain && activedomain.status === 'available' && (
+            activedomain.domain === window.box.domain_name.value + schdata.alias) ? '1' : '');
           scheme = schdata[`price_${currency}`] + schdata[`renew_${currency}`] * (years - 1);
         }
 

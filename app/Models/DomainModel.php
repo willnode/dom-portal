@@ -8,7 +8,7 @@ class DomainModel extends Model
 {
     protected $table         = 'domains';
     protected $allowedFields = [
-        'login_id', 'name', 'scheme_id'
+        'login_id', 'name', 'scheme_id', 'status'
     ];
     protected $primaryKey = 'id';
     protected $returnType = 'App\Entities\Domain';
@@ -22,7 +22,7 @@ class DomainModel extends Model
 
     public function atDomain($id)
     {
-        $this->builder()->where('domain', $id);
+        $this->builder()->where('name', $id);
         return $this;
     }
 }

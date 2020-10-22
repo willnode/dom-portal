@@ -20,7 +20,6 @@ use App\Libraries\VirtualMinShell;
 use App\Models\DomainModel;
 use App\Models\HostDeployModel;
 use App\Models\HostModel;
-use App\Models\LiquidModel;
 use App\Models\LoginModel;
 use App\Models\PlanModel;
 use App\Models\PurchaseModel;
@@ -178,7 +177,8 @@ class User extends BaseController
 						$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 						$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
 						$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
-						if ($newdomain = $this->processNewDomainTransaction($metadata, $r->getPost('domain'), $server)) {
+						$postdomain = json_decode($r->getPost('domain') ?: '[]', true);
+						if ($newdomain = $this->processNewDomainTransaction($metadata, $postdomain, $server)) {
 							if ($newdomain instanceof Domain) {
 								$payment->domain_id = $newdomain->id;
 								$hosting->domain = $newdomain->name;
@@ -318,7 +318,7 @@ class User extends BaseController
 				$metadata->years = max(1, ceil($host->expiry_at->difference(now())->getYears()));
 				$metadata->price = ($plan->price_local - $host->plan->price_local) * $metadata->years;
 			}
-			$metadata->price += ['idr' => 500, 'usd' => 0.05][$metadata->price_unit] * $metadata->addons;
+			$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
 			$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 			$payment->metadata = $metadata;
 			$payment->host_id = $host->id;
@@ -649,13 +649,14 @@ class User extends BaseController
 		}
 
 		return view('user/domain/create', [
-			'schemes' => $this->db->table('schemes')->get()->getResult(),
+			'schemes' => (new SchemeModel())->findAll(),
 		]);
 	}
 	protected function listDomain()
 	{
 		return view('user/domain/list', [
-			'list' => (new DomainModel())->atLogin($this->login->id),
+			'domains' => (new DomainModel())->atLogin($this->login->id)->findAll(),
+			'codes' => CountryCodes::$codes,
 			'page' => 'domain',
 		]);
 	}

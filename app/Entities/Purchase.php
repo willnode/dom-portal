@@ -2,6 +2,7 @@
 
 namespace App\Entities;
 
+use App\Models\DomainModel;
 use App\Models\HostModel;
 use CodeIgniter\Entity;
 
@@ -26,8 +27,16 @@ class Purchase extends Entity
     /** @return Host */
     public function getHost()
     {
-        return (new HostModel())->find($this->attributes['host_id']);
+        $id = $this->attributes['host_id'];
+        return $id ? (new HostModel())->find($id) : null;
     }
+
+     /** @return Domain */
+     public function getDomain()
+     {
+         $id = $this->attributes['domain_id'];
+         return $id ? (new DomainModel())->find($id) : null;
+     }
 
     public function getMetadata()
     {
