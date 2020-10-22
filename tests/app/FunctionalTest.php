@@ -110,7 +110,18 @@ class FunctionalTest extends CIDatabaseTestCase
 
         // Okay, try rename
 
-
+        $req->setMethod('post');
+        $req->setGlobal('post', $post_data = [
+            'username' => 'emily',
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->host('rename', $host->id);
+        $this->assertTrue((new HostModel())->find(1)->domain === 'emily.dom.my.id');
+        $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
+            'program=modify-domain&domain=contoso.dom.my.id&user=emily',
+            'program=modify-domain&domain=contoso.dom.my.id&newdomain=emily.dom.my.id'
+        ]);
+        VirtualMinShell::$output = '';
 
         // Okay, try extend
 
@@ -154,8 +165,8 @@ class FunctionalTest extends CIDatabaseTestCase
         $home->notify();
         $this->assertTrue(($purchase = $host->purchase)->status === 'active');
         $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
-            'program=enable-domain&domain=contoso.dom.my.id',
-            'program=modify-domain&domain=contoso.dom.my.id&apply-plan=Lite'
+            'program=enable-domain&domain=emily.dom.my.id',
+            'program=modify-domain&domain=emily.dom.my.id&apply-plan=Lite'
         ]);
         VirtualMinShell::$output = '';
     }

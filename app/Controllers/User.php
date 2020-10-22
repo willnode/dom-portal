@@ -12,7 +12,6 @@ use App\Entities\PurchaseMetadata;
 use App\Entities\Scheme;
 use App\Entities\Server;
 use App\Libraries\BannedNames;
-use App\Libraries\CountryCodes;
 use App\Libraries\DigitalRegistra;
 use App\Libraries\IpaymuGate;
 use App\Libraries\TemplateDeployer;
@@ -234,7 +233,6 @@ class User extends BaseController
 			'trustiness' => $this->login->trustiness,
 			'email' => $this->login->email,
 			'validation' => $this->validator,
-			'codes' => CountryCodes::$codes,
 			'ok' => $ok,
 		]);
 	}
@@ -655,7 +653,6 @@ class User extends BaseController
 	{
 		return view('user/domain/list', [
 			'domains' => (new DomainModel())->atLogin($this->login->id)->findAll(),
-			'codes' => CountryCodes::$codes,
 			'page' => 'domain',
 		]);
 	}
