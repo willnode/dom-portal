@@ -26,6 +26,7 @@ use App\Models\SchemeModel;
 use App\Models\ServerModel;
 use App\Models\TemplatesModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use CodeIgniter\HTTP\IncomingRequest;
 use Config\Services;
 
 class User extends BaseController
@@ -39,6 +40,7 @@ class User extends BaseController
 		parent::initController($request, $response, $logger);
 
 		if (!$this->session->get('login') || (!($this->login = (new LoginModel())->find($this->session->login)))) {
+			// @codeCoverageIgnoreStart
 			$path = Services::request()->detectPath('REQUEST_URI');
 			$query = Services::request()->detectPath('QUERY_STRING');
 			$this->session->destroy();
@@ -46,6 +48,7 @@ class User extends BaseController
 				'login?r=' . urlencode($path . ($query ? '?' . $query : ''))
 			))->pretend(false)->send();
 			exit;
+			// @codeCoverageIgnoreEnd
 		} else {
 			$this->request->setLocale($this->login->lang);
 		}
@@ -53,7 +56,7 @@ class User extends BaseController
 
 	public function index()
 	{
-		return $this->response->redirect('/user/host');
+		return $this->response->redirect('/user/host'); // @codeCoverageIgnore
 	}
 
 	protected function listHost()
@@ -72,12 +75,12 @@ class User extends BaseController
 	protected function processNewDomainTransaction($metadata, $input, $server = null)
 	{
 		if (!is_array($input)) {
-			return null;
-		} elseif ($this->validator->setRules([
+			return null; // @codeCoverageIgnore
+		} elseif ($this->validator->reset()->setRules([
 			'scheme' => 'required|is_not_unique[schemes.id]',
 			'name' => 'required|regex_match[/^[-\w]+$/]',
 		])->run($input)) {
-			if (empty($input['bio']) || !$this->validator->setRules([
+			if (empty($input['bio']) || !$this->validator->reset()->setRules([
 				'fname' => 'required|max_length[32]',
 				'company' => 'required|max_length[32]',
 				'email' => 'required|valid_email|max_length[63]',
@@ -88,7 +91,7 @@ class User extends BaseController
 				'postal' => 'required|max_length[8]',
 				'address1' => 'required|max_length[255]',
 			])->run(($bio = json_decode($input['bio'], true))['owner']))
-				return null;
+				return null; // @codeCoverageIgnore
 			/** @var Scheme */
 			$scheme = (new SchemeModel())->find($input['scheme']);
 			$domain = new Domain([
@@ -111,12 +114,33 @@ class User extends BaseController
 			);
 			$domain->id = $model->getInsertID();
 			return $domain;
-		} elseif ($this->validator->setRules([
+		} elseif ($this->validator->reset()->setRules([
 			'custom' => 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
 				'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosts.domain]'
 		])->run($input)) {
 			return $metadata->domain = $input['custom'];
-		} else return null;
+		} else return null; // @codeCoverageIgnore
+	}
+
+	/**
+	 * @param IncomingRequest $request
+	 * @param Purchase $payment
+	 * @param Host $hosting
+	 */
+	protected function checkNewDomainTransaction($request, $payment, $hosting)
+	{
+		$metadata = $payment->metadata;
+		if ($newdomain = $this->processNewDomainTransaction($metadata, $request->getPost('domain'), $hosting->server)) {
+			$payment->metadata = $metadata;
+			if ($newdomain instanceof Domain) {
+				$payment->domain_id = $newdomain->id;
+				$hosting->domain = $newdomain->name;
+			} else {
+				$hosting->domain = $newdomain;
+			}
+		} else {
+			$hosting->domain = $hosting->username . $hosting->server->domain; // @codeCoverageIgnore
+		}
 	}
 	protected function createHost()
 	{
@@ -147,6 +171,7 @@ class User extends BaseController
 					'server_id' => $data['server'],
 					'plan_id' => $data['plan'],
 				]);
+
 				if ($plan->price_local !== 0) {
 					if ($this->validate([
 						'years' => 'required|integer|greater_than[0]|less_than[6]',
@@ -176,22 +201,12 @@ class User extends BaseController
 						$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 						$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
 						$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
-						if ($newdomain = $this->processNewDomainTransaction($metadata, $r->getPost('domain'), $server)) {
-							if ($newdomain instanceof Domain) {
-								$payment->domain_id = $newdomain->id;
-								$hosting->domain = $newdomain->name;
-							} else {
-								$hosting->domain = $newdomain;
-							}
-						} else {
-							$hosting->domain = $hosting->username . $server->domain;
-						}
 						$hosting->expiry_at = $metadata->expiration;
 						$hosting->status = 'pending';
 						$payment->metadata = $metadata;
+						$this->checkNewDomainTransaction($this->request, $payment, $hosting);
 					} else {
-						$r->setMethod('get');
-						return $this->createHost();
+						return $this->response->redirect('/user/host/'); // @codeCoverageIgnore
 					}
 				} else {
 					// Free plan. Just create
@@ -214,16 +229,18 @@ class User extends BaseController
 						$payment->host_id = $id;
 						(new PurchaseModel())->insert($payment);
 					} else if ($data['template'] ?? '') {
+						// @codeCoverageIgnoreStart
 						(new TemplateDeployer())->schedule(
 							$id,
 							$hosting->domain,
 							$data['template']
 						);
+						// @codeCoverageIgnoreEnd
 					}
 					return $this->response->redirect('/user/host/invoices/' . $id);
 				}
 			}
-			return redirect()->back()->withInput()->with('errors', $this->validator->listErrors());
+			return redirect()->back()->withInput()->with('errors', $this->validator->listErrors()); // @codeCoverageIgnore
 		}
 		return view('user/host/create', [
 			'plans' => (new PlanModel())->find(),
@@ -239,8 +256,9 @@ class User extends BaseController
 	/** @param Host $host */
 	protected function upgradeHost($host)
 	{
-		if ($this->request->getMethod() === 'post') {
-			if (!$host->purchase && $this->request->getPost('plan') === '1') {
+		$req = $this->request;
+		if ($req->getMethod() === 'post') {
+			if (!$host->purchase && $req->getPost('plan') === '1') {
 				// Preliminating check. If current is free then requesting free again:
 				// Just expand the expiry time and do nothing else.
 				$host->expiry_at = date('Y-m-d H:i:s', strtotime("+2 months", \time()));
@@ -248,14 +266,14 @@ class User extends BaseController
 				return $this->response->redirect('/user/host/invoices/' . $host->id);
 			}
 			// Anything goes out of rule... nice try hackers.
-			$mode = $this->request->getPost('mode');
+			$mode = $req->getPost('mode');
 			if (!$this->validate([
 				'mode' => $host->plan_id === 1 ? 'required|in_list[new]' : 'required|in_list[new,extend,upgrade,topup]',
 				'plan' => $mode === 'topup' ? 'permit_empty' : 'required|greater_than[1]|is_not_unique[plans.id]',
 				'years' => $mode === 'new' || $mode === 'extend' ? 'required|greater_than[0]|less_than[6]' : 'permit_empty',
-				'addons' => ($this->request->getPost('addons')) ? 'required|integer|greater_than_equal_to[0]|less_than_equal_to[10000]' : 'permit_empty',
-			]) || ($mode === 'upgrade' && $this->request->getPost('plan') <= $host->plan_id)) {
-				return;
+				'addons' => $req->getPost('addons') ? 'required|integer|greater_than_equal_to[0]|less_than_equal_to[10000]' : 'permit_empty',
+			]) || ($mode === 'upgrade' && $req->getPost('plan') <= $host->plan_id)) {
+				return; // @codeCoverageIgnore
 			}
 			$payment = new Purchase([
 				'status' => 'pending',
@@ -266,11 +284,9 @@ class User extends BaseController
 				"price_unit" => lang('Interface.currency'),
 				"template" => null,
 				"expiration" => $host->expiry_at->toDateTimeString(), // later
-				"years" => $mode === 'new' || $mode === 'extend' ?  intval($this->request->getPost('years')) : null,
-				"plan" => $mode === 'upgrade' || $mode === 'new' ? intval($this->request->getPost('plan')) : $host->plan_id,
-				"addons" => intval($this->request->getPost('addons') ?? '0'),
-				"liquid" => null, // later
-				"scheme" => null, // later
+				"years" => $mode === 'new' || $mode === 'extend' ?  intval($req->getPost('years')) : null,
+				"plan" => $mode === 'upgrade' || $mode === 'new' ? intval($req->getPost('plan')) : $host->plan_id,
+				"addons" => intval($req->getPost('addons')),
 				"_challenge" => random_int(111111111, 999999999),
 				"_id" => null,
 				"_via" => null,
@@ -282,30 +298,7 @@ class User extends BaseController
 			$plan = (new PlanModel())->find($metadata->plan);
 			if ($mode === 'new') {
 				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years", \time()));
-				$metadata->price = $plan->price_local * $metadata->years; {
-					// Setup Domain too
-					$domain_mode = $this->request->getPost('domain_mode') ?? 'free';
-					if (!$this->validate([
-						'custom_cname' => $domain_mode === 'custom' ? 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
-							'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosts.domain]' : 'permit_empty',
-						'buy_cname' => $domain_mode === 'buy' ? 'required|regex_match[/^[-\w]+$/]' : 'permit_empty',
-						'buy_scheme' => $domain_mode === 'buy' ? 'required|is_not_unique[schemes.id]' : 'permit_empty',
-					])) {
-						return;
-					}
-					if ($domain_mode == 'buy') {
-						/** @var Scheme */
-						$scheme = (new SchemeModel())->find($this->request->getPost('buy_scheme'));
-						$metadata->domain = $this->request->getPost('buy_cname') . $scheme->alias;
-						$metadata->scheme = $scheme->id;
-						$metadata->price += $scheme->price_local + $scheme->renew_local * ($metadata->years - 1);
-						$rrr = $this->processNewDomainTransaction($metadata->domain, $metadata->years);
-						$host->liquid_id = $rrr->domain_id;
-						$metadata->liquid = $rrr->transaction_id;
-					} else if ($domain_mode == 'custom') {
-						$metadata->domain = $this->request->getPost('custom_cname');
-					}
-				}
+				$metadata->price = $plan->price_local * $metadata->years;
 			} else if ($mode === 'extend') {
 				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years", strtotime($host->expiry_at)));
 				$metadata->price = $plan->price_local *  $metadata->years;
@@ -319,6 +312,9 @@ class User extends BaseController
 			$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
 			$payment->metadata = $metadata;
 			$payment->host_id = $host->id;
+			// Setup Domain too
+			if ($mode === 'new')
+				$this->checkNewDomainTransaction($this->request, $payment, $host);
 			(new PurchaseModel())->save($payment);
 			return $this->response->redirect('/user/host/invoices/' . $host->id);
 		}
@@ -423,7 +419,7 @@ class User extends BaseController
 			if (!$this->validate([
 				'username' => 'required|alpha_dash|min_length[5]|max_length[32]|is_unique[hosts.username]',
 			])) {
-				return redirect()->back();
+				return redirect()->back(); // @codeCoverageIgnore
 			}
 			$username = strtolower($this->request->getPost('username'));
 			if (array_search($username, (new BannedNames())->names) !== FALSE) return;
@@ -457,7 +453,7 @@ class User extends BaseController
 					'cname' => 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
 						'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosting.domain]',
 				])) {
-					return;
+					return; // @codeCoverageIgnore
 				}
 				$domain = strtolower($this->request->getPost('cname'));
 				$server = $host->server;
@@ -576,10 +572,10 @@ class User extends BaseController
 					return $this->deleteHost($host);
 				}
 			} else {
-				return $this->response->redirect('/user/host');
+				return $this->response->redirect('/user/host'); // @codeCoverageIgnore
 			}
 		}
-		throw new PageNotFoundException();
+		throw new PageNotFoundException(); // @codeCoverageIgnore
 	}
 
 	protected function checkDomain()
@@ -686,7 +682,7 @@ class User extends BaseController
 		} else if ($page == 'create') {
 			return $this->createDomain();
 		}
-		return $this->response->redirect('/user/domain');
+		return $this->response->redirect('/user/domain'); // @codeCoverageIgnore
 	}
 
 	public function status()
@@ -706,21 +702,12 @@ class User extends BaseController
 		]);
 	}
 
-	public function verify_email()
-	{
-		if ($this->request->getMethod() === 'post' && ($this->request->getPost('action') === 'resend')) {
-			$this->login->sendVerifyEmail();
-			return $this->response->redirect("/{$this->login->lang}/login?msg=emailsent");
-		}
-		return view('user/veremail', [
-			'email' => $this->login->email,
-		]);
-	}
 	public function profile()
 	{
 		if ($this->request->getMethod() === 'post') {
 			if (($this->request->getPost('action')) === 'resend') {
-				return $this->verify_email();
+				$this->login->sendVerifyEmail();
+				return $this->response->redirect("/{$this->login->lang}/login?msg=emailsent");
 			} else
 			if ($this->validate([
 				'name' => 'required|min_length[3]|max_length[255]',
@@ -763,7 +750,7 @@ class User extends BaseController
 				]);
 			}
 		}
-		return $this->response->redirect('/user/profile');
+		return $this->response->redirect('/user/profile'); // @codeCoverageIgnore
 	}
 
 	public function delete()

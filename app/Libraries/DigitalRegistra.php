@@ -11,6 +11,9 @@ use SimpleXMLElement;
 
 class DigitalRegistra
 {
+	/**
+	 * @codeCoverageIgnore
+	 */
 	protected function callApi($route, $post = [])
 	{
 		$url = Services::request()->config->srsxURL;

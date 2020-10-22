@@ -9,6 +9,7 @@ use App\Entities\Login;
 use App\Libraries\SendGridEmail;
 use App\Libraries\VirtualMinShell;
 use App\Models\HostModel;
+use App\Models\HostStatModel;
 use App\Models\LoginModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\Test\CIDatabaseTestCase;
@@ -69,8 +70,23 @@ class WebViewTest extends CIDatabaseTestCase
             'plan_id' => 1,
             'server_id' => 1,
             'username' => 'contoso',
+            'password' => 'contoso',
             'domain' => 'contoso.dom.my.id',
             'expiry_at' => date('Y-m-d H:i:s'),
+        ]);
+        (new HostStatModel())->insert([
+            'host_id' => 1,
+            'domain' => 'contoso.dom.my.id',
+            'identifier' => '10101',
+            'password' =>  'contoso',
+            'quota_server' => 0,
+            'quota_user' => 0,
+            'quota_db' => 0,
+            'quota_net' => 0,
+            'features' => 'web',
+            'bandwidths' => null,
+            'disabled' => null,
+            'updated_at' => date('Y-m-d H:i:s'),
         ]);
         $req->setGlobal('get', []);
         foreach (['en', 'id'] as $lang) {

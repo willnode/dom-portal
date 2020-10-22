@@ -142,6 +142,9 @@ class FunctionalTest extends CIDatabaseTestCase
             'mode' => 'new',
             'plan' => 2,
             'years' => 1,
+            'domain' => [
+                'custom' => 'emily.com'
+            ]
         ]);
         $req->setGlobal('request', $post_data);
         $user->host('upgrade', $host->id);
@@ -165,8 +168,9 @@ class FunctionalTest extends CIDatabaseTestCase
         $home->notify();
         $this->assertTrue(($purchase = $host->purchase)->status === 'active');
         $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
-            'program=enable-domain&domain=emily.dom.my.id',
-            'program=modify-domain&domain=emily.dom.my.id&apply-plan=Lite'
+            'program=modify-domain&domain=emily.dom.my.id&newdomain=emily.com',
+            'program=enable-domain&domain=emily.com',
+            'program=modify-domain&domain=emily.com&apply-plan=Lite'
         ]);
         VirtualMinShell::$output = '';
     }

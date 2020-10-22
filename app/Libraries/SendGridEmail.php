@@ -29,7 +29,7 @@ class SendGridEmail
     {
         if (!($template = $this->sendGridTemplates[$id][lang('Interface.code')] ?? '')) {
             if (ENVIRONMENT === 'production')
-                return;
+                return; // @codeCoverageIgnore
         }
         $ch = curl_init($this->sendGridUrl);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -55,7 +55,7 @@ class SendGridEmail
 
         if (ENVIRONMENT === 'production')
             // execute!
-            curl_exec($ch);
+            curl_exec($ch); // @codeCoverageIgnore
 
         SendGridEmail::$sentEmail = $id;
         SendGridEmail::$sentBody = $body;

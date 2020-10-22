@@ -4,6 +4,9 @@ namespace App\Libraries;
 
 use Config\Services;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Recaptha
 {
 	public $recapthaUrl = 'https://www.google.com/recaptcha/api/siteverify';

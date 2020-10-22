@@ -9,7 +9,6 @@ use CodeIgniter\Entity;
  * @property string $price_unit Applied Price Unit [idr|usd]
  * @property int|null $years Reservation in years
  * @property int|null $plan Plan ID to be applied
- * @property int|null $scheme Scheme Domain ID to be applied
  * @property int|null $addons Addons in GB to be applied (excluding bonus from plan)
  * @property string|null $domain Name Domain to be applied
  * @property string|null $expiration Host expiration date to be applied

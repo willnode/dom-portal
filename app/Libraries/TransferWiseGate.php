@@ -4,6 +4,9 @@ namespace App\Libraries;
 
 use Config\Services;
 
+/**
+ * @codeCoverageIgnore
+ */
 class TransferWiseGate
 {
     private $url;

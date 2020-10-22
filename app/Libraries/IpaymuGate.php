@@ -4,6 +4,9 @@ namespace App\Libraries;
 
 use Config\Services;
 
+/**
+ * @codeCoverageIgnore
+ */
 class IpaymuGate
 {
 	public function createPayment($id, $amount, $name, $challenge)

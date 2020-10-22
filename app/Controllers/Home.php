@@ -22,7 +22,7 @@ class Home extends BaseController
 {
 	public function index()
 	{
-		return $this->response->redirect(href('login'));
+		return $this->response->redirect(href('login')); // @codeCoverageIgnore
 	}
 
 	public function notify()
@@ -56,8 +56,6 @@ class Home extends BaseController
 						(new DigitalRegistra())->domainRegister($metadata->registrar);
 						$domain->status = 'active';
 						(new DomainModel())->save($domain);
-					} else {
-
 					}
 				}
 				if ($data->host_id) {
@@ -163,9 +161,12 @@ class Home extends BaseController
 				return "OK";
 			}
 		}
-		throw new PageNotFoundException();
+		throw new PageNotFoundException(); // @codeCoverageIgnore
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function notifyws()
 	{
 		if ($this->request->getMethod() === 'post') {
@@ -207,6 +208,9 @@ class Home extends BaseController
 		throw new PageNotFoundException();
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function notifypp()
 	{
 		if ($this->request->getMethod() === 'post') {
@@ -214,7 +218,7 @@ class Home extends BaseController
 			log_message('notice', $this->request->getBody());
 			return 'OK';
 		}
-		throw new PageNotFoundException();
+		throw new PageNotFoundException(); // @codeCoverageIgnore
 	}
 
 	public function verify()
@@ -240,7 +244,7 @@ class Home extends BaseController
 				}
 			}
 		}
-		throw new PageNotFoundException();
+		throw new PageNotFoundException(); // @codeCoverageIgnore
 	}
 
 	public function login()
@@ -376,7 +380,7 @@ class Home extends BaseController
 				}
 			}
 		}
-		throw new PageNotFoundException();
+		throw new PageNotFoundException(); // @codeCoverageIgnore
 	}
 
 	//--------------------------------------------------------------------
