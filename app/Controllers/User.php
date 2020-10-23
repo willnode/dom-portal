@@ -28,6 +28,7 @@ use App\Models\TemplatesModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\IncomingRequest;
 use Config\Services;
+use DateTime;
 
 class User extends BaseController
 {
@@ -269,7 +270,7 @@ class User extends BaseController
 			$mode = $req->getPost('mode');
 			if (!$this->validate([
 				'mode' => $host->plan_id === 1 ? 'required|in_list[new]' : 'required|in_list[new,extend,upgrade,topup]',
-				'plan' => $mode === 'topup' ? 'permit_empty' : 'required|greater_than[1]|is_not_unique[plans.id]',
+				'plan' => $mode === 'topup' || $mode === 'extend' ? 'permit_empty' : 'required|greater_than[1]|is_not_unique[plans.id]',
 				'years' => $mode === 'new' || $mode === 'extend' ? 'required|greater_than[0]|less_than[6]' : 'permit_empty',
 				'addons' => $req->getPost('addons') ? 'required|integer|greater_than_equal_to[0]|less_than_equal_to[10000]' : 'permit_empty',
 			]) || ($mode === 'upgrade' && $req->getPost('plan') <= $host->plan_id)) {
@@ -301,11 +302,11 @@ class User extends BaseController
 				$metadata->price = $plan->price_local * $metadata->years;
 			} else if ($mode === 'extend') {
 				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years", strtotime($host->expiry_at)));
-				$metadata->price = $plan->price_local *  $metadata->years;
+				$metadata->price = $host->purchase->price_local *  $metadata->years;
 				// Todo: also expand domain
 			} else if ($mode === 'upgrade') {
 				// The years need to be revamped
-				$metadata->years = max(1, ceil($host->expiry_at->difference(now())->getYears()));
+				$metadata->years = max(1, ceil($host->expiry_at->difference(new DateTime())->getYears()));
 				$metadata->price = ($plan->price_local - $host->plan->price_local) * $metadata->years;
 			}
 			$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
@@ -499,15 +500,15 @@ class User extends BaseController
 		$history = (new PurchaseModel())->atHost($host->id)->descending()->find();
 		$current = $history[0] ?? null;
 		if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending') {
-			// @codeCoverageIgnoreStart
 			$metadata = $current->metadata;
 			if ($action === 'cancel') {
-				if (count($history) === 1 && $host->status === 'pending') {
-					(new HostModel())->delete($host->id);
-					return $this->response->redirect('user/host');
-				} else {
+				if (count($history) > 1 || $host->status !== 'pending') {
 					(new PurchaseModel())->delete($current->id);
 					return $this->response->redirect('/user/host/invoices/' . $host->id);
+					// @codeCoverageIgnoreStart
+				} else {
+					(new HostModel())->delete($host->id);
+					return $this->response->redirect('user/host');
 				}
 			} else if ($action === 'pay' && $metadata->price_unit === 'idr') {
 				$plan = (new PlanModel())->find($metadata->plan)->alias ?? '';
@@ -539,10 +540,12 @@ class User extends BaseController
 	protected function deleteHost($host)
 	{
 		if ($this->request->getMethod() === 'post' && $host->plan_id === 1 && ($this->request->getPost('wordpass')) === $host->username) {
+			// @codeCoverageIgnoreStart
 			(new VirtualMinShell())->deleteHost($host->domain, $host->server->alias);
 			(new HostModel())->delete($host->id);
 			log_message('notice', VirtualMinShell::$output);
 			return $this->response->redirect('/user/host/');
+			// @codeCoverageIgnoreEnd
 		}
 		return view('user/host/delete', [
 			'host' => $host,
@@ -555,30 +558,30 @@ class User extends BaseController
 		} else if ($page === 'create') {
 			return $this->createHost();
 		} else {
-			$host = (new HostModel())->atLogin($this->login->id)->find($id);
-			if ($host) {
-				if ($page === 'detail') {
-					return $this->detailHost($host);
-				} else if ($page === 'rename') {
-					return $this->renameHost($host);
-				} else if ($page === 'cname') {
-					return $this->cnameHost($host);
-				} else if ($page === 'deploys') {
-					return $this->deployesHost($host);
-				} else if ($page === 'see') {
-					return $this->seeHost($host);
-				} else if ($page === 'ssl') {
-					return $this->sslHost($host);
-				} else if ($page === 'dns') {
-					return $this->dnsHost($host);
-				} else if ($page === 'nginx') {
-					return $this->nginxHost($host);
-				} else if ($page === 'upgrade') {
-					return $this->upgradeHost($host);
-				} else if ($page === 'invoices') {
-					return $this->invoicesHost($host);
-				} else if ($page === 'delete') {
-					return $this->deleteHost($host);
+			if ($host = (new HostModel())->atLogin($this->login->id)->find($id)) {
+				switch ($page) {
+					case 'detail':
+						return $this->detailHost($host);
+					case 'rename':
+						return $this->renameHost($host);
+					case 'cname':
+						return $this->cnameHost($host);
+					case 'deploys':
+						return $this->deployesHost($host);
+					case 'see':
+						return $this->seeHost($host);
+					case 'ssl':
+						return $this->sslHost($host);
+					case 'dns':
+						return $this->dnsHost($host);
+					case 'nginx':
+						return $this->nginxHost($host);
+					case 'upgrade':
+						return $this->upgradeHost($host);
+					case 'invoices':
+						return $this->invoicesHost($host);
+					case 'delete':
+						return $this->deleteHost($host);
 				}
 			} else {
 				return $this->response->redirect('/user/host'); // @codeCoverageIgnore
@@ -668,16 +671,14 @@ class User extends BaseController
 	protected function detailDomain($domain)
 	{
 		return view('user/domain/detail', [
-			'data' => $domain,
+			'domain' => $domain,
 		]);
 	}
-	protected function invoiceDomain($id)
+	protected function invoicesDomain($domain)
 	{
-		return view('user/domain/invoice', []);
-	}
-	protected function deleteDomain($id)
-	{
-		return view('user/domain/domain', []);
+		return view('user/domain/invoice', [
+			'domain' => $domain,
+		]);
 	}
 
 
@@ -689,9 +690,18 @@ class User extends BaseController
 		if ($page == 'list') {
 			return $this->listDomain();
 		} else if ($page == 'check') {
-	 return $this->checkDomain(); // @codeCoverageIgnore
+			return $this->checkDomain(); // @codeCoverageIgnore
 		} else if ($page == 'create') {
 			return $this->createDomain();
+		} else {
+			if ($domain = (new DomainModel())->atLogin($this->login->id)->find($id)) {
+				switch ($page) {
+					case 'detail':
+						return $this->detailDomain($domain);
+					case 'invoices':
+						return $this->invoicesDomain($domain);
+				}
+			}
 		}
 		return $this->response->redirect('/user/domain'); // @codeCoverageIgnore
 	}
@@ -717,10 +727,11 @@ class User extends BaseController
 	{
 		if ($this->request->getMethod() === 'post') {
 			if (($this->request->getPost('action')) === 'resend') {
+				// @codeCoverageIgnoreStart
 				$this->login->sendVerifyEmail();
 				return $this->response->redirect("/{$this->login->lang}/login?msg=emailsent");
-			} else
-			if ($this->validate([
+				// @codeCoverageIgnoreEnd
+			} else if ($this->validate([
 				'name' => 'required|min_length[3]|max_length[255]',
 				'email' => $this->login->email_verified_at ? 'permit_empty' : 'required|valid_email',
 				'lang' => 'required|in_list[id,en]',
@@ -768,7 +779,8 @@ class User extends BaseController
 		$ok = $ok && $this->db->table('domains')->where(['login_id' => $this->login->id])->countAll() === 0;
 		if ($ok && $this->request->getMethod() === 'post' && strpos($this->request->getPost('wordpass'), 'Y') !== FALSE) {
 			(new LoginModel())->delete($this->login->id);
-			$this->session->destroy();
+			if (ENVIRONMENT !== 'testing')
+				$this->session->destroy(); // @codeCoverageIgnore
 			return $this->response->redirect('/');
 		}
 		return view('user/delete', [

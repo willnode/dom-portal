@@ -22,9 +22,13 @@ class FunctionalTest extends CIDatabaseTestCase
     public function testRegister()
     {
         // check database migration and prepare controller
+
         $this->assertTrue($this->db->tableExists('login'));
         $this->assertTrue($this->db->table('login')->countAllResults() === 0);
         ($home = new Home())->initController($req = Services::request(), Services::response(), Services::logger());
+
+        // execute register and check email sent
+
         $req->setMethod('post');
         $req->setGlobal('post', $login_data = [
             'name' => 'Contoso User',
@@ -32,9 +36,6 @@ class FunctionalTest extends CIDatabaseTestCase
             'password' => 'mycontosouser',
         ]);
         $req->setGlobal('request', $login_data);
-
-        // execute register and check email sent
-
         $home->register();
         /** @var Login */
         $login = (new LoginModel())->find(1);
@@ -47,10 +48,10 @@ class FunctionalTest extends CIDatabaseTestCase
         // okay, check if we can verify
 
         $req->setMethod('get');
-        $req->setGlobal('get', $otp_data = [
+        $req->setGlobal('get', $post_data = [
             'code' => base64_encode("$login->email:$login->otp"),
         ]);
-        $req->setGlobal('request', $otp_data);
+        $req->setGlobal('request', $post_data);
         $home->verify();
         /** @var Login */
         $login = (new LoginModel())->find(1);
@@ -62,25 +63,25 @@ class FunctionalTest extends CIDatabaseTestCase
         // okay, check if we can reset password
 
         $req->setMethod('post');
-        $req->setGlobal('post', $otp_data = [
+        $req->setGlobal('post', $post_data = [
             'email' => $login->email,
         ]);
-        $req->setGlobal('request', $otp_data);
+        $req->setGlobal('request', $post_data);
         $home->forgot();
         /** @var Login */
         $login = (new LoginModel())->find(1);
         $this->assertTrue($login->otp !== null);
         $req->setMethod('get');
-        $req->setGlobal('get', $otp_data = [
+        $req->setGlobal('get', $post_data = [
             'code' => base64_encode("$login->email:$login->otp"),
         ]);
         $this->assertTrue(is_string($home->reset()));
         $req->setMethod('post');
-        $req->setGlobal('post', $otp_data = [
+        $req->setGlobal('post', $post_data = [
             'password' => $login_data['password'],
             'passconf' => $login_data['password'],
         ]);
-        $req->setGlobal('request', $otp_data);
+        $req->setGlobal('request', $post_data);
         $home->reset();
         /** @var Login */
         $login = (new LoginModel())->find(1);
@@ -95,6 +96,43 @@ class FunctionalTest extends CIDatabaseTestCase
         $home->login();
 
         $this->assertTrue(Services::session()->login === 1);
+
+        // check can edit profile
+
+        ($user = new User())->initController($req, Services::response(), Services::logger());
+        $req->setGlobal('post', $post_data = [
+            'phone' => '1555654678',
+            'name' => $login_data['name'],
+            'email' => $login_data['email'],
+            'lang' => 'en',
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->profile();
+
+        /** @var Login */
+        $login = (new LoginModel())->find(1);
+        $this->assertTrue($login->phone === $post_data['phone']);
+
+        // check can change password
+
+        $req->setGlobal('post', $post_data = [
+            'passtest' => $login_data['password'],
+            'password' => $ppp = strrev($login_data['password']),
+            'passconf' => $ppp,
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->reset();
+        /** @var Login */
+        $login = (new LoginModel())->find(1);
+        $this->assertTrue(password_verify($ppp, $login->password));
+
+        // check can delete
+
+        $req->setGlobal('post', $post_data = [
+            'wordpass' => 'Y',
+        ]);
+        $user->delete();
+        $this->assertTrue((new LoginModel())->find(1) === null);
     }
 
     public function testCreateFreeAndUpgradeHost()
@@ -212,7 +250,6 @@ class FunctionalTest extends CIDatabaseTestCase
 
         // Okay, try to change domain
 
-
         $req->setGlobal('post', $post_data = [
             'cname' => 'emily.me'
         ]);
@@ -258,6 +295,39 @@ class FunctionalTest extends CIDatabaseTestCase
             'program=enable-domain&domain=emily.me',
         ]);
         VirtualMinShell::$output = '';
+
+        // Okay, try to extend
+
+        $req->setGlobal('post', $post_data = [
+            'mode' => 'extend',
+            'years' => 1,
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->host('upgrade', $host->id);
+        /** @var Host */
+        $host = (new HostModel())->find(1);
+        $this->assertTrue(($purchase = $host->purchase)->status === 'pending');
+
+        // This time, try to cancel
+
+        $req->setGlobal('post', $post_data = [
+            'action' => 'cancel',
+        ]);
+        $user->host('invoices', $host->id);
+        $this->assertTrue(($purchase = $host->purchase)->status === 'active');
+
+
+        // Okay, try to upgrade
+
+        $req->setGlobal('post', $post_data = [
+            'mode' => 'upgrade',
+            'plan' => 3,
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->host('upgrade', $host->id);
+        /** @var Host */
+        $host = (new HostModel())->find(1);
+        $this->assertEquals($host->purchase->metadata->price, 15.5);
     }
 
     public function testCreateHostWithDomain()

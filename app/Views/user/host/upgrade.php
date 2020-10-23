@@ -219,7 +219,6 @@
     <?= json_encode($schemes) ?>
   </script>
   <script>
-    let plans, schemes, activedomain = null;
     const currency = '<?= lang('Interface.currency') ?>';
     const digits = '<?= lang('Interface.currency') === 'usd' ? 2 : 0 ?>';
     const formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
@@ -228,6 +227,8 @@
       maximumFractionDigits: digits,
       minimumFractionDigits: digits,
     });
+
+    let plans, schemes, activedomain = null;
 
     window.addEventListener('DOMContentLoaded', (event) => {
       plans = JSON.parse($('#plans').html()).reduce((a, b) => (a[b.id] = b, a), {});

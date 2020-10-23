@@ -4,6 +4,7 @@ namespace App\Database;
 
 use App\Controllers\Home;
 use App\Controllers\User;
+use App\Models\DomainModel;
 use App\Models\HostModel;
 use App\Models\HostStatModel;
 use App\Models\LoginModel;
@@ -84,6 +85,13 @@ class WebViewTest extends CIDatabaseTestCase
             'disabled' => null,
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
+        (new DomainModel())->insert([
+            'id' => 1,
+            'login_id' => 1,
+            'name' => 'contoso.me',
+            'scheme_id' => 1,
+            'expiry_at' => date('Y-m-d H:i:s'),
+        ]);
         $req->setGlobal('get', []);
         foreach (['en', 'id'] as $lang) {
             $req->setLocale($lang);
@@ -97,7 +105,11 @@ class WebViewTest extends CIDatabaseTestCase
             }
             $this->assertTrue(is_string($user->domain('list')));
             $this->assertTrue(is_string($user->domain('create')));
-
+            foreach ([
+                'detail', 'invoices',
+            ] as $page) {
+                $this->assertTrue(is_string($user->domain($page, 1)));
+            }
         }
     }
 

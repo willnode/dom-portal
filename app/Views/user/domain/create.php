@@ -8,7 +8,7 @@
   <div class="container">
     <h1>Order Domain</h1>
     <?= isset($validation) ? $validation->listErrors() : '' ?>
-    <form method="POST" name="upgrade">
+    <form method="POST" name="box">
       <?= csrf_field() ?>
       <div class="row">
         <div class="col-lg-6">
@@ -16,10 +16,16 @@
             <div class="card-body">
               <h3 class="card-title">Data Domain</h3>
               <div class="mb-3">
-                <label>Cari Domain</label>
+                <label class="form-label d-flex align-items-center"><?= lang('Host.findDomain') ?>
+                  <button type="button" id="domainBioModalBtn" class="ml-auto btn btn-sm btn-warning" data-toggle="modal" data-target="#domainBioModal">
+                    Isi Biodata Domain
+                  </button>
+                </label>
                 <div class="input-group">
-                  <input name="domain_name" id="domain_name" class="form-control" pattern="^[-\w]+$" required oninput="updateStat()">
-                  <select class="form-select" name="domain_scheme" id="domain_scheme" required style="max-width: 120px" onchange="updateStat()">
+                  <input id="domain_bio" hidden name="domain[bio]" required>
+                  <input id="domain_available" hidden <?= ENVIRONMENT === 'production' ? 'required' : '' ?>>
+                  <input name="domain[name]" id="domain_name" class="form-control" pattern="^[-\w]+$" required oninput="recalculate()">
+                  <select class="form-select" name="domain[scheme]" id="domain_scheme" required style="max-width: 120px" onchange="recalculate()">
                     <?php foreach ($schemes as $s) : if ($s->price_local !== 0) : ?>
                         <option value="<?= $s->id ?>"><?= $s->alias ?></option>
                     <?php endif;
@@ -29,9 +35,9 @@
                 </div>
               </div>
               <div class="mb-3">
-                <label>Durasi Tahun</label>
+                <label><?= lang('Host.yearDuration') ?></label>
                 <div class="input-group">
-                  <input name="years" class="form-control" type="number" min="1" max="5" value="1" required onchange="updateStat()">
+                  <input name="years" class="form-control" type="number" min="1" max="5" value="1" required onchange="recalculate()">
                 </div>
               </div>
             </div>
@@ -45,29 +51,24 @@
                 <div class="ml-auto" id="outstat">-</div>
               </div>
               <div class="d-flex">
-                <h6>Harga Paket</h6>
+                <h6><?= lang('Host.domainPrice') ?></h6>
                 <div class="ml-auto" id="outprice">-</div>
               </div>
               <div class="d-flex">
-                <h6>Durasi Paket</h6>
-                <div class="ml-auto" id="outyear">-</div>
-              </div>
-              <hr>
-              <div class="d-flex">
-                <h6>Total Harga Domain</h6>
-                <div class="ml-auto" id="outdomain">-</div>
-              </div>
-              <div class="d-flex">
-                <h6>Biaya Transaksi</h6>
+                <h6><?= lang('Host.transactionCost') ?></h6>
                 <div class="ml-auto" id="outtip">-</div>
               </div>
               <hr>
               <div class="d-flex">
-                <h6>Total Pembayaran</h6>
+                <h6><?= lang('Host.totalPayment') ?></h6>
                 <div class="ml-auto" id="outtotal">-</div>
               </div>
+              <div class="d-flex">
+                <h6><?= lang('Host.expirationDate') ?></h6>
+                <div class="ml-auto" id="outexp">-</div>
+              </div>
               <p><i><small>Perlu diingat anda hanya mendaftarkan domain. Apabila anda ingin mendaftarkan domain sekaligus hosting, anda dapat <a href="/user/host/create">melakukannya disini</a> </small></i></p>
-              <input type="submit" id="outsubmit" disabled class="btn btn-primary btn-block" value="Pesan">
+              <input type="submit" id="submitBtn" class="btn btn-primary btn-block" value="<?= lang('Host.orderNow') ?>">
             </div>
           </div>
         </div>
@@ -78,63 +79,76 @@
 
   <?= view('user/modals/domainbio') ?>
 
+  <script id="schemes" type="application/json">
+    <?= json_encode($schemes) ?>
+  </script>
   <script>
-    let hostingdata = null;
-    let statuses = {
-      error: "Error",
-      regthroughothers: "Tidak Tersedia",
-      available: "Tersedia",
-    };
+    let schemes, activedomain = null;
+    const currency = '<?= lang('Interface.currency') ?>';
+    const digits = '<?= lang('Interface.currency') === 'usd' ? 2 : 0 ?>';
+    const formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
+      style: 'currency',
+      currency: currency,
+      maximumFractionDigits: digits,
+      minimumFractionDigits: digits,
+    });
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+      schemes = JSON.parse($('#schemes').html()).reduce((a, b) => (a[b.id] = b, a), {});
+      recalculate();
+    });
 
     function checkDomain() {
-      var name = window.upgrade.domain_name;
-      var scheme = window.upgrade.domain_scheme;
+      var name = window.box.domain_name;
+      var scheme = window.box.domain_scheme;
       if (name.reportValidity && !name.reportValidity()) {
         return;
       }
-      hostingdata = null;
-      updateStat();
-      $('#domainname').text("Loading...");
+      activedomain = null;
+      recalculate();
+      $('#buy-status-available,#buy-status-error,#buy-status-prompt').toggleClass('d-none', true);
+      $('#buy-status-loading').toggleClass('d-none', false);
 
       fetch(`/user/domain/check?name=${name.value}&scheme=${scheme.value}`).then(r =>
         r.json()).then(r => {
-        hostingdata = r;
-        updateStat();
+        activedomain = r;
+        $(r.status === 'available' ? '#buy-status-available' : '#buy-status-error').toggleClass('d-none', false);
+        $('#buy-status-loading').toggleClass('d-none', true);
+        recalculate();
       }).catch(e => {
-        hostingdata = null;
+        activedomain = null;
+        $('#buy-status-loading').toggleClass('d-none', true);
+        $('#buy-status-error').toggleClass('d-none', false);
       });
     }
 
-    function updateStat() {
-      if (hostingdata) {
-        var years = window.upgrade.years.value;
-        var formatter = new Intl.NumberFormat('id-ID', {
-          style: 'currency',
-          currency: 'idr',
-          maximumFractionDigits: 0,
-          minimumFractionDigits: 0,
-        });
-        var price = hostingdata.price * 1000;
+    function recalculate() {
+      var tip = {
+        'usd': 0.5,
+        'idr': 5000
+      } [currency];
+      var form = window.box;
 
-        $('#domainname').text(hostingdata.domain);
-        $('#outstat').text(statuses[hostingdata.status] || hostingdata.status);
-        $('#outprice').text(formatter.format(price));
-        $('#outyear').html('&times; ' + years + ' Tahun');
-        $('#outdomain').text(formatter.format(price * years));
-        $('#outtip').text(formatter.format(5 * 1000));
-        $('#outtotal').text(formatter.format(5 * 1000 + price * years));
-        var seldom = $('#domain_name').val() + $('#domain_scheme option:selected').text()
-        $('#outsubmit').prop('disabled', hostingdata.status !== 'available' || hostingdata.domain !== seldom);
-      } else {
-        $('#domainname').text("-");
-        $('#outstat').text("-");
-        $('#outprice').text("-");
-        $('#outyear').html("-");
-        $('#outdomain').text("-");
-        $('#outtip').text("-");
-        $('#outtotal').text("-");
-        $('#outsubmit').prop('disabled', true);
-      }
+      var schdata = schemes[form.domain_scheme.value];
+      $('#domain_available').val(activedomain && activedomain.status === 'available' && (
+        activedomain.domain === form.domain_name.value + schdata.alias) ? '1' : '');
+      var years = form.years.value;
+
+      var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
+      var price = schdata[`price_${currency}`] + schdata[`renew_${currency}`] * (years - 1);
+
+      $('#domainname').text(activedomain && activedomain.domain);
+      $('#outstat').text(activedomain && activedomain.status);
+      $('#outprice').text(formatter.format(price));
+      $('#outtip').text(formatter.format(tip));
+      $('#outtotal').text(formatter.format(tip + price));
+      $('#outexp').text(exp.toISOString().substr(0, 10));
+
+
+      var valid = form.checkValidity();
+      $('#submitBtn')
+        .toggleClass('btn-outline-warning', !valid)
+        .toggleClass('btn-primary', valid);
     }
   </script>
 </body>

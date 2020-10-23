@@ -43,7 +43,10 @@ class Domain extends Entity
         return (new PurchaseModel())->atDomain($this->attributes['id'])->descending()->findAll(1)[0] ?? null;
     }
 
-    /** @return Login */
+    /**
+     * @codeCoverageIgnore
+     * @return Login
+     * */
     public function getLogin()
     {
         return (new LoginModel())->find($this->attributes['login_id']);
