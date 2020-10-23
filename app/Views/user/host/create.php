@@ -24,8 +24,8 @@
                 <div class="mb-3">
                   <label class="form-label" for="name"><?= lang('Host.portalPassword') ?></label>
                   <div class="input-group">
-                    <input class="form-control" id="password" oninput="this.type = 'password'" name="password" type="password" minlength="8" autocomplete="one-time-code" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$" oninput="recalculate()">
-                    <input type="button" class="btn btn-success" onclick="generateRandomPassword()" value="Random">
+                    <input class="form-control" id="password" oninput="this.type = 'password'; recalculate()" name="password" type="password" minlength="8" autocomplete="one-time-code" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$">
+                    <input type="button" class="btn btn-success" onclick="generateRandomPassword(); recalculate()" value="Random">
                   </div>
                   <small class="form-text text-muted">
                     <?= lang('Interface.passwordNotice') ?>.
@@ -197,7 +197,7 @@
                     <div class="ml-auto" id="specbwb">- GiB</div>
                   </div>
                 </div>
-                <input type="submit" id="submitBtn" value="<?= lang('Host.orderNow') ?>" class="form-control btn-lg btn btn-primary mt-3" disabled>
+                <input type="submit" id="submitBtn" value="<?= lang('Host.orderNow') ?>" class="form-control btn-lg btn btn-outline-warning mt-3">
               </div>
             </div>
           </div>
@@ -361,7 +361,10 @@
         }
 
         $('#domain_mode,#years,#addons').prop('disabled', unit == 0);
-        $('#submitBtn').prop('disabled', !form.checkValidity());
+        var valid = form.checkValidity();
+        $('#submitBtn')
+          .toggleClass('btn-outline-warning', !valid)
+          .toggleClass('btn-primary', valid);
 
         // Show values
         if (unit == 0) {

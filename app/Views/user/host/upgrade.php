@@ -92,13 +92,13 @@
                 <?php if ($data->scheme_id == 1 || $data->scheme_id === null) : ?>
                   <div class="mb-3">
                     <label class="form-label" for="domain_mode"><?= lang('Host.selectDomainKind') ?></label>
-                    <select name="domain_mode" id="domain_mode" class="form-select" onchange="recalculate()">
+                    <select id="domain_mode" class="form-select" onchange="recalculate()">
                       <option value="free" selected><?= lang('Host.useFreeDomain') ?></option>
                       <option value="buy"><?= lang('Host.buyNewDomain') ?></option>
                       <option value="custom"><?= lang('Host.useExistingDomain') ?></option>
                     </select>
                   </div>
-                  <div id="dm-free">
+                  <fieldset id="dm-free">
                     <div class="mb-3">
                       <input class="form-control" id="free_cname" value="<?= $data->username ?>.dom.my.id" disabled>
                       <small class="form-text text-muted">
@@ -106,46 +106,52 @@
                         <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                       </small>
                     </div>
-                  </div>
-                  <div id="dm-buy" class="d-none">
-                      <div class="mb-3">
-                        <label class="form-label"><?= lang('Host.findDomain') ?></label>
-                        <div class="input-group">
-                          <input name="buy_cname" id="buy_cname" class="form-control" pattern="^[-a-zA-Z0-9]+$" required oninput="recalculate()">
-                          <select class="form-select" name="buy_scheme" id="buy_scheme" required style="max-width: 120px" onchange="recalculate()">
-                            <?php foreach ($schemes as $s) : if ($s->price_idr) : ?>
-                                <option value="<?= $s->id ?>"><?= $s->alias ?></option>
-                            <?php endif;
-                            endforeach; ?>
-                          </select>
-                          <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
-                        </div>
-                        <small class="form-text text-muted">
-                          <a href="https://dom.my.id/domain" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
-                        </small>
-                      </div>
-                      <p id="buy-status-prompt" class="alert alert-primary">
-                        <?= lang('Host.findReady') ?>
-                      </p>
-                      <p id="buy-status-available" class="alert alert-success d-none">
-                        <?= lang('Host.findAvailable') ?>
-                      </p>
-                      <p id="buy-status-loading" class="alert alert-warning d-none">
-                        <?= lang('Host.findWait') ?>
-                      </p>
-                      <p id="buy-status-error" class="alert alert-danger d-none">
-                        <?= lang('Host.findUnavailable') ?>
-                      </p>
-                  </div>
-                  <div id="dm-custom" class="d-none">
+                  </fieldset>
+                  <fieldset disabled id="dm-buy" class="d-none">
                     <div class="mb-3">
-                      <input class="form-control" id="custom_cname" name="custom_cname" disabled oninput="recalculate()" required placeholder="masukkan domain kustom" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
+                      <label class="form-label d-flex align-items-center"><?= lang('Host.findDomain') ?>
+                        <button type="button" id="domainBioModalBtn" class="ml-auto btn btn-sm btn-warning" data-toggle="modal" data-target="#domainBioModal">
+                          Isi Biodata Domain
+                        </button>
+                      </label>
+                      <div class="input-group">
+                        <input id="domain_bio" hidden name="domain[bio]" required>
+                        <input id="domain_available" hidden <?= ENVIRONMENT === 'production' ? 'required' : '' ?>>
+                        <input id="domain_name" name="domain[name]" class="form-control" pattern="^[-a-zA-Z0-9]+$" required oninput="recalculate()">
+                        <select class="form-select" name="domain[scheme]" id="domain_scheme" required style="max-width: 120px" onchange="recalculate()">
+                          <?php foreach ($schemes as $s) : if ($s->price_local) : ?>
+                              <option value="<?= $s->id ?>"><?= $s->alias ?></option>
+                          <?php endif;
+                          endforeach; ?>
+                        </select>
+                        <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
+                      </div>
+                      <small class="form-text text-muted">
+                        <a href="https://dom.my.id/domain" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
+                      </small>
+                    </div>
+                    <p id="buy-status-prompt" class="alert alert-primary">
+                      <?= lang('Host.findReady') ?>
+                    </p>
+                    <p id="buy-status-available" class="alert alert-success d-none">
+                      <?= lang('Host.findAvailable') ?>
+                    </p>
+                    <p id="buy-status-loading" class="alert alert-warning d-none">
+                      <?= lang('Host.findWait') ?>
+                    </p>
+                    <p id="buy-status-error" class="alert alert-danger d-none">
+                      <?= lang('Host.findUnavailable') ?>
+                    </p>
+                  </fieldset>
+                  <fieldset disabled id="dm-custom" class="d-none">
+                    <div class="mb-3">
+                      <input class="form-control" id="custom_cname" name="domain[custom]" oninput="recalculate()" required placeholder="<?= lang('Host.enterCustomDomain') ?>" pattern="^[a-zA-Z0-9][a-zA-Z0-9.-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$">
                       <small class="form-text text-muted">
                         <?= lang('Host.useExistingHint') ?>
                         <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                       </small>
                     </div>
-                  </div>
+                  </fieldset>
                 <?php endif ?>
               </div>
             </div>
@@ -194,7 +200,7 @@
                   <div class="ml-auto" id="specbwb">- GiB</div>
                 </div>
               </div>
-              <input type="submit" value="<?= lang('Host.orderNow') ?>" class="form-control btn-lg btn btn-primary mt-3">
+              <input type="submit" value="<?= lang('Host.orderNow') ?>" id="submitBtn" class="form-control btn-lg btn btn-primary mt-3">
             </div>
           </div>
         </div>
@@ -204,6 +210,8 @@
 
   </div>
 
+  <?= view('user/modals/domainbio') ?>
+
   <script id="plans" type="application/json">
     <?= json_encode($plans) ?>
   </script>
@@ -211,8 +219,7 @@
     <?= json_encode($schemes) ?>
   </script>
   <script>
-    const plans = JSON.parse(document.getElementById('plans').innerHTML).reduce((a, b) => (a[b.id] = b, a), {});
-    const schemes = (x => x && x.reduce((a, b) => (a[b.id] = b, a), {}))(JSON.parse(document.getElementById('schemes').innerHTML));
+    let plans, schemes, activedomain = null;
     const currency = '<?= lang('Interface.currency') ?>';
     const digits = '<?= lang('Interface.currency') === 'usd' ? 2 : 0 ?>';
     const formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
@@ -222,7 +229,11 @@
       minimumFractionDigits: digits,
     });
 
-    let activedomain = null;
+    window.addEventListener('DOMContentLoaded', (event) => {
+      plans = JSON.parse($('#plans').html()).reduce((a, b) => (a[b.id] = b, a), {});
+      schemes = JSON.parse($('#schemes').html()).reduce((a, b) => (a[b.id] = b, a), {});
+      recalculate();
+    });
 
     function checkDomain() {
       const name = window.box.buy_cname;
@@ -281,13 +292,14 @@
         'idr': 5000
       } [currency];
       var bww = {
-        'usd': 0.05,
-        'idr': 500
+        'usd': 0.1,
+        'idr': 1000
       } [currency];
-      var mode = window.box.mode.value;
-      var plan = window.box.plan.value;
-      var years = Math.min(5, parseInt(window.box.years.value));
-      var addons = Math.min(10000, parseInt(window.box.addons.value));
+      var form = window.box;
+      var mode = form.mode.value;
+      var plan = form.plan.value;
+      var years = Math.min(5, parseInt(form.years.value));
+      var addons = Math.min(10000, parseInt(form.addons.value));
       var oldyr = parseInt('<?= $purchase->metadata->years ?? 0 ?>');
       var oldplan = parseInt('<?= $data->plan_id ?>');
       var oldval = parseInt('<?= $data->plan->{'price_' . lang('Interface.currency')} ?? 0 ?>');
@@ -295,38 +307,31 @@
       var oldadd = Math.floor(parseInt('<?= $data->addons ?>') / 1024 * 10) / 10;
       if (mode && (plan || mode == 'topup')) {
         var scheme = 0;
-        // Domain Calc
-        const includeDomain = window.box.domain_mode && mode === 'new' && plan != 1
-        $('#domain-renew').toggleClass('d-none', !includeDomain);
-        if (includeDomain) {
-          var dommod = window.box.domain_mode.value;
-          window.box.custom_cname.disabled = dommod !== 'custom';
-          if (window.box.buy_cname) {
-            window.box.buy_cname.disabled = dommod !== 'buy';
-            window.box.buy_scheme.disabled = dommod !== 'buy';
-          }
-          if (dommod === 'buy' && window.box.buy_scheme) {
-            scheme = parseInt(schemes[window.box.buy_scheme.value]['price_' + currency]);
-            if (years > 1) {
-              scheme += parseInt(schemes[window.box.buy_scheme.value]['renew_' + currency]) * (years - 1)
-            }
-          }
 
-          $('#dm-free').toggleClass('d-none', dommod !== 'free');
-          $('#dm-buy').toggleClass('d-none', dommod !== 'buy');
-          $('#dm-custom').toggleClass('d-none', dommod !== 'custom');
-        } else {
-          window.box.custom_cname.disabled = true;
-          if (window.box.buy_cname) {
-            window.box.buy_cname.disabled = true;
-            window.box.buy_scheme.disabled = true;
-          }
+        // Domain Calc
+        const includeDomain = form.domain_mode && mode === 'new' && plan != 1
+        $('#domain-renew').toggleClass('d-none', !includeDomain);
+        var dommod = includeDomain ? form.domain_mode.value : 'none';
+
+        $('#dm-free').toggleClass('d-none', dommod !== 'free')
+          .prop('disabled', dommod !== 'free');
+        $('#dm-buy').toggleClass('d-none', dommod !== 'buy')
+          .prop('disabled', dommod !== 'buy');
+        $('#dm-custom').toggleClass('d-none', dommod !== 'custom')
+          .prop('disabled', dommod !== 'custom');
+
+        if (dommod === 'buy') {
+          var schdata = schemes[form.domain_scheme.value];
+          $('#domain_available').val(activedomain && activedomain.status === 'available' && (
+            activedomain.domain === form.domain_name.value + schdata.alias) ? '1' : '');
+          scheme = schdata[`price_${currency}`] + schdata[`renew_${currency}`] * (years - 1);
         }
+
         var unit = mode == 'topup' ? 0 : plans[plan]['price_' + currency];
-        window.box.years.disabled = unit == 0 || mode == 'upgrade';
-        window.box.addons.disabled = unit == 0 && mode != 'topup';
+        form.years.disabled = unit == 0 || mode == 'upgrade';
+        form.addons.disabled = unit == 0 && mode != 'topup';
         if (unit == 0) years = 1 / 6;
-        else if (mode === 'upgrade') window.box.years.value = years = oldyr;
+        else if (mode === 'upgrade') form.years.value = years = oldyr;
 
 
         var cashback = mode === 'upgrade' ? oldval * oldyr : 0;
@@ -355,6 +360,10 @@
 
         $('#outexp').text(exp.toISOString().substr(0, 10));
       }
+      var valid = form.checkValidity();
+      $('#submitBtn')
+        .toggleClass('btn-outline-warning', !valid)
+        .toggleClass('btn-primary', valid);
     }
   </script>
 </body>

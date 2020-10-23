@@ -498,8 +498,7 @@ class User extends BaseController
 		/** @var Purchase[] */
 		$history = (new PurchaseModel())->atHost($host->id)->descending()->find();
 		$current = $history[0] ?? null;
-		if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending')
-		{
+		if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending') {
 			// @codeCoverageIgnoreStart
 			$metadata = $current->metadata;
 			if ($action === 'cancel') {
@@ -749,17 +748,15 @@ class User extends BaseController
 	{
 		if ($this->request->getMethod() === 'post') {
 			if ($this->validate([
+				'passtest' => 'required',
 				'password' => 'required|min_length[8]',
 				'passconf' => 'required|matches[password]',
-			])) {
-				$this->db->table('login')->update([
-					'password' => password_hash($this->request->getPost('password'), PASSWORD_BCRYPT)
-				], [
-					'login_id' => $this->login->id
-				]);
+			]) && password_verify($this->request->getPost('passtest'), $this->login->password)) {
+				$this->login->password = password_hash($this->request->getPost('password'), PASSWORD_BCRYPT);
+				(new LoginModel())->save($this->login);
 			}
 		}
-		return $this->response->redirect('/user/profile'); // @codeCoverageIgnore
+		return $this->response->redirect('/user/profile');
 	}
 
 	public function delete()

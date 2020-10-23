@@ -57,15 +57,15 @@
             <p><?= lang('Interface.changePasswordMessage') ?></p>
             <div class="mb-3">
               <label for="username"><?= lang('Interface.currentPassword') ?></label>
-              <input class="form-control" id="passnow" maxlength="72" name="passnow" type="password" required>
+              <input class="form-control" id="passtest" maxlength="72" autocomplete="current-password" name="passtest" type="password" required>
             </div>
             <div class="mb-3">
               <label for="username"><?= lang('Interface.newPassword') ?></label>
-              <input class="form-control" id="password" minlength="8" maxlength="72" name="password" type="password" required>
+              <input class="form-control" id="password" minlength="8" autocomplete="new-password" maxlength="72" name="password" type="password" required>
             </div>
             <div class="mb-3">
               <label for="username"><?= lang('Interface.confirmNewPassword') ?></label>
-              <input class="form-control" id="passconf" minlength="8" maxlength="72" name="passconf" type="password" required>
+              <input class="form-control" id="passconf" minlength="8" autocomplete="new-password" maxlength="72" name="passconf" type="password" required>
             </div>
             <p><input type="submit" class="btn btn-primary" value="<?= lang('Interface.savePassword') ?>"></p>
           </form>
