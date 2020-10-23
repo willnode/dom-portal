@@ -4,10 +4,12 @@ namespace App\Database;
 
 use App\Controllers\Home;
 use App\Controllers\User;
+use App\Entities\Domain;
 use App\Entities\Host;
 use App\Entities\Login;
 use App\Libraries\SendGridEmail;
 use App\Libraries\VirtualMinShell;
+use App\Models\DomainModel;
 use App\Models\HostModel;
 use App\Models\LoginModel;
 use CodeIgniter\Test\CIDatabaseTestCase;
@@ -267,7 +269,6 @@ class FunctionalTest extends CIDatabaseTestCase
         ], true, true);
         ($user = new User())->initController($req = Services::request(), Services::response(), Services::logger());
 
-
         // Check create host
 
         $req->setMethod('post');
@@ -365,6 +366,82 @@ class FunctionalTest extends CIDatabaseTestCase
         $domain = $host->domain_detail;
         $meta = $purchase->metadata;
         $this->assertTrue($domain->status === 'active', $host->status === 'active');
+    }
+
+    public function testRegisterDomain()
+    {
+        (new LoginModel())->register([
+            'name' => 'Contoso User',
+            'email' => 'contoso@example.com',
+            'password' => 'mycontosouser',
+        ], true, true);
+        ($user = new User())->initController($req = Services::request(), Services::response(), Services::logger());
+        $req->setMethod('post');
+        $req->setGlobal('post', $post_data = [
+            'years' => 1,
+            'domain' => [
+                'scheme' => 1,
+                'name' => 'example',
+                'bio' => json_encode([
+                    'owner' => [
+                        'fname' => 'Contoso',
+                        'company' => 'Contoso Company',
+                        'email' => 'contoso@example.com',
+                        'tel' => '15556667',
+                        'country' => 'US',
+                        'state' => 'California',
+                        'city' => 'Vancouver',
+                        'postal' => '11101',
+                        'address1' => 'St. John',
+                    ]
+                ])
+            ]
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->domain('create');
+
+        /** @var Domain */
+        $domain = (new DomainModel())->find(1);
+        $this->assertTrue(isset($domain, $domain->purchase));
+        $this->assertTrue($domain->status === 'pending');
+        $meta = $domain->purchase->metadata;
+        $this->assertEquals($meta->toRawArray(), [
+            'type' => "domain",
+            'price' => 11.5,
+            'price_unit' => "usd",
+            'expiration' =>  $meta->expiration,
+            'years' =>  1,
+            '_challenge' =>  $meta->_challenge,
+            '_id' => NULL,
+            '_via' =>  NULL,
+            '_issued' => $meta->_issued,
+            '_invoiced' => null,
+            '_status' => null,
+            'registrar' => [
+                'domain' => "example.com",
+                'periode' => 1,
+                'ns1' => "ns1.mysrsx.com",
+                'ns2' => "ns2.mysrsx.net",
+                'fname' => "Contoso",
+                'company' => "Contoso Company",
+                'address1' => "St. John",
+                'city' => "Vancouver",
+                'state' => "California",
+                'country' => "US",
+                'postcode' => "11101",
+                'phonenumber' => "15556667",
+                'email' => "contoso@example.com",
+                'user_username' => "contoso@example.com",
+                'user_fname' => "Contoso",
+                'user_company' => "Contoso Company",
+                'user_address' => "St. John",
+                'user_city' => "Vancouver",
+                'user_province' => "California",
+                'user_country' => "US",
+                'user_postal_code' => "11101",
+                'autoactive' => "on",
+            ]
+        ]);
     }
 
     protected function setUp(): void

@@ -34,17 +34,6 @@
                   <input name="years" class="form-control" type="number" min="1" max="5" value="1" required onchange="updateStat()">
                 </div>
               </div>
-
-              <div class="mb-3 row">
-                <div class="col-sm-10">Pasang Proteksi Privasi?</div>
-                <div class="col-sm-2">
-                  <label class="form-check">
-                    <input class="form-check-input" type="checkbox" name="purchase_privacy_protection" value="yes" onchange="updateStat()">
-                  </label>
-                </div>
-              </div>
-              <hr>
-
             </div>
           </div>
         </div>
@@ -69,10 +58,6 @@
                 <div class="ml-auto" id="outdomain">-</div>
               </div>
               <div class="d-flex">
-                <h6>Proteksi Privasi</h6>
-                <div class="ml-auto" id="outpriv">-</div>
-              </div>
-              <div class="d-flex">
                 <h6>Biaya Transaksi</h6>
                 <div class="ml-auto" id="outtip">-</div>
               </div>
@@ -90,6 +75,8 @@
 
     </form>
   </div>
+
+  <?= view('user/modals/domainbio') ?>
 
   <script>
     let hostingdata = null;
@@ -121,7 +108,6 @@
     function updateStat() {
       if (hostingdata) {
         var years = window.upgrade.years.value;
-        var priv = window.upgrade.purchase_privacy_protection.checked ? 50 * 1000 : 0;
         var formatter = new Intl.NumberFormat('id-ID', {
           style: 'currency',
           currency: 'idr',
@@ -135,9 +121,8 @@
         $('#outprice').text(formatter.format(price));
         $('#outyear').html('&times; ' + years + ' Tahun');
         $('#outdomain').text(formatter.format(price * years));
-        $('#outpriv').text(priv ? formatter.format(priv) : '');
         $('#outtip').text(formatter.format(5 * 1000));
-        $('#outtotal').text(formatter.format(5 * 1000 + price * years + priv));
+        $('#outtotal').text(formatter.format(5 * 1000 + price * years));
         var seldom = $('#domain_name').val() + $('#domain_scheme option:selected').text()
         $('#outsubmit').prop('disabled', hostingdata.status !== 'available' || hostingdata.domain !== seldom);
       } else {
@@ -146,7 +131,6 @@
         $('#outprice').text("-");
         $('#outyear').html("-");
         $('#outdomain').text("-");
-        $('#outpriv').text("-");
         $('#outtip').text("-");
         $('#outtotal').text("-");
         $('#outsubmit').prop('disabled', true);

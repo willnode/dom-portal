@@ -587,6 +587,9 @@ class User extends BaseController
 		throw new PageNotFoundException(); // @codeCoverageIgnore
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	protected function checkDomain()
 	{
 		if (!empty($_GET['name']) && !empty($_GET['scheme'])) {
@@ -626,7 +629,7 @@ class User extends BaseController
 					'status' => 'pending',
 				]);
 				$metadata = new PurchaseMetadata([
-					"type" => "hosting",
+					"type" => "domain",
 					"price" => 0.0,
 					"price_unit" => lang('Interface.currency'),
 					"expiration" => null,
@@ -686,7 +689,7 @@ class User extends BaseController
 		if ($page == 'list') {
 			return $this->listDomain();
 		} else if ($page == 'check') {
-			return $this->checkDomain();
+	 return $this->checkDomain(); // @codeCoverageIgnore
 		} else if ($page == 'create') {
 			return $this->createDomain();
 		}

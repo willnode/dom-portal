@@ -134,19 +134,17 @@
 <script>
   // https://unpkg.com/json-unflat@1.0.1/index.js
   function unflatten(n) {
-    var t = {},
-      r = function(r) {
-        var a,
-          f = r.split(".");
-        f.map(function(i, u) {
-          0 == u && (a = t),
-            a[i] ?
-            (a = a[i]) :
-            f.length === u + 1 ?
-            (a[i] = n[r]) :
-            ((a[i] = {}), (a = a[i]));
-        });
-      };
+    var t = {};
+    var r = function(r) {
+      var a, f = r.split(".");
+      f.map(function(i, u) {
+        0 == u && (a = t),
+          a[i] ? (a = a[i]) :
+          f.length === u + 1 ?
+          (a[i] = n[r]) :
+          ((a[i] = {}), (a = a[i]));
+      });
+    };
     for (var a in n) r(a);
     return t;
   }

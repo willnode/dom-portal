@@ -13,6 +13,7 @@ use CodeIgniter\Entity;
  * @property string $name
  * @property string $status
  * @property int $scheme_id
+ * @property Purchase $purchase
  * @property Scheme $scheme
  * @property Login $login
  */
