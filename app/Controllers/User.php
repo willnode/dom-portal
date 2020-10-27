@@ -455,16 +455,17 @@ class User extends BaseController
 	{
 		if ($this->request->getMethod() === 'post' && !$host->liquid_id && $host->plan_id !== 1 && $host->status === 'active') {
 			if ($this->request->getPost('cname')) {
+				$server = $host->server;
 				if (!$this->validate([
 					'cname' => 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
 						'{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/]|is_unique[hosts.domain]',
 				])) {
-					return; // @codeCoverageIgnore
-				}
-				$domain = strtolower($this->request->getPost('cname'));
-				$server = $host->server;
-				if (strpos($domain, $server->domain) !== false) {
-					return; // @codeCoverageIgnore
+					$domain = $host->username . $host->server->domain; // @codeCoverageIgnore
+				} else {
+					$domain = strtolower($this->request->getPost('cname'));
+					if (strpos($domain, $server->domain) !== false) {
+						return; // @codeCoverageIgnore
+					}
 				}
 				(new VirtualMinShell())->cnameHost(
 					$host->domain,

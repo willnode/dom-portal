@@ -316,7 +316,6 @@ class FunctionalTest extends CIDatabaseTestCase
         $user->host('invoices', $host->id);
         $this->assertTrue(($purchase = $host->purchase)->status === 'active');
 
-
         // Okay, try to upgrade
 
         $req->setGlobal('post', $post_data = [
