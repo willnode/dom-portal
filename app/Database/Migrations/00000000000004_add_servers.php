@@ -17,6 +17,7 @@ class AddServers extends Migration
             `scheme_id` int(11) NOT NULL,
             `capacity` int(11) NOT NULL DEFAULT 1,
             `public` int(11) NOT NULL DEFAULT 1,
+            `status` varchar(50) NULL DEFAULT NULL,
             PRIMARY KEY (`id`),
             UNIQUE KEY `slave_alias` (`alias`)
         )");
@@ -31,7 +32,7 @@ class AddServers extends Migration
         )");
 
         $this->db->simpleQuery("INSERT INTO `servers`  VALUES
-	        (1, 'sga', '0.0.0.0', '.dom.my.id', 'Singapore A', 1, 80, 1)
+	        (1, 'sga', '0.0.0.0', '.dom.my.id', 'Singapore A', 1, 80, 1, '')
         ");
     }
 

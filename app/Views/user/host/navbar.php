@@ -13,9 +13,6 @@
         <a class="nav-link <?= $path == 'dns' ? 'active' : '' ?>" href="/user/host/dns/<?= $host->id ?>">DNS</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link <?= $path == 'ssl' ? 'active' : '' ?>" href="/user/host/ssl/<?= $host->id ?>">SSL</a>
-    </li>
-    <li class="nav-item">
         <a class="nav-link <?= $path == 'deploys' ? 'active' : '' ?>" href="/user/host/deploys/<?= $host->id ?>">Deploy</a>
     </li>
     <li class="nav-item">
