@@ -39,7 +39,7 @@
 
   <div class="modal fade" id="deployModal" tabindex="-1" aria-labelledby="deployModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <form class="modal-content" onsubmit="return isItSafe(this)">
+      <form class="modal-content" method="POST" onsubmit="return isItSafe(this)">
         <div class="modal-header">
           <h5 class="modal-title" id="deployModalLabel">New deploy</h5>
           <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>

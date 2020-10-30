@@ -12,7 +12,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * @codeCoverageIgnore
  */
-class FetchTemplate extends BaseCommand
+class DeployJob extends BaseCommand
 {
     protected $group       = 'demo';
     protected $name        = 'deploy';
