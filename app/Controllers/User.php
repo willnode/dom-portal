@@ -776,8 +776,8 @@ class User extends BaseController
 
 	public function delete()
 	{
-		$ok = $this->db->table('hosts')->where(['login_id' => $this->login->id])->countAll() === 0;
-		$ok = $ok && $this->db->table('domains')->where(['login_id' => $this->login->id])->countAll() === 0;
+		$ok = (new HostModel())->atLogin($this->login->id)->countAllResults() === 0;
+		$ok = $ok && (new DomainModel())->atLogin($this->login->id)->countAllResults() === 0;
 		if ($ok && $this->request->getMethod() === 'post' && strpos($this->request->getPost('wordpass'), 'Y') !== FALSE) {
 			(new LoginModel())->delete($this->login->id);
 			if (ENVIRONMENT !== 'testing')

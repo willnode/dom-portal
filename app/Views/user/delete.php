@@ -5,7 +5,7 @@
 
 <body>
 	<?= view('user/navbar') ?>
-	<div class="container">
+	<div class="container text-center" style="max-width: 576px;">
 		<h1 class="mb-3">Menghapus Akun</h1>
 		<?php if ($ok) : ?>
 			<div class="card">
