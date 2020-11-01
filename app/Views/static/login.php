@@ -98,34 +98,10 @@
 					client_id: '<?= \Config\Services::request()->config->googleClient ?>',
 					cookiepolicy: 'single_host_origin',
 					ux_mode: 'redirect',
+					redirect_uri: '<?=base_url('api/signin/google/')?>'
 				});
 				auth2.attachClickHandler(document.getElementById('google-signin2'), {});
 				/* Ready. Make a call to gapi.auth2.init or some other API */
-			});
-		}
-
-		function onSuccess(googleUser) {
-			console.log('logging in');
-			var form = window.loginForm;
-			form.email.value = '';
-			form.password.value = '';
-			form.googleToken.value = googleUser.getAuthResponse().id_token;
-			form.submit();
-		}
-
-		function onFailure(error) {
-			console.log(error);
-			alert('Mohon maaf fitur ini masih dalam tahap review oleh Google. Mohon gunakan fitur ini lain waktu.');
-		}
-
-		function renderButton() {
-			gapi.signin2.render('my-signin2', {
-				'scope': 'profile email',
-				'width': 240,
-				'height': 38,
-				'longtitle': true,
-				'onsuccess': onSuccess,
-				'onfailure': onFailure
 			});
 		}
 	</script>

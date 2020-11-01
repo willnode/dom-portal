@@ -62,6 +62,7 @@ class Api extends BaseController
                         return $this->signinoauth($user['email'], $user['name'] ?? '');
                     }
                 }
+                return $this->response->redirect(href('login'));
             }
             return $this->response->redirect($lib->getConsentURL());
         }

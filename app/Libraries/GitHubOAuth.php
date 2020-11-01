@@ -54,6 +54,6 @@ class GitHubOAuth
 	}
     public function getConsentURL()
     {
-        return 'https://github.com/login/oauth/authorize?client_id='.urlencode($this->client);
+        return 'https://github.com/login/oauth/authorize?scope=user:email&client_id='.urlencode($this->client);
     }
 }
