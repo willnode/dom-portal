@@ -9,6 +9,8 @@ class App extends BaseConfig
 	public $sudoWebminPass;
 	public $sudoWebminPort;
 	public $sudoNginxSecret;
+	public $googleClient;
+	public $googleSecret = '';
 	public $ipaymuURL;
 	public $ipaymuKey;
 	public $ipaymuSecret = '';
@@ -101,7 +103,7 @@ class App extends BaseConfig
 	| should run under for this request.
 	|
 	*/
-	public $defaultLocale = 'en';
+	public $defaultLocale = 'id';
 
 	/*
 	|--------------------------------------------------------------------------
@@ -126,7 +128,7 @@ class App extends BaseConfig
 	| found, the first locale will be used.
 	|
 	*/
-	public $supportedLocales = ['en', 'id'];
+	public $supportedLocales = [ 'id', 'en' ];
 
 	/*
 	|--------------------------------------------------------------------------

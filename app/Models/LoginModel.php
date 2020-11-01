@@ -31,7 +31,8 @@ class LoginModel extends Model
             ['name', 'email', 'phone', 'password']
         ));
         $data['lang'] = Services::request()->getLocale();
-        $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
+        if (!empty($data['password']))
+            $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
         if ($autoVerified) {
             $data['email_verified_at'] = date('Y-m-d H:i:s');
         }

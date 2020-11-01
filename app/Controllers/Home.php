@@ -16,8 +16,7 @@ use App\Models\LoginModel;
 use App\Models\PlanModel;
 use App\Models\PurchaseModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
-use ErrorException;
-use Exception;
+use Google\Client;
 
 class Home extends BaseController
 {
@@ -262,6 +261,27 @@ class Home extends BaseController
 					$this->session->set('login', $login->id);
 					return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
 				}
+			} else if (isset($post['googletoken'])) {
+				$client = new Client(['client_id' => $this->request->config->googleClient]);
+				$payload = $client->verifyIdToken($post['googletoken']);
+				if ($payload) {
+					log_message('notice', json_encode($payload));
+					if (isset($payload['email'])) {
+						$login = (new LoginModel())->atEmail($payload['email']);
+						if ($login) {
+							$this->session->set('login', $login->id);
+						} else {
+							(new LoginModel())->register([
+								'email' => $payload['email'],
+								'name' => $payload['name'],
+							], true, true);
+						}
+						return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
+					}
+					// If request specified a G Suite domain:
+					//$domain = $payload['hd'];
+				} else {
+				}
 			}
 			$m = lang('Interface.wrongLogin'); // @codeCoverageIgnore
 		}
@@ -272,7 +292,10 @@ class Home extends BaseController
 
 	public function import()
 	{
-		return $this->response->redirect('/user/host/create?from=' . urlencode($this->request->getGet('from')));
+		$post = array_intersect_key($this->request->getGet(), array_flip([
+			'from', 'code', 'lang'
+		]));
+		return $this->response->redirect('/user/host/create?' . http_build_query($post));
 	}
 
 	/**

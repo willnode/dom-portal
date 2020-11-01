@@ -62,6 +62,18 @@ class AddHosts extends Migration
             PRIMARY KEY (`host_id`),
             CONSTRAINT FOREIGN KEY (`host_id`) REFERENCES `hosts` (`id`) ON DELETE CASCADE
         )");
+
+        $this->db->simpleQuery("CREATE TABLE `hosts__coupon` (
+            `code` VARCHAR(50) NOT NULL,
+            `redeems` INT(11) NOT NULL,
+            `currency` VARCHAR(50) NULL DEFAULT NULL,
+            `min` FLOAT(12) NULL DEFAULT NULL,
+            `max` FLOAT(12) NULL DEFAULT NULL,
+            `discount` FLOAT(12) NULL DEFAULT NULL,
+            `default_plan_id` INT(11) NOT NULL DEFAULT '1',
+            `expiry_at` TIMESTAMP NULL DEFAULT NULL,
+            PRIMARY KEY (`code`) USING BTREE
+        )");
     }
 
     public function down()
@@ -69,5 +81,6 @@ class AddHosts extends Migration
         $this->forge->dropTable('hosts');
         $this->forge->dropTable('hosts__deploy');
         $this->forge->dropTable('hosts__stat');
+        $this->forge->dropTable('hosts__coupon');
     }
 }

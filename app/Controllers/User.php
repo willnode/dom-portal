@@ -44,6 +44,11 @@ class User extends BaseController
 			// @codeCoverageIgnoreStart
 			$path = Services::request()->detectPath('REQUEST_URI');
 			$query = Services::request()->detectPath('QUERY_STRING');
+			if (($lang = $this->request->getGet('lang'))) {
+				if (in_array($lang, $this->request->config->supportedLocales)) {
+					$this->request->setLocale($lang);
+				}
+			}
 			$this->session->destroy();
 			Services::response()->redirect(href(
 				'login?r=' . urlencode($path . ($query ? '?' . $query : ''))
