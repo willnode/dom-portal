@@ -25,11 +25,6 @@ class WebViewTest extends CIDatabaseTestCase
         $this->assertTrue(is_string($home->register()));
         $this->assertTrue(is_string($home->forgot()));
         try {
-            $this->assertEmpty($home->notify());
-        } catch (\Throwable $th) {
-            $this->assertTrue($th instanceof PageNotFoundException);
-        }
-        try {
             $this->assertEmpty($home->reset());
         } catch (\Throwable $th) {
             $this->assertTrue($th instanceof PageNotFoundException);

@@ -11,6 +11,8 @@ class App extends BaseConfig
 	public $sudoNginxSecret;
 	public $googleClient;
 	public $googleSecret = '';
+	public $githubClient;
+	public $githubSecret = '';
 	public $ipaymuURL;
 	public $ipaymuKey;
 	public $ipaymuSecret = '';

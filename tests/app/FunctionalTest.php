@@ -2,6 +2,7 @@
 
 namespace App\Database;
 
+use App\Controllers\Api;
 use App\Controllers\Home;
 use App\Controllers\User;
 use App\Entities\Domain;
@@ -225,7 +226,7 @@ class FunctionalTest extends CIDatabaseTestCase
 
         // Try to execute payment
 
-        ($home = new Home())->initController($req, Services::response(), Services::logger());
+        ($api = new Api())->initController($req, Services::response(), Services::logger());
         $req->setGlobal('get', [
             'id' => $purchase->id,
             'challenge' => $purchase->metadata->_challenge,
@@ -236,7 +237,7 @@ class FunctionalTest extends CIDatabaseTestCase
             'via' => 'Test',
             'status' => 'berhasil',
         ]);
-        $home->notify();
+        $api->notify();
         /** @var Host */
         $host = (new HostModel())->find(1);
         $this->assertTrue($host->plan_id === 2);
@@ -277,7 +278,7 @@ class FunctionalTest extends CIDatabaseTestCase
 
         // Try to execute payment
 
-        ($home = new Home())->initController($req, Services::response(), Services::logger());
+        ($api = new Api())->initController($req, Services::response(), Services::logger());
         $req->setGlobal('get', [
             'id' => $purchase->id,
             'challenge' => $purchase->metadata->_challenge,
@@ -288,7 +289,7 @@ class FunctionalTest extends CIDatabaseTestCase
             'via' => 'Test',
             'status' => 'berhasil',
         ]);
-        $home->notify();
+        $api->notify();
         $this->assertTrue(($purchase = $host->purchase)->status === 'active');
         $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
             'program=modify-domain&domain=emily.me&bw=21474836480',
@@ -326,7 +327,7 @@ class FunctionalTest extends CIDatabaseTestCase
         $user->host('upgrade', $host->id);
         /** @var Host */
         $host = (new HostModel())->find(1);
-        $this->assertEquals($host->purchase->metadata->price, 15.5);
+        $this->assertEquals($host->purchase->metadata->price, 155000);
     }
 
     public function testCreateHostWithDomain()
@@ -377,8 +378,8 @@ class FunctionalTest extends CIDatabaseTestCase
         $this->assertTrue($domain->status === 'pending' && $host->status === 'pending');
         $this->assertEquals($meta->toRawArray(), [
             'type' => "hosting",
-            'price' => 17,
-            'price_unit' => "usd",
+            'price' => 220000,
+            'price_unit' => "idr",
             'template' => "",
             'expiration' =>  $meta->expiration,
             'years' =>  1,
@@ -418,7 +419,7 @@ class FunctionalTest extends CIDatabaseTestCase
 
         // Try to execute payment
 
-        ($home = new Home())->initController($req, Services::response(), Services::logger());
+        ($api = new Api())->initController($req, Services::response(), Services::logger());
         $req->setGlobal('get', [
             'id' => $purchase->id,
             'challenge' => $meta->_challenge,
@@ -429,7 +430,7 @@ class FunctionalTest extends CIDatabaseTestCase
             'via' => 'Test',
             'status' => 'berhasil',
         ]);
-        $home->notify();
+        $api->notify();
         $host = (new HostModel())->find(1);
         $purchase = $host->purchase;
         $domain = $host->domain_detail;
@@ -476,8 +477,8 @@ class FunctionalTest extends CIDatabaseTestCase
         $meta = $domain->purchase->metadata;
         $this->assertEquals($meta->toRawArray(), [
             'type' => "domain",
-            'price' => 11.5,
-            'price_unit' => "usd",
+            'price' => 165000,
+            'price_unit' => "idr",
             'expiration' =>  $meta->expiration,
             'years' =>  1,
             '_challenge' =>  $meta->_challenge,
