@@ -58,8 +58,8 @@ class Api extends BaseController
                 $token = $lib->verifyCode($code);
                 if ($token && ($user = $lib->getUserInfo($token))) {
                     log_message('notice', json_encode($user));
-                    if (isset($user['email'])) {
-                        return $this->signinoauth($user['email'], $user['name'] ?? '');
+                    if (isset($user->email)) {
+                        return $this->signinoauth($user->email, $user->name ?? '');
                     }
                 }
                 return $this->response->redirect(href('login'));

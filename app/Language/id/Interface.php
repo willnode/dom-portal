@@ -1,5 +1,6 @@
 <?php return [
 	'code' => 'id',
+	'codename' => 'Indonesia',
 	'codeI8LN' => 'id-ID',
 	'currency' => 'idr',
 	'appTitle' => 'DOM Cloud Hosting',
@@ -17,10 +18,12 @@
 	'expiration' => 'Masa Tenggang',
 	'enterToPortal' => 'Masuk ke Portal',
 	'registerToPortal' => 'Daftar ke Portal',
-	'registerPrompt' => 'Belum punya akun?',
+	'registerWithEmail' => 'Daftar dengan Email',
 	'forgotPrompt' => 'Lupa Password?',
 	'recoverYourPassword' => 'Pulihkan Password Anda',
 
+	'or' => 'Atau',
+	'signInWith' => 'Masuk dengan',
 	'wrongLogin' => 'Salah email atau password',
 	'wrongEmail' => 'Salah email?',
 	'resendConfirmationEmail' => 'Kirim Ulang Konfirmasi Email',

@@ -41,7 +41,8 @@ class GitHubOAuth
         curl_setopt($ch, CURLOPT_TIMEOUT, 1000);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Accept: application/json',
-            'Authorization: token '.$token,
+			'Authorization: token '.$token,
+			'User-Agent: DOMCloud.id'
         ]);
 		// execute!
 		$response = curl_exec($ch);

@@ -1,5 +1,6 @@
 <?php return [
 	'code' => 'en',
+	'codename' => 'English',
 	'codeI8LN' => 'en-US',
 	'currency' => 'usd',
 	'appTitle' => 'DOM Cloud Hosting',
@@ -17,10 +18,12 @@
 	'expiration' => 'Expiration',
 	'enterToPortal' => 'Enter to Portal',
 	'registerToPortal' => 'Register to Portal',
-	'registerPrompt' => 'Don\'t have account?',
+	'registerWithEmail' => 'Register with Email',
 	'forgotPrompt' => 'Forgot Password?',
 	'recoverYourPassword' => 'Recover Your Password',
 
+	'or' => 'Or',
+	'signInWith' => 'Sign in with',
 	'wrongLogin' => 'Wrong email or password',
 	'wrongEmail' => 'Wrong email?',
 	'resendConfirmationEmail' => 'Resend Confirmation Email',

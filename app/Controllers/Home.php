@@ -50,7 +50,9 @@ class Home extends BaseController
 		if ($this->session->has('login')) {
 			return $this->response->redirect('/user'); // @codeCoverageIgnore
 		}
-
+		if ($r = $this->request->getGet('r')) {
+			return $this->response->setCookie('r', $r, 0)->redirect(href('login'));
+		}
 		if ($this->request->getMethod() === 'post') {
 			$post = $this->request->getPost();
 			if (isset($post['email'], $post['password'])) {
@@ -60,7 +62,10 @@ class Home extends BaseController
 					$login->password
 				)) {
 					$this->session->set('login', $login->id);
-					return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
+					if ($r = $this->request->getCookie('r')) {
+						$this->response->deleteCookie('r');
+					}
+					return $this->response->redirect(base_url($r ?: 'user'));
 				}
 			}
 			$m = lang('Interface.wrongLogin'); // @codeCoverageIgnore
@@ -107,7 +112,10 @@ class Home extends BaseController
 				if (ENVIRONMENT !== 'production' || (new Recaptha())->verify($_POST['g-recaptcha-response'])) {
 					$id = (new LoginModel())->register($this->request->getPost());
 					(new LoginModel())->find($id)->sendVerifyEmail();
-					return $this->response->redirect(base_url($_GET['r'] ?? 'user'));
+					if ($r = $this->request->getCookie('r')) {
+						$this->response->deleteCookie('r');
+					}
+					return $this->response->redirect(base_url($r ?: 'user'));
 				}
 			}
 			return redirect()->back()->withInput()->with('errors', $this->validator->listErrors()); // @codeCoverageIgnore
