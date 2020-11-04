@@ -41,7 +41,11 @@ class Api extends BaseController
     public function signin($provider)
     {
         if ($provider === 'google') {
-            if ($code = $this->request->getGet('code')) {
+            $hash = $this->request->uri->getFragment();
+            if ($hash) {
+                $this->request->uri->setQuery($hash);
+            }
+            if ($code = $this->request->getGet('id_token')) {
                 $client = new Client(['client_id' => $this->request->config->googleClient]);
                 $payload = $client->verifyIdToken($code);
                 if ($payload) {
@@ -51,18 +55,18 @@ class Api extends BaseController
                     }
                 }
             }
-            return $this->response->redirect(href('login'));
+            return $this->response->redirect(href('login?hint=fail'));
         } elseif ($provider === 'github') {
             $lib = new GitHubOAuth();
             if ($code = $this->request->getGet('code')) {
                 $token = $lib->verifyCode($code);
-                if ($token && ($user = $lib->getUserInfo($token))) {
+                if ($token && ($user = $lib->getPrimaryEmail($token))) {
                     log_message('notice', json_encode($user));
                     if (isset($user->email)) {
-                        return $this->signinoauth($user->email, $user->name ?? '');
+                        return $this->signinoauth($user->email, $lib->getUserInfo($token)->name ?? '');
                     }
                 }
-                return $this->response->redirect(href('login'));
+                return $this->response->redirect(href('login?hint=fail'));
             }
             return $this->response->redirect($lib->getConsentURL());
         }

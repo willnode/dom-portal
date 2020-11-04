@@ -3,6 +3,7 @@
 namespace App\Libraries;
 
 use Config\Services;
+use Google\Task\Retryable;
 
 class GitHubOAuth
 {
@@ -30,6 +31,35 @@ class GitHubOAuth
 		curl_close($ch);
 		if ($response) {
 			return json_decode($response)->access_token ?? null;
+		} else {
+			return null;
+		}
+	}
+    public function getPrimaryEmail($token)
+	{
+		$ch = curl_init('https://api.github.com/user/emails');
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 1000);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: application/json',
+			'Authorization: token '.$token,
+			'User-Agent: DOMCloud.id'
+        ]);
+		// execute!
+		$response = curl_exec($ch);
+		curl_close($ch);
+		if ($response) {
+			$response = json_decode($response);
+			if (is_array($response)) {
+				$result = array_filter(
+					$response,
+					function ($e) {
+						return $e->primary == true;
+					}
+				);
+				return $result[0] ?? $response[0];
+			}
+			return ;
 		} else {
 			return null;
 		}
