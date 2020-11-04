@@ -14,7 +14,7 @@
 
       <input type="text" name="name" placeholder="<?= lang('Interface.fullName') ?>" value="<?= old('name') ?>" class="form-control mb-2">
       <input type="text" name="email" placeholder="<?= lang('Interface.activeEmail') ?>" value="<?= old('email') ?>" class="form-control mb-2">
-      <input type="password" name="password" placeholder="<?= lang('Interface.password') ?>" class="form-control mb-2">
+      <input type="password" name="password" placeholder="<?= lang('Interface.password') ?>" class="form-control mb-2" autocomplete="new-password">
       <div class="g-recaptcha mb-2 mx-auto" data-sitekey="<?= $recapthaSite ?>"></div>
       <p><small><?= lang('Interface.registerAgreement') ?></small></p>
       <input type="submit" value="<?= lang('Interface.register') ?>" class="btn-success btn mb-3">

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Entities\Domain;
 use App\Entities\Host;
+use App\Entities\HostCoupon;
 use App\Entities\Liquid;
 use App\Entities\Login;
 use App\Entities\Plan;
@@ -17,6 +18,7 @@ use App\Libraries\IpaymuGate;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\VirtualMinShell;
 use App\Models\DomainModel;
+use App\Models\HostCouponModel;
 use App\Models\HostDeployModel;
 use App\Models\HostModel;
 use App\Models\LoginModel;
@@ -153,6 +155,13 @@ class User extends BaseController
 		$r = $this->request;
 		$count = $this->db->table('hosts')->where('login_id', $this->login->id)->countAllResults();
 		$ok = $count < ($this->login->trustiness === 0 ? 1 : ($this->login->trustiness * 5));
+		if ($coupon = $this->request->getGet('code')) {
+			/** @var HostCoupon */
+			$coupon = (new HostCouponModel())->find($coupon);
+			if ($coupon && ($coupon->redeems <= 0 || $coupon->currency !== lang('Interface.currency') || $coupon->expiry_at->getTimestamp() < time())) {
+				$coupon = null;
+			}
+		}
 		if ($ok && $r->getMethod() === 'post') {
 			if ($this->validate([
 				'plan' => 'required|is_not_unique[plans.id]',
@@ -204,7 +213,14 @@ class User extends BaseController
 							"_status" => null,
 						]);
 						$metadata->price += $plan->price_local * $r->getPost('years');
-						$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
+						/** @var HostCoupon $coupon */
+						if ($coupon) {
+							$metadata->price -= min($coupon->max, max($coupon->min, $coupon->discount * $plan->price_local));
+							$coupon->redeems--;
+							(new HostCouponModel())->save($coupon);
+						} else {
+							$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
+						}
 						$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
 						$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
 						$hosting->expiry_at = $metadata->expiration;
@@ -246,7 +262,8 @@ class User extends BaseController
 					return $this->response->redirect('/user/host/invoices/' . $id);
 				}
 			}
-			return redirect()->back()->withInput()->with('errors', $this->validator->listErrors()); // @codeCoverageIgnore
+			return redirect()->back()->withInput()
+				->with('errors', $this->validator->listErrors()); // @codeCoverageIgnore
 		}
 		return view('user/host/create', [
 			'plans' => (new PlanModel())->find(),
@@ -254,6 +271,7 @@ class User extends BaseController
 			'schemes' => (new SchemeModel())->find(),
 			'templates' => (new TemplatesModel())->atLang($this->login->lang)->findAll(),
 			'trustiness' => $this->login->trustiness,
+			'coupon' => $coupon,
 			'email' => $this->login->email,
 			'validation' => $this->validator,
 			'ok' => $ok,

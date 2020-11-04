@@ -3,7 +3,6 @@
 
 <?php include 'head.php' ?>
 
-
 <body class="text-center" style="background: url(https://images.unsplash.com/photo-1504370805625-d32c54b16100?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1953&q=80) center/cover #925a02; position: relative">
 	<div class="justify-content-center container d-flex flex-column" style="min-height: 100vh; max-width: 476px">
 		<p class="mt-5"><a href="//domcloud.id"><img src="/logo.svg" alt="Logo" width="150px"></a></p>

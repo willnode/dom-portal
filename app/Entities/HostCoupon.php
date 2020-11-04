@@ -4,22 +4,31 @@ namespace App\Entities;
 
 use App\Models\HostModel;
 use CodeIgniter\Entity;
+use CodeIgniter\I18n\Time;
 
 /**
- * @property int $id
- * @property int $host_id
- * @property string $domain
- * @property string $template
- * @property string $result
- * @property Host $host
+ * @property string $code
+ * @property int $redeems
+ * @property float $min
+ * @property float $max
+ * @property float $discount
+ * @property Time $expiry_at
  */
 class HostCoupon extends Entity
 {
+
+	protected $dates = [
+		'expiry_at',
+	];
+
+
     protected $casts = [
-        'id' => 'integer',
-        'host_id' => 'integer',
-        'domain' => 'string',
-        'template' => 'string',
-        'result' => 'string',
+        'code' => 'string',
+        'redeems' => 'integer',
+        'currency' => 'string',
+        'min' => 'float',
+        'max' => 'float',
+        'discount' => 'float',
+        'default_plan_id' => 'int',
     ];
 }

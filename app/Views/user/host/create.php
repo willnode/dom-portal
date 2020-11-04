@@ -184,6 +184,15 @@
                 </div>
                 <hr>
                 <div class="row">
+                  <div class="col-12">
+                    <?php if ($coupon) : ?>
+                      <div class="alert alert-primary">
+                        <?php /** @var \App\Entities\HostCoupon $coupon */ ?>
+                        Selamat, kupon <b><?= $coupon->code ?></b> dapat diaplikasikan!<br>
+                        <small>Kupon berlaku sampai <b><?= $coupon->expiry_at->toDateString() ?></b>.</small>
+                      </div>
+                    <?php endif ?>
+                  </div>
                   <div class="col">
                     <h6>Disk Space</h6>
                     <div class="ml-auto" id="specdisk">- MiB</div>
@@ -272,6 +281,7 @@
       let plans, schemes, activedomain = null;
       const currency = '<?= lang('Interface.currency') ?>';
       const digits = '<?= lang('Interface.currency') === 'usd' ? 2 : 0 ?>';
+      const coupon = JSON.parse('<?= json_encode($coupon) ?>');
       const formatter = new Intl.NumberFormat('<?= lang('Interface.codeI8LN') ?>', {
         style: 'currency',
         currency: currency,
@@ -338,13 +348,23 @@
         var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
         var scheme = 0;
 
+        if (coupon instanceof Object) {
+          if (unit == 0) {
+            form.plan.value = coupon.default_plan_id;
+            plan = plans[form.plan.value];
+            unit = plan[`price_${currency}`];
+          }
+          tip = Math.max(coupon.min, Math.min(coupon.max, coupon.discount * unit));
+          tip = -Math.min(unit, tip);
+        }
+
         // Alter for free
         if (unit == 0) {
-          form.free_cname.value = form.username.value + '.dom.my.id';
           dommod = form.domain_mode.value = 'free';
           addons = 0;
           years = 1 / 6;
         }
+
 
         $('#dm-free').toggleClass('d-none', dommod !== 'free')
           .prop('disabled', dommod !== 'free');
@@ -358,7 +378,10 @@
           $('#domain_available').val(activedomain && activedomain.status === 'available' && (
             activedomain.domain === window.box.domain_name.value + schdata.alias) ? '1' : '');
           scheme = schdata[`price_${currency}`] + schdata[`renew_${currency}`] * (years - 1);
+        } else if (dommod == 'free') {
+          form.free_cname.value = form.username.value + '.dom.my.id';
         }
+
 
         $('#domain_mode,#years,#addons').prop('disabled', unit == 0);
         var valid = form.checkValidity();
