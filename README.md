@@ -4,8 +4,8 @@
 
 [![codecov](https://codecov.io/gh/domcloud/dom-portal/branch/master/graph/badge.svg?token=KVP6A2KFXW)](https://codecov.io/gh/domcloud/dom-portal)
 [![Build Status](https://travis-ci.com/domcloud/dom-portal.svg?branch=master)](https://travis-ci.com/domcloud/dom-portal)
-![Uptime Robot ratio (30 days)](https://img.shields.io/uptimerobot/ratio/m786188407-1d0bd21c51b4159f15ad894f)
-![License](https://img.shields.io/github/license/domcloud/dom-portal)
+[![Uptime Robot ratio (30 days)](https://img.shields.io/uptimerobot/ratio/m786188407-1d0bd21c51b4159f15ad894f)](https://status.domcloud.id)
+[![License](https://img.shields.io/github/license/domcloud/dom-portal)](LICENSE)
 
 This is the actual server code that runs on [portal.domcloud.id](https://portal.domcloud.id). Open sourced because I want to transparent and clear about how your data will be handled and what or how limitations applies for you.
 

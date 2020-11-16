@@ -20,11 +20,11 @@ class DeployJob extends BaseCommand
 
     public function run(array $params)
     {
-        set_time_limit(30 * 60);
         /** @var HostDeploy */
         $deploy = (new HostDeployModel())->find($params[0]);
         if ($deploy) {
             $host = $deploy->host;
+            set_time_limit($timeout = (($host->plan_id + 1) * 300));
             $template = Yaml::parse($deploy->template);
             $deploy->result = (new TemplateDeployer())->deploy(
                 $host->server->alias,
@@ -32,7 +32,7 @@ class DeployJob extends BaseCommand
                 $host->username,
                 $host->password,
                 $template,
-                ($host->plan_id + 1) * 300
+                $timeout
             );
             if ($host->status === 'starting') {
                 $host->status = 'active';

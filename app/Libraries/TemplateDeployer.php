@@ -3,7 +3,9 @@
 namespace App\Libraries;
 
 use App\Models\HostDeployModel;
+use CodeIgniter\CLI\CLI;
 use phpseclib\Net\SSH2;
+
 /**
  * @codeCoverageIgnore
  */
@@ -26,6 +28,7 @@ class TemplateDeployer
             exec("php spark deploy $did  > /dev/null &");
         }
     }
+
     public function deploy($server, $domain, $username, $password, $config, $timeout)
     {
         $timing = microtime(true);
@@ -60,16 +63,16 @@ class TemplateDeployer
                 if (substr_compare($tscheme, '.git', -strlen('.git')) === 0) {
                     // use git clone
                     $cloning = true;
-                } else if ($tdomain === 'github.com' && preg_match('/^\/(\w+)(\/\w+)/', $tpath, $matches)) {
+                } else if ($tdomain === 'github.com' && preg_match('/^\/([-_\w]+)\/([-_\w]+)/', $tpath, $matches)) {
                     $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
-                    $path = "https://github.com/$matches[1]$matches[2]/archive/$thash.zip";
+                    $path = "https://github.com/$matches[1]/$matches[2]/archive/$thash.zip";
                     $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
-                    $directory = "$tpath-$thash";
-                } else if ($tdomain === 'gitlab.com' && preg_match('/^\/(\w+)(\/\w+)/', $tpath, $matches)) {
+                    $directory = "$matches[2]-$thash";
+                } else if ($tdomain === 'gitlab.com' && preg_match('/^\/([-_\w]+)\/([-_\w]+)/', $tpath, $matches)) {
                     $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
-                    $path = "https://gitlab.com/$matches[1]$matches[2]/-/archive/$thash/$tpath-$thash.zip";
+                    $path = "https://gitlab.com/$matches[1]/$matches[2]/-/archive/$thash/$tpath-$thash.zip";
                     $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
-                    $directory = "$tpath-$thash";
+                    $directory = "$matches[2]-$thash";
                 }
                 // check headers
                 if (!isset($cloning) && array_search('Content-Type: application/zip', get_headers($path)) === false) {
@@ -103,7 +106,7 @@ class TemplateDeployer
         }
         if (!empty($config['nginx'])) {
             $log .= '#----- APPLYING NGINX CONFIG -----#' . "\n";
-            $log .= '$> '.($nginx = json_encode($config['nginx']))."\n";
+            $log .= '$> ' . ($nginx = json_encode($config['nginx'])) . "\n";
             $res = (new VirtualMinShell)->setNginxConfig($domain, $server, $nginx);
             if ($res) {
                 $log .= "$res\nExit status: config discarded.\n";

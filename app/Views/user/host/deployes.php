@@ -7,9 +7,12 @@
   <?= view('user/navbar') ?>
   <div class="container">
     <?= view('user/host/navbar') ?>
-    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#deployModal">
-      Deploy New
-    </button>
+
+    <?php if ($host->status === 'active') : ?>
+      <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#deployModal">
+        Deploy New
+      </button>
+    <?php endif ?>
     <?php $i = 0;
     foreach (array_reverse($deploys) as $deploy) : ?>
       <form class="card" method="POST" onsubmit="return putToDeploy(this)">
