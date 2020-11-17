@@ -16,7 +16,7 @@ class Filters extends BaseConfig
 	public $globals = [
 		'before' => [
 			//'honeypot'
-			'csrf' => ['except' => ['home/notif*', 'user/host/ssl/*', 'user/host/dns/*', 'user/host/nginx/*']],
+			'csrf' => ['except' => ['api/*', 'user/host/ssl/*', 'user/host/dns/*', 'user/host/nginx/*']],
 		],
 		'after'  => [
 			'toolbar',
