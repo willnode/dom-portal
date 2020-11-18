@@ -60,9 +60,17 @@ class TemplateDeployer
             // Check if it was HTTP
             if ($tscheme === 'https' || $tscheme === 'http') {
                 // expand clone/github/gitlab URLs
-                if (substr_compare($tscheme, '.git', -strlen('.git')) === 0) {
+                if (substr_compare($tpath, '.git', -strlen('.git')) === 0) {
                     // use git clone
                     $cloning = true;
+                    if ($directory) {
+                        $directory = "-b ".$directory;
+                    }
+                    if (isset($config['args'])) {
+                        $directory .= " ".$config['args']; // maybe couple finetuning
+                    } else {
+                        $directory .= " --depth 1"; // faster clone
+                    }
                 } else if ($tdomain === 'github.com' && preg_match('/^\/([-_\w]+)\/([-_\w]+)/', $tpath, $matches)) {
                     $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
                     $path = "https://github.com/$matches[1]/$matches[2]/archive/$thash.zip";
@@ -84,7 +92,7 @@ class TemplateDeployer
                     if ($directory) {
                         $directory = ' -b ' . $directory;
                     }
-                    $cmd .= "git clone " . escapeshellarg($path) . $directory . " --depth 1 ; ";
+                    $cmd .= "git clone " . escapeshellarg($path) . $directory . " ; ";
                 } else {
                     $cmd .= "wget -q -O _.zip " . escapeshellarg($path) . " ; ";
                     $cmd .= "unzip -q -o _.zip ; rm _.zip ; chmod -R 0750 * .* ; ";
