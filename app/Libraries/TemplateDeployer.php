@@ -64,7 +64,7 @@ class TemplateDeployer
                     // use git clone
                     $cloning = true;
                     if ($directory) {
-                        $directory = "-b ".$directory;
+                        $directory = " -b ".$directory;
                     }
                     if (isset($config['args'])) {
                         $directory .= " ".$config['args']; // maybe couple finetuning
@@ -89,10 +89,7 @@ class TemplateDeployer
                 // build command
                 $cmd = "cd ~/public_html ; rm -rf * .* 2>/dev/null ; ";
                 if (isset($cloning)) {
-                    if ($directory) {
-                        $directory = ' -b ' . $directory;
-                    }
-                    $cmd .= "git clone " . escapeshellarg($path) . $directory . " ; ";
+                    $cmd .= "git clone " . escapeshellarg($path) . " ." . $directory . " ; ";
                 } else {
                     $cmd .= "wget -q -O _.zip " . escapeshellarg($path) . " ; ";
                     $cmd .= "unzip -q -o _.zip ; rm _.zip ; chmod -R 0750 * .* ; ";
