@@ -40,12 +40,25 @@
       }).then(x => x.text().then(y => [$('#config').text(y), $('#template').val(tryParse(y))]));
     }
 
+    /**
+     * @param {String} t
+     */
     function tryParse(t) {
       var x = 'nginx:\n';
       // check ssl config
       var listen80 = /^\s*listen [\d\.]+;$/gm.test(t);
       var listen443 = /^\s*listen [\d\.]+:443 ssl;$/gm.test(t);
-      x += '  ssl:' + (listen80 ? (listen443 ? 'on' : 'off') : 'enforce') + '\n';
+      x += '  ssl: ' + (listen80 ? (listen443 ? 'on' : 'off') : 'enforce') + '\n';
+      // check passenger config
+      var r = /^\s*passenger_(\w+): (.+);$/gm;
+      var p = r.exec(t);
+      if (p) {
+        x += '  passenger:\n';
+        do {
+          x += '    ' + p[1] + ": ".p[2];
+        }
+        while (p = r.exec(t));
+      }
       // check location config
       var locations = t.match(/^\s*location .+?{.+?}$/gms);
       if (locations.length > 1) {
@@ -54,9 +67,9 @@
           var y = '';
           y += '  - match: ' + l.match(/^\s*location (.+?) {/m)[1].trim() + '\n';
           l.split('\n').slice(1).forEach(ll => {
-            ll = ll.trim().split(' ', 2);
-            if (ll.length > 1)
-              y += '    ' + ll[0] + ': ' + ll[1] + '\n';
+            var ls = ll.trim().split(' ');
+            if (ls.length > 1)
+              y += '    ' + ls[0] + ': ' + ls.slice(1).join(' ').trim(';') + '\n';
           });
           return y;
         }).join('');
