@@ -124,7 +124,8 @@ class VirtualMinShell
 			$line = rtrim($line);
 			if (strlen($line) >= 4 && $line[0] === ' ') {
 				$line = explode(':', ltrim($line), 2);
-				$nesval[$line[0]] = ltrim($line[1]);
+				if (count($line) >= 2)
+					$nesval[$line[0]] = ltrim($line[1]);
 			} else if (strlen($line) >= 0) {
 				if ($neskey) {
 					$result[$neskey] = $nesval;
