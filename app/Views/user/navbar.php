@@ -19,6 +19,9 @@
         <li class="nav-item">
           <a class="nav-link <?= ($page ?? '') === 'status' ? 'active' : '' ?>" href="/user/status"><?= lang('Interface.status') ?></a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://domcloud.id/faq"><?= lang('Interface.help') ?>?</a>
+        </li>
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item">
