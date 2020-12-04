@@ -23,12 +23,22 @@
           <a class="nav-link" href="https://domcloud.id/faq"><?= lang('Interface.help') ?>?</a>
         </li>
       </ul>
+
       <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link <?= ($page ?? '') === 'profile' ? 'active' : '' ?>" href="/user/profile"><?= lang('Interface.profile') ?></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/logout"><?= lang('Interface.logout') ?></a>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle p-0" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+            <span title="<?= esc($_SESSION['email'] ?? '') ?>"><?= esc($_SESSION['name'] ?? '') ?></span>
+            <img class="rounded-circle mx-1 bg-white" width="60" height="60" src="<?= isset($_SESSION['email']) ? get_gravatar($_SESSION['email'], 60, 'identicon') : '' ?>" alt="">
+          </a>
+          <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <li>
+              <a class="dropdown-item" href="/user/profile"><?= lang('Interface.profile') ?></a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/logout"><?= lang('Interface.logout') ?></a>
+            </li>
+          </ul>
         </li>
       </ul>
     </div>
@@ -36,7 +46,7 @@
 </nav>
 
 <noscript>
-    <div class="container my-4 alert alert-danger text-center">
-        Please enable Javascript in your browser.
-    </div>
+  <div class="container my-4 alert alert-danger text-center">
+    Please enable Javascript in your browser.
+  </div>
 </noscript>

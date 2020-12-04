@@ -24,6 +24,14 @@ class LoginModel extends Model
         return $this->find()[0] ?? null;
     }
 
+    public function login(Login $data)
+    {
+        $s = Services::session();
+        $s->set('login', $data->id);
+        $s->set('name', $data->name);
+        $s->set('email', $data->email);
+    }
+
     /** @return int|null */
     public function register($data, $thenLogin = true, $autoVerified = false)
     {
@@ -39,6 +47,8 @@ class LoginModel extends Model
         if ($this->save($data)) {
             if ($thenLogin) {
                 Services::session()->set('login', $this->insertID);
+                Services::session()->set('name', $data['name'] ?? '');
+                Services::session()->set('email', $data['email'] ?? '');
             }
             return $this->insertID;
         }

@@ -61,7 +61,7 @@ class Home extends BaseController
 					$post['password'],
 					$login->password
 				)) {
-					$this->session->set('login', $login->id);
+					(new LoginModel())->login($login);
 					if ($r = $this->request->getCookie('r')) {
 						$this->response->deleteCookie('r');
 					}
