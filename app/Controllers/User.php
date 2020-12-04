@@ -286,6 +286,13 @@ class User extends BaseController
 				// Preliminating check. If current is free then requesting free again:
 				// Just expand the expiry time and do nothing else.
 				$host->expiry_at = date('Y-m-d H:i:s', strtotime("+2 months", \time()));
+				if ($host->status === 'expired') {
+					$host->status = 'active';
+					(new VirtualMinShell())->enableHost(
+						$host->domain,
+						$host->server->alias
+					);
+				}
 				(new HostModel())->save($host);
 				return $this->response->redirect('/user/host/invoices/' . $host->id);
 			}
