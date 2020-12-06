@@ -402,7 +402,8 @@ class User extends BaseController
 	{
 		if ($this->request->getMethod() === 'post') {
 			// @codeCoverageIgnoreStart
-			$nginx = (new VirtualMinShell())->getNginxConfig($host->domain, $host->server->alias);
+			$domain = (isset($_GET['subdomain']) ? $_GET['subdomain'] . '.' : '') . $host->domain;
+			$nginx = (new VirtualMinShell())->getNginxConfig($domain, $host->server->alias);
 			return $this->response->setContentType('application/nginx')->setBody($nginx);
 			// @codeCoverageIgnoreEnd
 		}

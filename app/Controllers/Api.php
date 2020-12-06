@@ -25,7 +25,7 @@ class Api extends BaseController
     {
         $login = (new LoginModel())->atEmail($email);
         if ($login) {
-            $this->session->set('login', $login->id);
+            (new LoginModel())->login($login);
         } else {
             (new LoginModel())->register([
                 'email' => $email,

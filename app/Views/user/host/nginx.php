@@ -12,17 +12,26 @@
 
         <div class="row my-2">
           <div class="col-md-6">
+            <div class="mb-3 ">
+              <h2>NginX Configurator (Beta)</h2>
+            </div>
+            <?php if ($host->plan_id > 2) : ?>
+              <form method="GET">
+                <label for="subdomain">
+                  Cek Subdomain:&nbsp;
+                </label>
+                <input type="text" id="subdomain" name="subdomain" value="<?= $_GET['subdomain'] ?? '' ?>">
+                <input type="submit" value="Check" class="btn btn-primary btn-sm">
+              </form>
+            <?php endif ?>
             <form method="POST" action="/user/host/deploys/<?= $host->id ?>">
-              <div class="mb-3 ">
-                <h2>NginX Configurator (Beta)</h2>
-              </div>
               <p>
                 <a href="https://github.com/domcloud/dom-nginx" target="_blank" rel="noopener noreferrer">
                   Help on configuration
                 </a>
               </p>
               <?= csrf_field() ?>
-              <textarea class="form-control font-monospace" name="template" id="template" cols="30" rows="10"></textarea>
+              <textarea class="form-control font-monospace" name="template" id="template" cols="30" rows="10" required></textarea>
               <input type="submit" value="Save" class="btn btn-primary my-1">
             </form>
           </div>
@@ -74,7 +83,10 @@
           return y;
         }).join('');
       }
-      console.log(locations);
+      var sub = new URL(window.location.href).searchParams.get('subdomain');
+      if (sub) {
+        x += 'subdomain: '+sub;
+      }
       return x;
     }
   </script>

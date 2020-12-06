@@ -179,7 +179,9 @@ class VirtualMinShell
 	{
 		set_time_limit(300);
 		$secret = Services::request()->config->sudoNginxSecret;
-		$ch = curl_init("https://nginx-$server.domcloud.id/?secret=$secret&domain=$domain");
+		$ch = curl_init("https://nginx-$server.domcloud.id/?" . http_build_query([
+			'secret' => $secret, 'domain' => $domain
+		]));
 		curl_setopt($ch, CURLOPT_HTTPHEADER, [
 			'Content-Type: application/json'
 		]);
@@ -193,7 +195,9 @@ class VirtualMinShell
 	{
 		set_time_limit(300);
 		$secret = Services::request()->config->sudoNginxSecret;
-		$ch = curl_init("https://nginx-$server.domcloud.id/?secret=$secret&domain=$domain");
+		$ch = curl_init("https://nginx-$server.domcloud.id/?" . http_build_query([
+			'secret' => $secret, 'domain' => $domain
+		]));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
 		curl_close($ch);
