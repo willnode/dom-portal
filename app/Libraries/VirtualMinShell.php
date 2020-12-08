@@ -170,7 +170,7 @@ class VirtualMinShell
 
 	public function listSystemInfo($server)
 	{
-		$cmd = "program=info";
+		$cmd = "program=info&search=disk&search=mem&search=status";
 		$data = $this->execute($this->wrapWget($cmd, $server), NULL);
 		$data = str_replace('*', '-', $data);
 		return $data;

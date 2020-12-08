@@ -11,6 +11,7 @@ use App\Models\HostStatModel;
 use App\Models\ServerModel;
 use App\Models\ServerStatModel;
 use CodeIgniter\CLI\BaseCommand;
+use CodeIgniter\CLI\CLI;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -33,10 +34,11 @@ class CronJob extends BaseCommand
 			Disabling users who meets the expiration date
 			Deleting users who not reactivating within two weeks
         */
+        $vm = new VirtualMinShell();
         /** @var Server */
         foreach ((new ServerModel())->find() as $server) {
-            $domains = (new VirtualMinShell())->listDomainsInfo($server->alias);
-            $bandwidths = (new VirtualMinShell())->listBandwidthInfo($server->alias);
+            $domains = $vm->listDomainsInfo($server->alias);
+            $bandwidths = $vm->listBandwidthInfo($server->alias);
             /** @var Host[] */
             $hosts = (new HostModel())->atServer($server->id)->find();
             foreach ($hosts as $host) {
@@ -66,7 +68,7 @@ class CronJob extends BaseCommand
                         // Roll over time
                         log_message('notice', 'ROLLOVER ' . $newStat['domain'] . ': ' . json_encode([$stat->quota_net, $newStat['quota_net']]));
                         $host->addons = max(0, $host->addons - (($stat->quota_net / 1024 / 1024) - ($plan->net * 1024 / 12)));
-                        (new VirtualMinShell())->adjustBandwidthHost(
+                        $vm->adjustBandwidthHost(
                             ($host->addons + ($plan->net * 1024 / 12)),
                             $host->domain,
                             $server->alias
@@ -82,28 +84,28 @@ class CronJob extends BaseCommand
                 if (!$stat->disabled) {
                     if ($overDisk) {
                         // Disable
-                        (new VirtualMinShell())->disableHost($host->domain, $server->alias, 'Running out Disk Space');
+                        $vm->disableHost($host->domain, $server->alias, 'Running out Disk Space');
                         $host->status = 'suspended';
                     } else if ($overBw) {
                         // Disable
-                        (new VirtualMinShell())->disableHost($host->domain, $server->alias, 'Running out Bandwidth');
+                        $vm->disableHost($host->domain, $server->alias, 'Running out Bandwidth');
                         $host->status = 'suspended';
                     } else if ($expired) {
                         // Disable
-                        (new VirtualMinShell())->disableHost($host->domain, $server->alias, 'host expired');
+                        $vm->disableHost($host->domain, $server->alias, 'host expired');
                         $host->status = 'expired';
                     }
                 } else {
                     if ((strtotime('-2 weeks', time()) >= $host->expiry_at->getTimestamp()) || ($stat->quota_server > $plan->disk * 1024 * 1024 * 3)) {
                         if ($host->plan_id === 1) {
                             // Paid hosts should be immune from this, in case error logic happens...
-                            (new VirtualMinShell())->deleteHost($host->domain, $server->alias);
+                            $vm->deleteHost($host->domain, $server->alias);
                             $host->status = 'removed';
                         }
                         // TODO: Deleted email
                     } else if (!($expired || $overDisk || $overBw)) {
                         // Enable
-                        (new VirtualMinShell())->enableHost($host->domain, $server->alias);
+                        $vm->enableHost($host->domain, $server->alias);
                         $host->status = 'active';
                     }
                 }
@@ -111,7 +113,8 @@ class CronJob extends BaseCommand
                     (new HostModel())->save($host);
                 }
             }
-            $yaml = Yaml::parse((new VirtualMinShell())->listSystemInfo($server->alias));
+            $yaml = $vm->listSystemInfo($server->alias);
+            $yaml = Yaml::parse($yaml);
             $data = [
                 'server_id' => $server->id,
                 // php_yaml can't handle 64 bit ints properly
