@@ -97,13 +97,13 @@ class CronJob extends BaseCommand
                     }
                 } else {
                     if ((strtotime('-2 weeks', time()) >= $host->expiry_at->getTimestamp()) || ($stat->quota_server > $plan->disk * 1024 * 1024 * 3)) {
-                        if ($host->plan_id === 1) {
+                        if (!$host->purchase) {
                             // Paid hosts should be immune from this, in case error logic happens...
                             $vm->deleteHost($host->domain, $server->alias);
                             $host->status = 'removed';
                         }
                         // TODO: Deleted email
-                    } else if (!($expired || $overDisk || $overBw)) {
+                    } else if (!($expired || $overDisk || $overBw || $host->status == 'suspended')) {
                         // Enable
                         $vm->enableHost($host->domain, $server->alias);
                         $host->status = 'active';
