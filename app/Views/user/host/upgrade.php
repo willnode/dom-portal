@@ -239,7 +239,7 @@
     function checkDomain() {
       const name = window.box.domain_name;
       const scheme = window.box.domain_scheme;
-      if (name.reportValidity && (!name.reportValidity() || scheme.reportValidity())) {
+      if (name.reportValidity && (!name.reportValidity() || !scheme.reportValidity())) {
         return;
       }
       activedomain = null;
