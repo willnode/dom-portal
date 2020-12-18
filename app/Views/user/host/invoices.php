@@ -20,7 +20,7 @@
                 <?php $metadata = $current->metadata ?>
                 <?php $money = format_money($metadata->price) ?>
                 <?php $plan = (new \App\Models\PlanModel())->find($metadata->plan)->alias ?>
-                <?= ($metadata->liquid ? lang('Host.formatInvoiceAlt', [
+                <?= ($metadata->registrar ? lang('Host.formatInvoiceAlt', [
                   "<b>$plan</b>",
                   "<b>{$metadata->domain}</b>",
                 ]) : lang('Host.formatInvoice', [
