@@ -78,14 +78,14 @@ class Api extends BaseController
             $r->getPost('status')  == 'berhasil'
         ) {
             /** @var Purchase */
-            $data = (new PurchaseModel())->find($r->getGet('id'));
-            if ($data && $data->metadata->_challenge == $r->getGet('challenge')) {
+            $purchase = (new PurchaseModel())->find($r->getGet('id'));
+            if ($purchase && $purchase->metadata->_challenge == $r->getGet('challenge')) {
 
                 // At this point we process the purchase
                 // In case anything fails, at least we have record it.
 
-                $data->status = 'active';
-                $metadata = $data->metadata;
+                $purchase->status = 'active';
+                $metadata = $purchase->metadata;
                 $metadata->_id = $r->getPost('trx_id');
                 $metadata->_invoiced = date('Y-m-d H:i:s');
                 $metadata->_via = $r->getPost('via');
@@ -93,17 +93,17 @@ class Api extends BaseController
 
                 log_message('notice', 'PURCHASE: ' . json_encode($metadata));
 
-                if ($data->domain_id && $metadata->registrar) {
-                    $domain = $data->domain;
+                if ($purchase->domain_id && $metadata->registrar) {
+                    $domain = $purchase->domain;
                     if ($domain->status === 'pending') {
                         (new DigitalRegistra())->domainRegister($metadata->registrar);
                         $domain->status = 'active';
                         (new DomainModel())->save($domain);
                     }
                 }
-                if ($data->host_id) {
+                if ($purchase->host_id) {
 
-                    $host = $data->host;
+                    $host = $purchase->host;
                     $login = $host->login;
 
                     if ($metadata->domain && $host->domain != $metadata->domain) {
@@ -178,11 +178,11 @@ class Api extends BaseController
                         (new HostModel())->save($host);
                     }
                 }
-                $data->metadata = $metadata;
-                (new PurchaseModel())->save($data); {
+                $purchase->metadata = $metadata;
+                (new PurchaseModel())->save($purchase); {
                     // Email
                     $plan = $plan->alias;
-                    $desc = ($metadata->domain ? lang('Host.formatInvoiceAlt', [
+                    $desc = ($metadata->registrar ? lang('Host.formatInvoiceAlt', [
                         $plan,
                         $metadata->domain,
                     ]) : lang('Host.formatInvoice', [
@@ -219,20 +219,20 @@ class Api extends BaseController
             $json = file_get_contents('php://input');
             $gate = (new TransferWiseGate());
             if ($gate->sign($json, $this->request->getHeader('X-Signature-SHA256'))) {
-                if ($data = $gate->getTransferInfo(json_decode($json)->resource->id ?? '')) {
-                    if ($ref = intval(trim($data->details->reference, ' \t\n\r\0#"'))) {
+                if ($purchase = $gate->getTransferInfo(json_decode($json)->resource->id ?? '')) {
+                    if ($ref = intval(trim($purchase->details->reference, ' \t\n\r\0#"'))) {
                         /** @var Purchase */
                         if (($invoice = (new PurchaseModel())->find($ref))) {
                             $metadata = $invoice->metadata;
                             // 0.5 USD offset for in case of there's rounding error or something I don't aware of.
                             // Basically if you been here and read this, it's okay to not include transaction fee from us.
                             // But don't take this for granted! I won't solve any transaction error if you made a purchase without it :)
-                            if ($metadata->price_unit === strtolower($data->targetCurrency) && $metadata->price <= $data->targetValue + 0.5) {
-                                $metadata->_status = $data->status;
-                                $metadata->_id = $data->id;
+                            if ($metadata->price_unit === strtolower($purchase->targetCurrency) && $metadata->price <= $purchase->targetValue + 0.5) {
+                                $metadata->_status = $purchase->status;
+                                $metadata->_id = $purchase->id;
                                 $invoice->metadata = $metadata;
                                 (new PurchaseModel())->save($invoice);
-                                if ($invoice->status === 'pending' && $data->status === 'funds_converted') {
+                                if ($invoice->status === 'pending' && $purchase->status === 'funds_converted') {
                                     // Execute the fuckin payment. Imitate what iPaymu did
                                     $_GET = [];
                                     $_GET['id'] = $invoice->id;
@@ -241,7 +241,7 @@ class Api extends BaseController
                                     $_POST = [];
                                     $_POST['trx_id'] = $metadata->_id;
                                     $_POST['status'] = 'berhasil';
-                                    $_POST['via'] = "Transferwise ($data->targetValue $data->targetCurrency)";
+                                    $_POST['via'] = "Transferwise ($purchase->targetValue $purchase->targetCurrency)";
                                     $this->notify();
                                 }
                             }

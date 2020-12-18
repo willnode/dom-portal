@@ -385,6 +385,7 @@ class FunctionalTest extends CIDatabaseTestCase
             'years' =>  1,
             'plan' => 2,
             'addons' => 5,
+            'domain' => 'example.com',
             '_challenge' =>  $meta->_challenge,
             '_id' => NULL,
             '_via' =>  NULL,
@@ -393,6 +394,7 @@ class FunctionalTest extends CIDatabaseTestCase
             '_status' => null,
             'registrar' => [
                 'domain' => "example.com",
+                'api_id' => 1,
                 'periode' => 1,
                 'ns1' => "nsp.dom.my.id",
                 'ns2' => "nss.dom.my.id",
@@ -481,6 +483,7 @@ class FunctionalTest extends CIDatabaseTestCase
             'price_unit' => "idr",
             'expiration' =>  $meta->expiration,
             'years' =>  1,
+            'domain' =>  'example.com',
             '_challenge' =>  $meta->_challenge,
             '_id' => NULL,
             '_via' =>  NULL,
@@ -489,6 +492,7 @@ class FunctionalTest extends CIDatabaseTestCase
             '_status' => null,
             'registrar' => [
                 'domain' => "example.com",
+                'api_id' => 1,
                 'periode' => 1,
                 'ns1' => "ns1.mysrsx.com",
                 'ns2' => "ns2.mysrsx.net",

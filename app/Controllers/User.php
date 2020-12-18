@@ -78,10 +78,14 @@ class User extends BaseController
 	 * @param PurchaseMetadata $metadata
 	 * @param mixed $input
 	 * @param Server $server
+	 * @param Login $login
 	 * @return Domain|string|null if valid, return final domain object/string
 	 */
-	protected function processNewDomainTransaction($metadata, $input, $server = null)
+	protected function processNewDomainTransaction($metadata, $input, $server = null, $login = null)
 	{
+		if (!$login) {
+			$login = $this->login;
+		}
 		if (!is_array($input)) {
 			return null; // @codeCoverageIgnore
 		} elseif ($this->validator->reset()->setRules([
@@ -104,12 +108,14 @@ class User extends BaseController
 			$scheme = (new SchemeModel())->find($input['scheme']);
 			$domain = new Domain([
 				'name' => $input['name'] . $scheme->alias,
-				'login_id' => $this->login->id,
+				'login_id' => $login->id,
 				'scheme_id' => $scheme->id,
 				'status' => 'pending',
 			]);
 			$model = new DomainModel();
 			if (!$model->save($domain)) return null;
+			$domain->id = $model->getInsertID();
+			$metadata->domain = $domain->name;
 			$metadata->price += $scheme->price_local + $scheme->renew_local * ($metadata->years - 1);
 			$metadata->registrar = (new DigitalRegistra())->normalizeDomainInput(
 				$bio['owner'],
@@ -118,9 +124,8 @@ class User extends BaseController
 				$domain,
 				$domain->scheme,
 				$server,
-				$this->login
+				$login
 			);
-			$domain->id = $model->getInsertID();
 			return $domain;
 		} elseif ($this->validator->reset()->setRules([
 			'custom' => 'required|regex_match[/^[a-zA-Z0-9][a-zA-Z0-9_.-]' .
@@ -138,7 +143,7 @@ class User extends BaseController
 	protected function checkNewDomainTransaction($request, $payment, $hosting)
 	{
 		$metadata = $payment->metadata;
-		if ($newdomain = $this->processNewDomainTransaction($metadata, $request->getPost('domain'), $hosting->server)) {
+		if ($newdomain = $this->processNewDomainTransaction($metadata, $request->getPost('domain'), $hosting->server, $hosting->login)) {
 			$payment->metadata = $metadata;
 			if ($newdomain instanceof Domain) {
 				$payment->domain_id = $newdomain->id;
