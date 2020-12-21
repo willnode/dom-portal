@@ -27,10 +27,13 @@ class Api extends BaseController
         if ($login) {
             (new LoginModel())->login($login);
         } else {
-            (new LoginModel())->register([
+            $id = (new LoginModel())->register([
                 'email' => $email,
                 'name' => $name,
-            ], true, true);
+            ], true, false);
+            if ($id && ENVIRONMENT === 'production') {
+                (new LoginModel())->find($id)->sendVerifyEmail();
+            }
         }
         if ($r = $this->request->getCookie('r')) {
             $this->response->deleteCookie('r');
