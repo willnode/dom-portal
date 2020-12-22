@@ -120,14 +120,22 @@ class DigitalRegistra
 	 */
 	public function domainInfo($domain, $api_id)
 	{
-		return $this->callApi('/domain/check', ['domain' => $domain, 'api_id' => $api_id]);
+		return $this->callApi('/domain/info', ['domain' => $domain, 'api_id' => $api_id]);
 	}
 	/**
 	 * @codeCoverageIgnore
 	 */
 	public function domainRenew($domain, $api_id, $periode)
 	{
-		return $this->callApi('/domain/renew', ['domain' => $domain, 'api_id' => $api_id], $periode);
+		return $this->callApi('/domain/renew', ['domain' => $domain, 'api_id' => $api_id, 'periode' => $periode]);
+	}
+
+	/**
+	 * @codeCoverageIgnore
+	 */
+	public function dnsInfo($domain)
+	{
+		return $this->callApi('/dns/info', ['domain' => $domain]);
 	}
 	/**
 	 * @codeCoverageIgnore

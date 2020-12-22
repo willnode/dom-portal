@@ -731,12 +731,17 @@ class User extends BaseController
 		} else if ($page == 'create') {
 			return $this->createDomain();
 		} else {
+			/** @var Domain $domain */
 			if ($domain = (new DomainModel())->atLogin($this->login->id)->find($id)) {
 				switch ($page) {
 					case 'detail':
 						return $this->detailDomain($domain);
 					case 'invoices':
 						return $this->invoicesDomain($domain);
+					case 'info_domain':
+						return $this->response->setJSON((new DigitalRegistra())->domainInfo($domain->name, $domain->id));
+					case 'info_dns':
+						return $this->response->setJSON((new DigitalRegistra())->dnsInfo($domain->name));
 				}
 			}
 		}

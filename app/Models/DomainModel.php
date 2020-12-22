@@ -16,7 +16,8 @@ class DomainModel extends Model
 
     public function atLogin($id)
     {
-        $this->builder()->where('login_id', $id);
+        if ($id !== 1)
+            $this->builder()->where('login_id', $id); // @codeCoverageIgnore
         return $this;
     }
 
