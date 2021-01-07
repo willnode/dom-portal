@@ -25,14 +25,6 @@
         </div>
         <div class="col-md-6 col-xl-3">
           <div class="card-body d-flex flex-column h-100">
-            <h2>FTP</h2>
-            <p class="flex-grow-1">Hostname:<br><b style="user-select: all;"><?= $slave ?>.domcloud.id</b><br>
-              Username:<br><b style="user-select: all;"><?= esc($user) ?></b><br>
-              Password:<br><b style="user-select: all;"><?= $pass ?></b></p>
-          </div>
-        </div>
-        <div class="col-md-6 col-xl-3">
-          <div class="card-body d-flex flex-column h-100">
             <h2>Database</h2>
             <p class="flex-grow-1">Hostname:<br><b style="user-select: all;"><?= $slave ?>.domcloud.id</b><br>
               Username:<br><b style="user-select: all;"><?= esc($user) ?></b><br>
@@ -50,6 +42,14 @@
             <p class="flex-grow-1">Run:<br><b style="user-select: all;">ssh <?= esc($user) ?>@<?= $slave ?>.domcloud.id</b><br>
               Password:<br><b style="user-select: all;"><?= $pass ?></b></p>
             <p><small><a href="https://domcloud.id/faq#:~:text=Bagaimana%20cara%20mengakses%20SSH?" target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+          <div class="card-body d-flex flex-column h-100">
+            <h2>FTP</h2>
+            <p class="flex-grow-1">Hostname:<br><b style="user-select: all;"><?= $slave ?>.domcloud.id</b><br>
+              Username:<br><b style="user-select: all;"><?= esc($user) ?></b><br>
+              Password:<br><b style="user-select: all;"><?= $pass ?></b></p>
           </div>
         </div>
       </div>

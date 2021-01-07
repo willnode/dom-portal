@@ -64,7 +64,7 @@
 	'back' => 'Kembali',
 	'save' => 'Simpan',
 	'change' => 'Ganti',
-	'archives' => 'Arsip',
+	'archives' => 'Arsip Pembelian',
 	'renew' => 'Perbarui',
 	'upgrade' => 'Upgrade',
 	'extend' => 'Perpanjang',

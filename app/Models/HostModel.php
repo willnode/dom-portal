@@ -18,6 +18,8 @@ class HostModel extends Model
     {
         if ($id !== 1)
             $this->builder()->where('login_id', $id); // @codeCoverageIgnore
+        else
+            $this->builder()->whereNotIn('status', ['removed']);
         return $this;
     }
 
