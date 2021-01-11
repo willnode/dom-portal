@@ -103,7 +103,7 @@ class CronJob extends BaseCommand
                             $host->status = 'removed';
                         }
                         // TODO: Deleted email
-                    } else if (!($expired || $overDisk || $overBw || $host->status == 'suspended')) {
+                    } else if (!($expired || $overDisk || $overBw || $host->status == 'banned')) {
                         // Enable
                         $vm->enableHost($host->domain, $server->alias);
                         $host->status = 'active';
