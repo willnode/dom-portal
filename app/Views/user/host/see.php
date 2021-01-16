@@ -18,7 +18,7 @@
             <form target="_blank" action="https://<?= $slave ?>.domcloud.id:<?= $webminport ?>/session_login.cgi" method="POST">
               <input name="user" class="d-none" value="<?= esc($user) ?>">
               <input name="pass" class="d-none" value="<?= esc($rawpass) ?>">
-              <p><input type="submit" value="<?= lang('Host.loginTo') ?> Portal Host" class="btn btn-sm btn-link p-0"></p>
+              <p><small><a href="https://<?= $slave ?>.domcloud.id:<?= $webminport ?>/filemin/index.cgi?path=%2F&xnavigation=1" target="_blank">Buka Portal</a></small> / <input type="submit" value="Auto Login" class="btn btn-sm btn-link p-0"></p>
               <p><small><a href="https://domcloud.id/faq#:~:text=Saya%20Mendapat%20cookie,portal%20Webmin." target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
             </form>
           </div>

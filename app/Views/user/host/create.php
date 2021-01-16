@@ -50,7 +50,7 @@
                       <?= lang('Host.chooseTemplate') ?>
                     </button>
                   </div>
-                  <textarea name="template" class="form-control font-monospace text-nowrap" placeholder="Config File" rows=7></textarea>
+                  <textarea name="template" class="form-control font-monospace text-nowrap" placeholder="Config File" rows=7>features: ['mysql', 'ssl']</textarea>
                 </div>
               </div>
             </div>
