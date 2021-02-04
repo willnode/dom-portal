@@ -46,7 +46,7 @@
                 <div class="mb-3">
                   <div class="d-flex mb-2">
                     <label class="form-label" for="template"><?= lang('Host.template') ?></label>
-                    <button type="button" class="ml-auto btn btn-sm btn-primary" data-toggle="modal" data-target="#templateModal">
+                    <button type="button" class="ms-auto btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#templateModal">
                       <?= lang('Host.chooseTemplate') ?>
                     </button>
                   </div>
@@ -109,7 +109,7 @@
                 <fieldset disabled id="dm-buy" class="d-none">
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center"><?= lang('Host.findDomain') ?>
-                      <button type="button" id="domainBioModalBtn" class="ml-auto btn btn-sm btn-warning" data-toggle="modal" data-target="#domainBioModal">
+                      <button type="button" id="domainBioModalBtn" class="ms-auto btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#domainBioModal">
                         Isi Biodata Domain
                       </button>
                     </label>
@@ -159,28 +159,28 @@
               <div class="card-body">
                 <div class="d-flex">
                   <h6><?= lang('Host.schemePrice') ?></h6>
-                  <div class="ml-auto" id="outprice">-</div>
+                  <div class="ms-auto" id="outprice">-</div>
                 </div>
                 <div class="d-flex">
                   <h6><?= lang('Host.domainPrice') ?></h6>
-                  <div class="ml-auto" id="outdomain">-</div>
+                  <div class="ms-auto" id="outdomain">-</div>
                 </div>
                 <div class="d-flex">
                   <h6><?= lang('Host.addonsPrice') ?></h6>
-                  <div class="ml-auto" id="outaddons">-</div>
+                  <div class="ms-auto" id="outaddons">-</div>
                 </div>
                 <div class="d-flex">
                   <h6><?= lang('Host.transactionCost') ?></h6>
-                  <div class="ml-auto" id="outtip">-</div>
+                  <div class="ms-auto" id="outtip">-</div>
                 </div>
                 <hr>
                 <div class="d-flex">
                   <h6><?= lang('Host.totalPayment') ?></h6>
-                  <div class="ml-auto" id="outbill">-</div>
+                  <div class="ms-auto" id="outbill">-</div>
                 </div>
                 <div class="d-flex">
                   <h6><?= lang('Host.expirationDate') ?></h6>
-                  <div class="ml-auto" id="outexp">-</div>
+                  <div class="ms-auto" id="outexp">-</div>
                 </div>
                 <hr>
                 <div class="row">
@@ -195,15 +195,15 @@
                   </div>
                   <div class="col">
                     <h6>Disk Space</h6>
-                    <div class="ml-auto" id="specdisk">- MiB</div>
+                    <div class="ms-auto" id="specdisk">- MiB</div>
                   </div>
                   <div class="col">
                     <h6>Bandwidth</h6>
-                    <div class="ml-auto" id="specbwt">- GiB</div>
+                    <div class="ms-auto" id="specbwt">- GiB</div>
                   </div>
                   <div class="col">
                     <h6>Add-ons</h6>
-                    <div class="ml-auto" id="specbwb">- GiB</div>
+                    <div class="ms-auto" id="specbwb">- GiB</div>
                   </div>
                 </div>
                 <input type="submit" id="submitBtn" value="<?= lang('Host.orderNow') ?>" class="form-control btn-lg btn btn-outline-warning mt-3">
@@ -222,15 +222,13 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title"><?= lang('Host.chooseTemplate') ?></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="row g-2" style="color: white; fill: white">
               <?php foreach ($templates as $t) : ?>
                 <div class="col-md-6 my-1">
-                  <div class="btn btn-block btn-dark text-center" style="background-color: <?= $t->color ?>;" onclick="submitTemplate(this)" data-dismiss="modal" data-template="<?= $t->template ?>">
+                  <div class="btn w-100 btn-dark text-center" style="background-color: <?= $t->color ?>;" onclick="submitTemplate(this)" data-bs-dismiss="modal" data-template="<?= $t->template ?>">
                     <div class="w-50 mx-auto my-2"><?= $t->logo ?></div>
                     <p class="mb-0"><?= $t->name ?></p>
                   </div>
@@ -242,7 +240,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= lang('Interface.back') ?></button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= lang('Interface.back') ?></button>
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@
         <input type="hidden" name="action" value="resend">
         <input type="submit" class="btn btn-success" onclick="return confirm('<?= lang('Interface.confirmationPrompt') ?>')" value="<?= lang('Interface.resendConfirmationEmail') ?>">
       </form>
-      <a href="/user/profile" class="btn btn-secondary ml-auto my-2"><?= lang('Interface.wrongEmail') ?></a>
+      <a href="/user/profile" class="btn btn-secondary ms-auto my-2"><?= lang('Interface.wrongEmail') ?></a>
     </div>
   </div>
 </body>

@@ -4,7 +4,7 @@
 	<link rel="shortcut icon" href="/logo.svg" />
 	<meta name="description" content="The small framework with powerful features">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
 	<?php if (ENVIRONMENT === 'production') : ?>
 		<script src="https://google.com/recaptcha/api.js" async defer></script>
 	<?php endif ?>

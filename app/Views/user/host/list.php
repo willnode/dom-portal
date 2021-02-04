@@ -14,7 +14,7 @@
             <?= lang('Host.purchasedHint') ?>
           </div>
         <?php endif ?>
-        <a class="btn btn-primary my-2 float-sm-right" href="/user/host/create"><?= lang('Host.newOrder') ?></a>
+        <a class="btn btn-primary my-2 float-sm-end" href="/user/host/create"><?= lang('Host.newOrder') ?></a>
         <h1 class="mb-4"><?= lang('Host.listTitle') ?></h1>
         <hr>
         <div class="table-responsive">

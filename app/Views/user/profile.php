@@ -72,7 +72,7 @@
         </div>
         <div class="card my-2">
           <div class="card-body">
-            <a href="/user/delete" class="float-right btn btn-danger"><?= lang('Interface.deleteAccount') ?></a>
+            <a href="/user/delete" class="float-end btn btn-danger"><?= lang('Interface.deleteAccount') ?></a>
           </div>
         </div>
       </div>

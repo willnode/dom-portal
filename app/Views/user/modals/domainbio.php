@@ -4,9 +4,7 @@
     <form class="modal-content" name="domainBio">
       <div class="modal-header">
         <h5 class="modal-title">Masukkan Biodata</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <fieldset class="mb-3 card">
@@ -122,7 +120,7 @@
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary"><?= lang('Interface.save') ?></button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= lang('Interface.back') ?></button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= lang('Interface.back') ?></button>
       </div>
     </form>
   </div>

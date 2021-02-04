@@ -15,9 +15,9 @@
             <div class="input-group mb-3">
               <h3><?= ucfirst($host->status) ?></h3>
               <?php if ($host->status === 'pending') : ?>
-                <a href="/user/host/invoices/<?= $host->id ?>" class="ml-auto btn btn-primary"><?= lang('Host.finishPayment') ?></a>
+                <a href="/user/host/invoices/<?= $host->id ?>" class="ms-auto btn btn-primary"><?= lang('Host.finishPayment') ?></a>
               <?php elseif ($host->status === 'active') : ?>
-                <a href="http://<?= $host->domain ?>" target="_blank" rel="noopener noreferrer" class="ml-auto btn btn-primary"><?= lang('Host.openWebsite') ?></a>
+                <a href="http://<?= $host->domain ?>" target="_blank" rel="noopener noreferrer" class="ms-auto btn btn-primary"><?= lang('Host.openWebsite') ?></a>
               <?php endif ?>
             </div>
             <div><?= lang('Host.usernameHost') ?></div>
@@ -120,7 +120,7 @@
                 <div class="col-6">
                   <small> <?= lang('Host.planDetail', [$plan->alias, format_bytes($plan->disk_bytes), format_bytes($plan->net_monthly_bytes)]) ?></small>
                 </div>
-                <div class="col-6 text-right">
+                <div class="col-6 text-end">
                   <small><?= lang('Interface.lastUpdated')?> <span title="<?=$stat->updated_at?> UTC"><?=$stat->updated_at->humanize()?></span></small>
                 </div>
               </div>
@@ -137,7 +137,7 @@
     </div>
     <div class="d-flex mb-3">
       <a href="/user/host" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
-      <a href="/user/host/delete/<?= $host->id ?>" class="mt-3 ml-auto btn btn-danger"><?= lang('Host.deleteHost') ?></a>
+      <a href="/user/host/delete/<?= $host->id ?>" class="mt-3 ms-auto btn btn-danger"><?= lang('Host.deleteHost') ?></a>
     </div>
   </div>
   <script id="bandwidths" type="application/json">

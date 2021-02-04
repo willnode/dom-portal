@@ -55,9 +55,9 @@
       </div>
       <div class="card-body">
         <?php if ($shown) : ?>
-          <a href="?" class="mt-3 btn btn-warning float-right"><?= lang('Host.hidePassword') ?></a>
+          <a href="?" class="mt-3 btn btn-warning float-end"><?= lang('Host.hidePassword') ?></a>
         <?php else : ?>
-          <a href="?show=password" class="mt-3 btn btn-warning float-right"><?= lang('Host.showPassword') ?></a>
+          <a href="?show=password" class="mt-3 btn btn-warning float-end"><?= lang('Host.showPassword') ?></a>
         <?php endif ?>
         <a href="/user/host/detail/<?= $id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
       </div>

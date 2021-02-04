@@ -9,7 +9,7 @@
   <div class="container">
     <div class="card">
       <div class="card-body">
-        <a class="btn btn-primary my-2 float-sm-right" href="/user/domain/create"><?= lang('Domain.newOrder') ?></a>
+        <a class="btn btn-primary my-2 float-sm-end" href="/user/domain/create"><?= lang('Domain.newOrder') ?></a>
         <h1 class="mb-4"><?= lang('Domain.listTitle') ?></h1>
         <table class="table table-striped">
           <thead>

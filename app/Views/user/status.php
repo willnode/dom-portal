@@ -41,7 +41,7 @@
                       <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: <?= 100 * ($stat->mem[4]) / $stat->mem[0] ?>%"></div>
                     </div>
                   </td>
-                  <td width="150px" class="text-right">
+                  <td width="150px" class="text-end">
                     <?= format_bytes(($stat->mem[0] - $stat->mem[1]) * 1024) ?> /
                     <?= format_bytes($stat->mem[0] * 1024) ?>
                   </td>
@@ -53,19 +53,19 @@
                       <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * ($stat->disk_total - $stat->disk_free) / $stat->disk_total ?>%"></div>
                     </div>
                   </td>
-                  <td class="text-right">
+                  <td class="text-end">
                     <?= format_bytes($stat->disk_total - $stat->disk_free) ?> /
                     <?= format_bytes($stat->disk_total) ?>
                   </td>
                 </tr>
               </table>
               <div class="d-flex">
-                <div class="mr-auto">
+                <div class="me-auto">
                   <a href="//status.domcloud.id" title="See status page">
                     <img src="https://img.shields.io/uptimerobot/ratio/<?= $server->status ?>" alt="">
                   </a>
                 </div>
-                <div class="text-muted text-right">
+                <div class="text-muted text-end">
                   <small><?= lang('Interface.lastUpdated') ?> <?= $stat_update ?></small>
                 </div>
               </div>

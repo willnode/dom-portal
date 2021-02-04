@@ -17,7 +17,7 @@
               <h3 class="card-title">Data Domain</h3>
               <div class="mb-3">
                 <label class="form-label d-flex align-items-center"><?= lang('Host.findDomain') ?>
-                  <button type="button" id="domainBioModalBtn" class="ml-auto btn btn-sm btn-warning" data-toggle="modal" data-target="#domainBioModal">
+                  <button type="button" id="domainBioModalBtn" class="ms-auto btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#domainBioModal">
                     Isi Biodata Domain
                   </button>
                 </label>
@@ -48,24 +48,24 @@
             <div class="card-body">
               <div class="d-flex">
                 <h5 id="domainname"></h5>
-                <div class="ml-auto" id="outstat">-</div>
+                <div class="ms-auto" id="outstat">-</div>
               </div>
               <div class="d-flex">
                 <h6><?= lang('Host.domainPrice') ?></h6>
-                <div class="ml-auto" id="outprice">-</div>
+                <div class="ms-auto" id="outprice">-</div>
               </div>
               <div class="d-flex">
                 <h6><?= lang('Host.transactionCost') ?></h6>
-                <div class="ml-auto" id="outtip">-</div>
+                <div class="ms-auto" id="outtip">-</div>
               </div>
               <hr>
               <div class="d-flex">
                 <h6><?= lang('Host.totalPayment') ?></h6>
-                <div class="ml-auto" id="outtotal">-</div>
+                <div class="ms-auto" id="outtotal">-</div>
               </div>
               <div class="d-flex">
                 <h6><?= lang('Host.expirationDate') ?></h6>
-                <div class="ml-auto" id="outexp">-</div>
+                <div class="ms-auto" id="outexp">-</div>
               </div>
               <p><i><small>Perlu diingat anda hanya mendaftarkan domain. Apabila anda ingin mendaftarkan domain sekaligus hosting, anda dapat <a href="/user/host/create">melakukannya disini</a> </small></i></p>
               <input type="submit" id="submitBtn" class="btn btn-primary btn-block" value="<?= lang('Host.orderNow') ?>">

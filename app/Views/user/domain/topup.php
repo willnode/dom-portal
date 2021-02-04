@@ -31,15 +31,15 @@
             </div>
             <div class="d-flex mb-3">
               <h5>Jumlah Topup</h5>
-              <div class="ml-auto" id="topup">-</div>
+              <div class="ms-auto" id="topup">-</div>
             </div>
             <div class="d-flex mb-3">
               <h5>Harga Bayar</h5>
-              <div class="ml-auto" id="topay">-</div>
+              <div class="ms-auto" id="topay">-</div>
             </div>
             <div class="d-flex mb-3">
               <h5>Kredit Setelah Topup</h5>
-              <div class="ml-auto" id="total">-</div>
+              <div class="ms-auto" id="total">-</div>
             </div>
           </div>
         </div>

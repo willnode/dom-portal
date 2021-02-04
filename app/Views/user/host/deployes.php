@@ -9,7 +9,7 @@
     <?= view('user/host/navbar') ?>
 
     <?php if ($host->status === 'active') : ?>
-      <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#deployModal">
+      <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#deployModal">
         Deploy New
       </button>
     <?php endif ?>
@@ -45,7 +45,7 @@
       <form class="modal-content" method="POST" onsubmit="return isItSafe(this)">
         <div class="modal-header">
           <h5 class="modal-title" id="deployModalLabel">New deploy</h5>
-          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <?= csrf_field() ?>
@@ -53,7 +53,7 @@
           <a href="https://github.com/domcloud/dom-templates" target="_blank" rel="noopener noreferrer">Deploy Config Reference</a>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
           <button type="submit" class="btn btn-primary">Deploy Sekarang</button>
         </div>
       </form>

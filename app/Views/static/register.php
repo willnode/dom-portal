@@ -21,7 +21,7 @@
 
     </form>
 		<div class="d-flex mb-5 text-shadow">
-			<a href="<?= href('login') ?>" class="btn btn-link text-white mr-auto"><?= lang('Interface.login') ?></a>
+			<a href="<?= href('login') ?>" class="btn btn-link text-white me-auto"><?= lang('Interface.login') ?></a>
 			<?php $l = lang('Interface.code');
 			foreach (\Config\Services::request()->config->supportedLocales as $lang) : ?>
 				<?php if ($l !== $lang) : ?>

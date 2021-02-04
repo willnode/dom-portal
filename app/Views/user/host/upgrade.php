@@ -22,7 +22,7 @@
               <div class="radio">
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="new" onchange="syncPlans()" required class="mr-2" <?= $purchase && (($data->notification & 1) != 1) ? 'disabled' : 'checked' ?>>
+                    <input type="radio" name="mode" value="new" onchange="syncPlans()" required class="me-2" <?= $purchase && (($data->notification & 1) != 1) ? 'disabled' : 'checked' ?>>
                     <b><?= lang('Interface.renew') ?></b>
                   </div>
                   <div class="pl-4">
@@ -31,7 +31,7 @@
                 </label>
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="extend" onchange="syncPlans()" class="mr-2" <?= !$purchase ? 'disabled' : '' ?>>
+                    <input type="radio" name="mode" value="extend" onchange="syncPlans()" class="me-2" <?= !$purchase ? 'disabled' : '' ?>>
                     <b><?= lang('Interface.extend') ?></b>
                   </div>
                   <div class="pl-4">
@@ -41,7 +41,7 @@
                 </label>
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="upgrade" onchange="syncPlans()" class="mr-2" <?= !$purchase ? 'disabled' : '' ?>>
+                    <input type="radio" name="mode" value="upgrade" onchange="syncPlans()" class="me-2" <?= !$purchase ? 'disabled' : '' ?>>
                     <b><?= lang('Interface.upgrade') ?></b>
                   </div>
                   <div class="pl-4">
@@ -50,7 +50,7 @@
                 </label>
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="topup" onchange="syncPlans()" class="mr-2" <?= !$purchase ? 'disabled' : '' ?>>
+                    <input type="radio" name="mode" value="topup" onchange="syncPlans()" class="me-2" <?= !$purchase ? 'disabled' : '' ?>>
                     <b><?= lang('Interface.topup') ?></b>
                   </div>
                   <div class="pl-4">
@@ -69,7 +69,7 @@
                 <?php foreach ($plans as $plan) : ?>
                   <div class="col-4">
                     <label>
-                      <input type="radio" <?= $plan->id === 1 && $purchase ? 'disabled' : '' ?> name="plan" id="plan<?= $plan->id ?>" class="mr-2" value="<?= $plan->id ?>" required onchange="recalculate()">
+                      <input type="radio" <?= $plan->id === 1 && $purchase ? 'disabled' : '' ?> name="plan" id="plan<?= $plan->id ?>" class="me-2" value="<?= $plan->id ?>" required onchange="recalculate()">
                       <?= $plan->alias ?>
                     </label>
                   </div>
@@ -110,7 +110,7 @@
                   <fieldset disabled id="dm-buy" class="d-none">
                     <div class="mb-3">
                       <label class="form-label d-flex align-items-center"><?= lang('Host.findDomain') ?>
-                        <button type="button" id="domainBioModalBtn" class="ml-auto btn btn-sm btn-warning" data-toggle="modal" data-target="#domainBioModal">
+                        <button type="button" id="domainBioModalBtn" class="ms-auto btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#domainBioModal">
                           Isi Biodata Domain
                         </button>
                       </label>
@@ -162,42 +162,42 @@
             <div class="card-body">
               <div class="d-flex">
                 <h6><?= lang('Host.schemePrice') ?></h6>
-                <div class="ml-auto" id="outprice">-</div>
+                <div class="ms-auto" id="outprice">-</div>
               </div>
               <div class="d-flex">
                 <h6><?= lang('Host.domainPrice') ?></h6>
-                <div class="ml-auto" id="outdomain">-</div>
+                <div class="ms-auto" id="outdomain">-</div>
               </div>
               <div class="d-flex">
                 <h6><?= lang('Host.addonsPrice') ?></h6>
-                <div class="ml-auto" id="outaddons">-</div>
+                <div class="ms-auto" id="outaddons">-</div>
               </div>
               <div class="d-flex">
                 <h6><?= lang('Host.transactionCost') ?></h6>
-                <div class="ml-auto" id="outtip">-</div>
+                <div class="ms-auto" id="outtip">-</div>
               </div>
               <hr>
               <div class="d-flex">
                 <h6><?= lang('Host.totalPayment') ?></h6>
-                <div class="ml-auto" id="outbill">-</div>
+                <div class="ms-auto" id="outbill">-</div>
               </div>
               <div class="d-flex">
                 <h6><?= lang('Host.expirationDate') ?></h6>
-                <div class="ml-auto" id="outexp">-</div>
+                <div class="ms-auto" id="outexp">-</div>
               </div>
               <hr>
               <div class="row">
                 <div class="col">
                   <h6>Disk Space</h6>
-                  <div class="ml-auto" id="specdisk">- MiB</div>
+                  <div class="ms-auto" id="specdisk">- MiB</div>
                 </div>
                 <div class="col">
                   <h6>Bandwidth</h6>
-                  <div class="ml-auto" id="specbwt">- GiB</div>
+                  <div class="ms-auto" id="specbwt">- GiB</div>
                 </div>
                 <div class="col">
                   <h6>Add-ons</h6>
-                  <div class="ml-auto" id="specbwb">- GiB</div>
+                  <div class="ms-auto" id="specbwb">- GiB</div>
                 </div>
               </div>
               <input type="submit" value="<?= lang('Host.orderNow') ?>" id="submitBtn" class="form-control btn-lg btn btn-primary mt-3">
