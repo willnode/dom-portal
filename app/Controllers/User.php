@@ -788,6 +788,9 @@ class User extends BaseController
 				if ($this->login->email_verified_at) {
 					unset($data['email']);
 				}
+				if (!($data['phone'] ?? '')) {
+					unset($data['phone']);
+				}
 				(new LoginModel())->save($data);
 				$this->request->setLocale($data['lang']);
 				return $this->response->redirect('/user/profile');

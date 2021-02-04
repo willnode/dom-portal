@@ -108,6 +108,14 @@ class WebViewTest extends CIDatabaseTestCase
         }
     }
 
+    public function testRollingQuota()
+    {
+        // 3GB usage, 1GB plan, 2.5GB addons => 0.5
+        $this->assertEquals(500, calculateRemaining(3000, 2500, 1000));
+        // 500MB usage, 1GB plan, 2.5GB addons => 2.5
+        $this->assertEquals(2500, calculateRemaining(500, 2500, 1000));
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

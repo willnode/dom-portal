@@ -61,3 +61,8 @@ function get_gravatar( $email, $s = 80, $d = 'mp', $r = 'g' ) {
     $url .= "?s=$s&d=$d&r=$r";
     return $url;
 }
+
+function calculateRemaining($current, $addons, $plan)
+{
+    return floor(min($addons, max(0, $addons - ($current - $plan))));
+}

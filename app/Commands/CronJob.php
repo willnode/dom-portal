@@ -66,8 +66,9 @@ class CronJob extends BaseCommand
                 } else {
                     if ($stat->quota_net > $newStat['quota_net']) {
                         // Roll over time
-                        log_message('notice', 'ROLLOVER ' . $newStat['domain'] . ': ' . json_encode([$stat->quota_net, $newStat['quota_net']]));
-                        $host->addons = max(0, $host->addons - (($stat->quota_net / 1024 / 1024) - ($plan->net * 1024 / 12)));
+                        $newaddons = calculateRemaining($stat->quota_net / 1024 / 1024, $host->addons, $plan->net * 1024 / 12);
+                        log_message('notice', 'ROLLOVER ' . $newStat['domain'] . ': ' . json_encode([$stat->quota_net, $newStat['quota_net'], $host->addons, $newaddons]));
+                        $host->addons = $newaddons;
                         $vm->adjustBandwidthHost(
                             ($host->addons + ($plan->net * 1024 / 12)),
                             $host->domain,
@@ -96,7 +97,7 @@ class CronJob extends BaseCommand
                         $host->status = 'expired';
                     }
                 } else {
-                    if ((strtotime('-2 weeks', time()) >= $host->expiry_at->getTimestamp()) || ($stat->quota_server > $plan->disk * 1024 * 1024 * 3)) {
+                    if ((strtotime('-4 weeks', time()) >= $host->expiry_at->getTimestamp()) || ($stat->quota_server > $plan->disk * 1024 * 1024 * 3)) {
                         if (!$host->purchase) {
                             // Paid hosts should be immune from this, in case error logic happens...
                             $vm->deleteHost($host->domain, $server->alias);
