@@ -126,6 +126,9 @@ class TemplateDeployer
                 $args = explode(' ', $feature);
                 if (!$args) continue;
                 switch ($args[0]) {
+                    case 'dns':
+                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, ['dns']));
+                        break;
                     case 'mysql':
                         $dbname = ($username . '_' . ($args[1] ?? 'db'));
                         $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, ['mysql']));

@@ -112,9 +112,14 @@ class Api extends BaseController
                     if ($metadata->domain && $host->domain != $metadata->domain) {
                         (new VirtualMinShell())->cnameHost(
                             $host->domain,
-                            $host->server->alias,
+                            $sv = $host->server->alias,
                             $metadata->domain
                         );
+                        if ($purchase->domain_id && $host->status != 'pending') {
+                            (new VirtualMinShell())->enableFeature($domain, $sv, ['dns']);
+                        } else if (!$purchase->domain_id && $host->status != 'pending') {
+                            (new VirtualMinShell())->disableFeature($domain, $sv, ['dns']);
+                        }
                         $host->domain = $metadata->domain;
                     }
                     if ($metadata->plan) {
@@ -127,9 +132,12 @@ class Api extends BaseController
                                 $host->password,
                                 $login->email,
                                 $host->domain,
-                                $host->server->alias,
+                                $sv = $host->server->alias,
                                 $plan->alias
                             );
+                            if ($purchase->domain_id) {
+                                (new VirtualMinShell())->enableFeature($domain, $sv, ['dns']);
+                            }
                             if ($metadata->template) {
                                 // @codeCoverageIgnoreStart
                                 (new TemplateDeployer())->schedule(

@@ -92,6 +92,13 @@ class VirtualMinShell
 		}, $features));
 		return $this->execute($this->wrapWget($cmd, $server), " Enable Features for $domain ");
 	}
+	public function disableFeature($domain, $server, $features)
+	{
+		$cmd = "program=disable-feature&domain=$domain" . implode('', array_map(function ($x) {
+			return "&$x=";
+		}, $features));
+		return $this->execute($this->wrapWget($cmd, $server), " Disable Features for $domain ");
+	}
 	public function adjustBandwidthHost($bw_mb, $domain, $server)
 	{
 		$bw_bytes = floor($bw_mb) * 1024 * 1024;
