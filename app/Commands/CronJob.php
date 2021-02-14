@@ -134,7 +134,7 @@ class CronJob extends BaseCommand
                             'dynamic_template_data' => [
                                 'name' => $login->name,
                                 'domain' =>  $host->domain,
-                                'date' => date('Y-m-d H:i:s'),
+                                'date' => $host->expiry_at->toDateString(),
                                 'reason' => 'Melewati Batas Kadarluarsa',
                                 'solution' => 'Anda dapat memperpanjang batas kadarluarsa sekarang agar tidak menjadi subjek penghapusan data permanen dalam beberapa pekan mendatang.',
                                 'url' => base_url('user/host/detail/'.$host->id),
