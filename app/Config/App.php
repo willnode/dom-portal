@@ -32,13 +32,8 @@ class App extends BaseConfig
 		'verify_email' => [ 'id' => '', 'en' => '' ], // verify_url
 		'receipt_email' => [ 'id' => '', 'en' => '' ],
 		'recover_email' => [ 'id' => '', 'en' => '' ],
-		'notify_updates' => [ 'id' => '', 'en' => '' ],
-		'warn_bandwidth' => [ 'id' => '', 'en' => '' ],
-		'warn_disk' => [ 'id' => '', 'en' => '' ],
-		'warn_expiry' => [ 'id' => '', 'en' => '' ],
-		'disabled_bandwidth' => [ 'id' => '', 'en' => '' ],
-		'disabled_disk' => [ 'id' => '', 'en' => '' ],
-		'disabled_expiry' => [ 'id' => '', 'en' => '' ],
+		'reminder_email' => [ 'id' => '', 'en' => '' ],
+		'suspension_email' => [ 'id' => '', 'en' => '' ],
 	];
 	public $sendGridAsms = [
 		'billing' => '',

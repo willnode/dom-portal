@@ -159,7 +159,6 @@ class Api extends BaseController
                                 $plan->alias,
                             );
                         }
-                        $host->expiry_at = $metadata->expiration;
                         $host->plan_id = $metadata->plan;
                         $host->status = 'active';
                         $host->addons += $plan->net * (3 * 1024 / 12);
@@ -167,6 +166,10 @@ class Api extends BaseController
                             $login->trustiness = $metadata->plan;
                             (new LoginModel())->save($login);
                         }
+                    }
+                    if ($metadata->expiration) {
+                        $host->notification = 0;
+                        $host->expiry_at = $metadata->expiration;
                     }
                     if ($metadata->addons) {
                         $host->addons += $metadata->addons * 1024;
