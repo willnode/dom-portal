@@ -11,7 +11,7 @@ class LoginModel extends Model
 {
     protected $table         = 'login';
     protected $allowedFields = [
-        'id', 'name', 'email', 'phone', 'password', 'otp', 'lang', 'email_verified_at',
+        'id', 'name', 'email', 'phone', 'password', 'otp', 'lang', 'email_verified_at', 'trustiness',
     ];
     protected $primaryKey = 'id';
     protected $returnType = 'App\Entities\Login';

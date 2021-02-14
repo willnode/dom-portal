@@ -413,6 +413,8 @@
       <div class="alert alert-danger">
         <?php if ($trustiness === 0) : ?>
           <?= lang('Host.createLimitVerEmail') ?>
+          <br>
+          <a href="/user/profile">Belum menerima konfirmasi email?</a>
         <?php else : ?>
           <?= lang('Host.createLimitUpgrade', [(new App\Models\PlanModel())->find($trustiness + 1)->alias]) ?>
         <?php endif ?>
