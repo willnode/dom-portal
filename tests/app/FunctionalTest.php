@@ -242,11 +242,12 @@ class FunctionalTest extends CIDatabaseTestCase
         $host = (new HostModel())->find(1);
         $this->assertTrue($host->plan_id === 2);
         $this->assertTrue(($purchase = $host->purchase)->status === 'active');
-        $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
+        $this->assertEquals([
             'program=modify-domain&domain=emily.dom.my.id&newdomain=emily.com',
+            'program=disable-feature&domain=emily.com&dns=', // we use custom bind
             'program=enable-domain&domain=emily.com',
             'program=modify-domain&domain=emily.com&apply-plan=Lite'
-        ]);
+        ], explode("\n", trim(VirtualMinShell::$output)));
         VirtualMinShell::$output = '';
 
         // Okay, try to change domain
@@ -291,10 +292,10 @@ class FunctionalTest extends CIDatabaseTestCase
         ]);
         $api->notify();
         $this->assertTrue(($purchase = $host->purchase)->status === 'active');
-        $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
-            'program=modify-domain&domain=emily.me&bw=21474836480',
+        $this->assertEquals([
+            'program=modify-domain&domain=emily.me&bw=32212254720',
             'program=enable-domain&domain=emily.me',
-        ]);
+        ], explode("\n", trim(VirtualMinShell::$output)));
         VirtualMinShell::$output = '';
 
         // Okay, try to extend
@@ -433,6 +434,14 @@ class FunctionalTest extends CIDatabaseTestCase
             'status' => 'berhasil',
         ]);
         $api->notify();
+
+        $this->assertEquals([
+            'program=create-domain&user=contoso&pass=mycontoso&email=contoso@example.com&domain=example.com&plan=Lite&limits-from-plan=&dir=&webmin=&virtualmin-nginx=&virtualmin-nginx-ssl=&unix=',
+            'program=enable-feature&domain=example.com&dns=',
+            'program=modify-domain&domain=example.com&bw=26843545600'
+        ], explode("\n", trim(VirtualMinShell::$output)));
+        VirtualMinShell::$output = '';
+
         $host = (new HostModel())->find(1);
         $purchase = $host->purchase;
         $domain = $host->domain_detail;

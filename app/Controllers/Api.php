@@ -116,9 +116,9 @@ class Api extends BaseController
                             $metadata->domain
                         );
                         if ($purchase->domain_id && $host->status != 'pending') {
-                            (new VirtualMinShell())->enableFeature($domain, $sv, ['dns']);
+                            (new VirtualMinShell())->enableFeature($metadata->domain, $sv, ['dns']);
                         } else if (!$purchase->domain_id && $host->status != 'pending') {
-                            (new VirtualMinShell())->disableFeature($domain, $sv, ['dns']);
+                            (new VirtualMinShell())->disableFeature($metadata->domain, $sv, ['dns']);
                         }
                         $host->domain = $metadata->domain;
                     }
@@ -136,7 +136,7 @@ class Api extends BaseController
                                 $plan->alias
                             );
                             if ($purchase->domain_id) {
-                                (new VirtualMinShell())->enableFeature($domain, $sv, ['dns']);
+                                (new VirtualMinShell())->enableFeature($host->domain, $sv, ['dns']);
                             }
                             if ($metadata->template) {
                                 // @codeCoverageIgnoreStart
@@ -162,7 +162,7 @@ class Api extends BaseController
                         $host->expiry_at = $metadata->expiration;
                         $host->plan_id = $metadata->plan;
                         $host->status = 'active';
-                        $host->addons += $plan->net * 1024 / 12;
+                        $host->addons += $plan->net * (3 * 1024 / 12);
                         if ($login->trustiness < $metadata->plan) {
                             $login->trustiness = $metadata->plan;
                             (new LoginModel())->save($login);
