@@ -13,6 +13,7 @@ use App\Models\ServerModel;
 use App\Models\ServerStatModel;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
+use DateTime;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -140,7 +141,7 @@ class CronJob extends BaseCommand
                             ]
                         ]]);
                     } else {
-                        $diff = $host->expiry_at->difference(time());
+                        $diff = $host->expiry_at->difference(new DateTime());
                         $rangerem = $diff->getSeconds() < 0 ? 0 : ($diff->getMonths() > 1 ? 0 : ($diff->getWeeks() > 1 ? 1 : 2));
                         if ($rangerem > 0 && $host->notification < $rangerem) {
                             (new SendGridEmail())->send('reminder_email', 'billing', [[
