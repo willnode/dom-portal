@@ -11,6 +11,7 @@
 	'hosting' => 'Hosting',
 	'domain' => 'Domain',
 	'email' => 'Email',
+	'sales' => 'Penjualan',
 	'help' => 'Bantuan',
 	'marketplace' => 'Marketplace',
 	'reseller' => 'Reseller',

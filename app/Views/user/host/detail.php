@@ -136,8 +136,9 @@
       </div>
     </div>
     <div class="d-flex mb-3">
-      <a href="/user/host" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
-      <a href="/user/host/delete/<?= $host->id ?>" class="mt-3 ms-auto btn btn-danger"><?= lang('Host.deleteHost') ?></a>
+      <a href="/user/host" class="mt-3 btn btn-secondary me-auto"><?= lang('Interface.back') ?></a>
+      <a href="/user/host/transfer/<?= $host->id ?>" class="mt-3 me-3 btn btn-warning">Transfer Hosting</a>
+      <a href="/user/host/delete/<?= $host->id ?>" class="mt-3 btn btn-danger"><?= lang('Host.deleteHost') ?></a>
     </div>
   </div>
   <script id="bandwidths" type="application/json">

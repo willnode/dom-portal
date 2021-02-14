@@ -19,6 +19,11 @@
         <li class="nav-item">
           <a class="nav-link <?= ($page ?? '') === 'status' ? 'active' : '' ?>" href="/user/status"><?= lang('Interface.status') ?></a>
         </li>
+        <?php if ($_SESSION['login'] == 1) : ?>
+          <li class="nav-item">
+            <a class="nav-link <?= ($page ?? '') === 'sales' ? 'active' : '' ?>" href="/user/sales"><?= lang('Interface.sales') ?></a>
+          </li>
+        <?php endif ?>
         <li class="nav-item">
           <a class="nav-link" href="https://domcloud.id/faq"><?= lang('Interface.help') ?>?</a>
         </li>

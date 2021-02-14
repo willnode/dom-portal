@@ -11,6 +11,7 @@
 	'hosting' => 'Hosting',
 	'domain' => 'Domain',
 	'email' => 'Email',
+	'sales' => 'Sales',
 	'help' => 'Help',
 	'marketplace' => 'Marketplace',
 	'reseller' => 'Reseller',

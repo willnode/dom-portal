@@ -282,8 +282,7 @@ class User extends BaseController
 			'ok' => $ok,
 		]);
 	}
-	/** @param Host $host */
-	protected function upgradeHost($host)
+	protected function upgradeHost(Host $host)
 	{
 		$req = $this->request;
 		if ($req->getMethod() === 'post') {
@@ -361,8 +360,7 @@ class User extends BaseController
 			'plans' => (new PlanModel())->find(),
 		]);
 	}
-	/** @param Host $host */
-	protected function detailHost($host)
+	protected function detailHost(Host $host)
 	{
 		return view('user/host/detail', [
 			'host' => $host,
@@ -370,7 +368,7 @@ class User extends BaseController
 			'stat' => $host->stat,
 		]);
 	}
-	protected function seeHost($host)
+	protected function seeHost(Host $host)
 	{
 		$shown = ($_GET['show'] ?? '') === 'password';
 		return view('user/host/see', [
@@ -385,8 +383,7 @@ class User extends BaseController
 			'shown' => $shown,
 		]);
 	}
-	/** @param Host $host */
-	protected function dnsHost($host)
+	protected function dnsHost(Host $host)
 	{
 		if ($this->request->getMethod() === 'post') {
 			// @codeCoverageIgnoreStart
@@ -402,8 +399,7 @@ class User extends BaseController
 			'host' => $host
 		]);
 	}
-	/** @param Host $host */
-	protected function nginxHost($host)
+	protected function nginxHost(Host $host)
 	{
 		if ($this->request->getMethod() === 'post') {
 			// @codeCoverageIgnoreStart
@@ -417,7 +413,7 @@ class User extends BaseController
 		]);
 	}
 	/** @param Host $host  */
-	protected function sslHost($host)
+	protected function sslHost(Host $host)
 	{
 		if ($this->request->getMethod() === 'post') {
 			// @codeCoverageIgnoreStart
@@ -454,8 +450,7 @@ class User extends BaseController
 			'host' => $host
 		]);
 	}
-	/**  @param Host $host */
-	protected function renameHost($host)
+	protected function renameHost(Host $host)
 	{
 		if ($this->request->getMethod() === 'post' && $host->status === 'active') {
 			if (!$this->validate([
@@ -486,8 +481,7 @@ class User extends BaseController
 			'host' => $host,
 		]);
 	}
-	/** @param Host $host */
-	protected function cnameHost($host)
+	protected function cnameHost(Host $host)
 	{
 		if ($this->request->getMethod() === 'post' && !$host->liquid_id && $host->plan_id !== 1 && $host->status === 'active') {
 			if ($this->request->getPost('cname')) {
@@ -517,7 +511,7 @@ class User extends BaseController
 			'host' => $host,
 		]);
 	}
-	protected function deployesHost($host)
+	protected function deployesHost(Host $host)
 	{
 		if ($this->request->getMethod() === 'post' && $this->request->getPost('template')) {
 			// @codeCoverageIgnoreStart
@@ -530,8 +524,7 @@ class User extends BaseController
 			'deploys' => (new HostDeployModel())->atHost($host->id)->find(),
 		]);
 	}
-	/** @param Host $host */
-	protected function invoicesHost($host)
+	protected function invoicesHost(Host $host)
 	{
 		/** @var Purchase[] */
 		$history = (new PurchaseModel())->atHost($host->id)->descending()->find();
@@ -573,8 +566,24 @@ class User extends BaseController
 			'history' => $history,
 		]);
 	}
-	/** @param Host $host */
-	protected function deleteHost($host)
+	protected function transferHost(Host $host)
+	{
+		if ($this->request->getMethod() === 'post') {
+			// @codeCoverageIgnoreStart
+			if ($login = (new LoginModel())->atEmail($_POST['email'] ?? '')) {
+				$host->login_id = $login->id;
+				if ($host->hasChanged()) {
+					(new HostModel())->save($host);
+				}
+			}
+			return $this->response->redirect('/user/host/');
+			// @codeCoverageIgnoreEnd
+		}
+		return view('user/host/transfer', [
+			'host' => $host,
+		]);
+	}
+	protected function deleteHost(Host $host)
 	{
 		if ($this->request->getMethod() === 'post' && $host->plan_id === 1 && ($this->request->getPost('wordpass')) === $host->username) {
 			// @codeCoverageIgnoreStart
@@ -617,6 +626,8 @@ class User extends BaseController
 						return $this->upgradeHost($host);
 					case 'invoices':
 						return $this->invoicesHost($host);
+					case 'transfer':
+						return $this->transferHost($host);
 					case 'delete':
 						return $this->deleteHost($host);
 				}
@@ -762,6 +773,27 @@ class User extends BaseController
 			'servers' => $servers,
 			'stat' => $server->stat ? $server->stat->metadata : null,
 			'stat_update' => $server->stat ? $server->stat->updated_at->humanize() : null,
+		]);
+	}
+
+	public function sales()
+	{
+		if ($this->login->id !== 1) {
+			throw new PageNotFoundException();
+		}
+		/** @var \App\Entities\Purchase[] $list */
+		$list = (new PurchaseModel())->findAll();
+		$summ = [];
+		foreach ($list as $pay) {
+			if ($pay->status != 'pending') {
+				$season = substr($pay->metadata->_invoiced, 0, 7);
+				$summ[$season] = ($summ[$season] ?? 0) + ($pay->metadata->price_unit === 'idr' ? 1 : 0) * $pay->metadata->price;
+			}
+		}
+		return view('user/sales', [
+			'summ' => $summ,
+			'list' => $list,
+			'page' => 'sales',
 		]);
 	}
 
