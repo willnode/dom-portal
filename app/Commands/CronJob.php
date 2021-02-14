@@ -142,7 +142,8 @@ class CronJob extends BaseCommand
                         ]]);
                     } else {
                         $diff = $host->expiry_at->difference(new DateTime());
-                        $rangerem = $diff->getSeconds() < 0 ? 0 : ($diff->getMonths() > 1 ? 0 : ($diff->getWeeks() > 1 ? 1 : 2));
+                        $rangerem = $diff->getSeconds() > 0 ? 0 : ($diff->getMonths() < -1 ? 0 : ($diff->getWeeks() < -1 ? 1 : 2));
+
                         if ($rangerem > 0 && $host->notification < $rangerem) {
                             (new SendGridEmail())->send('reminder_email', 'billing', [[
                                 'to' => [[

@@ -16,26 +16,26 @@
               <label for=""><?= lang('Interface.fullName') ?></label>
               <div class="row g-1 align-items-center">
                 <div class="col">
-                  <input class="form-control" name="domain.owner.fname" required>
+                  <input class="form-control" name="domain.owner.fname" maxlength="32" required>
                 </div>
                 <div class="col">
-                  <input class="form-control" name="domain.owner.lname">
+                  <input class="form-control" name="domain.owner.lname" maxlength="32">
                 </div>
               </div>
             </div>
             <div class="mb-1">
               <label for=""><?= lang('Interface.companyName') ?></label>
-              <input class="form-control" name="domain.owner.company" required>
+              <input class="form-control" name="domain.owner.company" required maxlength="32">
             </div>
             <div class="row g-1 mb-1">
               <div class="col">
                 <label for="name"><?= lang('Interface.email') ?></label>
-                <input type="email" class="form-control" id="email" name="domain.owner.email" autocomplete="email" required>
+                <input type="email" class="form-control" id="email" name="domain.owner.email" autocomplete="email" required  maxlength="63">
               </div>
               <div class="col">
                 <label for="name"><?= lang('Interface.phone') ?></label>
                 <div class="input-group">
-                  <input class="form-control" name="domain.owner.tel" autocomplete="tel" required>
+                  <input class="form-control" name="domain.owner.tel" autocomplete="tel" required maxlength="15">
                 </div>
               </div>
             </div>
@@ -48,19 +48,19 @@
                   </select>
                 </div>
                 <div class="col">
-                  <input class="form-control" autocomplete="address-level1" name="domain.owner.state" placeholder="<?= lang('Domain.state') ?>" required>
+                  <input class="form-control" autocomplete="address-level1" name="domain.owner.state" maxlength="32" placeholder="<?= lang('Domain.state') ?>" required>
                 </div>
               </div>
               <div class="row g-1 mb-1">
                 <div class="col">
-                  <input class="form-control" autocomplete="address-level2" name="domain.owner.city" placeholder="<?= lang('Domain.city') ?>" required>
+                  <input class="form-control" autocomplete="address-level2" name="domain.owner.city" maxlength="32" placeholder="<?= lang('Domain.city') ?>" required>
                 </div>
                 <div class="col">
-                  <input class="form-control" autocomplete="postal-code" name="domain.owner.postal" placeholder="<?= lang('Domain.zipCode') ?>" required>
+                  <input class="form-control" autocomplete="postal-code" name="domain.owner.postal" maxlength="32" placeholder="<?= lang('Domain.zipCode') ?>" required>
                 </div>
               </div>
-              <input class="form-control mb-1" autocomplete="address-line1" name="domain.owner.address1" placeholder="Address 1" required>
-              <input class="form-control mb-1" autocomplete="address-line2" name="domain.owner.address2" placeholder="Address 2">
+              <input class="form-control mb-1" autocomplete="address-line1" name="domain.owner.address1" maxlength="255" placeholder="Address 1" required>
+              <input class="form-control mb-1" autocomplete="address-line2" name="domain.owner.address2" maxlength="255" placeholder="Address 2">
             </div>
           </div>
         </fieldset>
@@ -80,39 +80,39 @@
               <label for=""><?= lang('Interface.fullName') ?></label>
               <div class="row g-1 align-items-center">
                 <div class="col">
-                  <input class="form-control" name="domain.user.fname" required>
+                  <input class="form-control" name="domain.user.fname" maxlength="32" required>
                 </div>
                 <div class="col">
-                  <input class="form-control" name="domain.user.lname">
+                  <input class="form-control" name="domain.user.lname" maxlength="32">
                 </div>
               </div>
             </div>
             <div class="mb-1">
               <label for=""><?= lang('Interface.companyName') ?></label>
-              <input class="form-control" name="domain.user.company" required>
+              <input class="form-control" name="domain.user.company" required maxlength="32">
             </div>
             <div class="mb-1">
               <label for="">Alamat</label>
               <div class="row g-1 mb-1">
                 <div class="col">
-                  <select name="domain.user.country" autocomplete="country" class="ccode form-select" required>
+                  <select name="domain.user.country" autocomplete="country" maxlength="32" class="ccode form-select" required>
                     <option disabled selected><?= lang('Domain.country') ?></option>
                   </select>
                 </div>
                 <div class="col">
-                  <input class="form-control" autocomplete="address-level1" name="domain.user.state" placeholder="<?= lang('Domain.state') ?>" required>
+                  <input class="form-control" autocomplete="address-level1" maxlength="32" name="domain.user.state" placeholder="<?= lang('Domain.state') ?>" required>
                 </div>
               </div>
               <div class="row g-1 mb-1">
                 <div class="col">
-                  <input class="form-control" autocomplete="address-level2" name="domain.user.city" placeholder="<?= lang('Domain.city') ?>" required>
+                  <input class="form-control" autocomplete="address-level2" maxlength="32" name="domain.user.city" placeholder="<?= lang('Domain.city') ?>" required>
                 </div>
                 <div class="col">
-                  <input class="form-control" autocomplete="postal-code" name="domain.user.postal" placeholder="<?= lang('Domain.zipCode') ?>" required>
+                  <input class="form-control" autocomplete="postal-code" maxlength="8" name="domain.user.postal" placeholder="<?= lang('Domain.zipCode') ?>" required>
                 </div>
               </div>
-              <input class="form-control mb-1" autocomplete="address-line1" name="domain.user.address1" placeholder="Address 1" required>
-              <input class="form-control mb-1" autocomplete="address-line2" name="domain.user.address2" placeholder="Address 2">
+              <input class="form-control mb-1" autocomplete="address-line1" maxlength="255" name="domain.user.address1" placeholder="Address 1" required>
+              <input class="form-control mb-1" autocomplete="address-line2" maxlength="255" name="domain.user.address2" placeholder="Address 2">
             </div>
           </div>
         </fieldset>
