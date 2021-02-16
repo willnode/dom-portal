@@ -155,7 +155,7 @@ class CronJob extends BaseCommand
                                     'type' => 'Hosting',
                                     'domain' =>  $host->domain,
                                     'remaining' => $host->expiry_at->humanize(),
-                                    'date' => date('Y-m-d'),
+                                    'date' => $host->expiry_at->toDateString(),
                                     'repeat' => $rangerem == 1 ? 'Pesan ini akan diulang lagi apabila anda belum memperbarui ekspirasi 1 minggu dari jatuh tempo' : 'Pesan ini adalah peringatan terakhir sebelum pembelian anda jatuh tempo.',
                                     'extend_url' => base_url('user/host/upgrade/'.$host->id),
                                 ]
