@@ -24,6 +24,12 @@ function href($url)
     return base_url($req->getLocale() . '/' . $url);
 }
 
+function imsort(array $ar)
+{
+    sort($ar);
+    return $ar;
+}
+
 function format_money($money, $currency = null)
 {
     $money = floatval($money);

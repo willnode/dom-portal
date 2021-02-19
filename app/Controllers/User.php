@@ -781,18 +781,40 @@ class User extends BaseController
 		if ($this->login->id !== 1) {
 			throw new PageNotFoundException();
 		}
-		/** @var \App\Entities\Purchase[] $list */
-		$list = (new PurchaseModel())->findAll();
-		$summ = [];
-		foreach ($list as $pay) {
+		/** @var \App\Entities\Purchase[] $invoice */
+		$invoice = (new PurchaseModel())->findAll();
+		$gross = [];
+		foreach ($invoice as $pay) {
 			if ($pay->status != 'pending') {
 				$season = substr($pay->metadata->_invoiced, 0, 7);
-				$summ[$season] = ($summ[$season] ?? 0) + ($pay->metadata->price_unit === 'idr' ? 1 : 0) * $pay->metadata->price;
+				$gross[$season] = ($gross[$season] ?? 0) + ($pay->metadata->price_unit === 'idr' ? 1 : 14000) * $pay->metadata->price;
 			}
 		}
+		/** @var \App\Entities\Host[] $hosts */
+		$hosts = (new HostModel())->findAll();
+		$plans = [];
+		$item_plans = [];
+		foreach ($hosts as $h) {
+			if ($h->status == 'active' || $h->status == 'suspended')
+			$plans[$h->plan_id] = ($plans[$h->plan_id] ?? 0) + 1;
+			isset($item_plans[$h->plan_id]) or ($item_plans[$h->plan_id] = $h->plan);
+		}
+		/** @var \App\Entities\Domain[] $domains */
+		$domains = (new DomainModel())->findAll();
+		$schemes = [];
+		$item_schemes = [];
+		foreach ($domains as $h) {
+			if ($h->status == 'active')
+			$schemes[$h->scheme_id] = ($schemes[$h->scheme_id] ?? 0) + 1;
+			isset($item_schemes[$h->scheme_id]) or ($item_schemes[$h->scheme_id] = $h->scheme);
+		}
 		return view('user/sales', [
-			'summ' => $summ,
-			'list' => $list,
+			'gross' => $gross,
+			'invoice' => $invoice,
+			'plans' => $plans,
+			'schemes' => $schemes,
+			'item_schemes' => $item_schemes,
+			'item_plans' => $item_plans,
 			'page' => 'sales',
 		]);
 	}
