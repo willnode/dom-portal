@@ -53,7 +53,7 @@
                 <tr>
                   <td><?= $item_plans[$k]->alias ?></td>
                   <td><?= $plans[$k] ?></td>
-                  <td><?= format_bytes($plans[$k] * $item_plans[$k]->disk) ?></td>
+                  <td><?= format_bytes($plans[$k] * $item_plans[$k]->disk * 1024 * 1024) ?></td>
                   <td><?= format_money($plans[$k] * $item_plans[$k]->price_idr, 'idr') ?></td>
                 </tr>
               <?php endforeach ?>
@@ -62,6 +62,9 @@
               <tr>
                 <th>Total</th>
                 <th><?= array_sum($plans) ?></th>
+                <th><?= format_bytes(array_sum(array_map(function ($k) use ($item_plans, $plans) {
+                      return $plans[$k] * $item_plans[$k]->disk;
+                    }, array_keys($plans))) * 1024 * 1024) ?></th>
                 <th><?= format_money(array_sum(array_map(function ($k) use ($item_plans, $plans) {
                       return $plans[$k] * $item_plans[$k]->price_idr;
                     }, array_keys($plans))), 'idr') ?></th>
