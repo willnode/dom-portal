@@ -44,6 +44,7 @@
               <tr>
                 <th>Plan</th>
                 <th>Qty</th>
+                <th>GB</th>
                 <th>Total</th>
               </tr>
             </thead>
@@ -52,6 +53,7 @@
                 <tr>
                   <td><?= $item_plans[$k]->alias ?></td>
                   <td><?= $plans[$k] ?></td>
+                  <td><?= format_bytes($plans[$k] * $item_plans[$k]->disk) ?></td>
                   <td><?= format_money($plans[$k] * $item_plans[$k]->price_idr, 'idr') ?></td>
                 </tr>
               <?php endforeach ?>
