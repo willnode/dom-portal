@@ -136,7 +136,7 @@ class Home extends BaseController
 						(new LoginModel())->save($login);
 					}
 
-					(new SendGridEmail())->send('receipt_email', 'billing', [[
+					(new SendGridEmail())->send('recover_email', 'billing', [[
 						'to' => [[
 							'email' => $login->email,
 							'name' => $login->name,

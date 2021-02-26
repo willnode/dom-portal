@@ -97,7 +97,7 @@ class DigitalRegistra
 			'state' => $bio['state'],
 			'country' => $bio['country'],
 			'postcode' => $bio['postal'],
-			'phonenumber' => trim($bio['tel'], ' +'),
+			'phonenumber' => trim(str_replace([' ', '-'],'', $bio['tel']), ' +'),
 			'email' => $bio['email'],
 			'user_username' => $login->email,
 			'user_fname' => $user['fname'] ?? $bio['fname'],
