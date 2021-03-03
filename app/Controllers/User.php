@@ -499,7 +499,7 @@ class User extends BaseController
 				}
 				(new VirtualMinShell())->cnameHost(
 					$host->domain,
-					$host->alias,
+					$host->server->alias,
 					$domain
 				);
 				$host->domain = $domain;
@@ -699,6 +699,7 @@ class User extends BaseController
 						$payment->metadata = $metadata;
 						$payment->domain_id = $newdomain->id;
 						(new PurchaseModel())->save($payment);
+						return $this->response->redirect('/user/domain/invoices/'.$newdomain->id);
 					}
 				}
 			}

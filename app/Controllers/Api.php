@@ -103,6 +103,7 @@ class Api extends BaseController
                         $domain->status = 'active';
                         (new DomainModel())->save($domain);
                     }
+                    $login = $domain->login;
                 }
                 if ($purchase->host_id) {
 
