@@ -7,6 +7,7 @@
   <?= view('user/navbar') ?>
 
   <div class="container">
+    <?php /** @var \App\Entities\Domain $domain */ ?>
     <h1 class="mb-2">Detail Domain</h1>
     <div class="row">
       <div class="col-md-6">

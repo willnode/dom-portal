@@ -12,4 +12,5 @@
     'state' => 'State',
     'country' => 'Country',
     'zipCode' => 'Zip Code',
+	'formatInvoice' => 'Pembayaran domain {0} seharga {1}',
 ];

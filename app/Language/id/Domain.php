@@ -12,4 +12,5 @@
     'state' => 'Provinsi',
     'country' => 'Negara',
     'zipCode' => 'Kode Zip',
+	'formatInvoice' => 'Pembayaran domain {0} seharga {1}',
 ];

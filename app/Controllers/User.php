@@ -723,8 +723,41 @@ class User extends BaseController
 			'domain' => $domain,
 		]);
 	}
-	protected function invoicesDomain($domain)
+	protected function invoicesDomain(Domain $domain)
 	{
+			/** @var Purchase[] */
+			$history = (new PurchaseModel())->atDomain($domain->id)->descending()->find();
+			$current = $history[0] ?? null;
+			if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending') {
+				$metadata = $current->metadata;
+				if ($action === 'cancel') {
+					if (count($history) > 1 || $domain->status !== 'pending') {
+						(new PurchaseModel())->delete($current->id);
+						return $this->response->redirect('/user/domain/invoices/' . $domain->id);
+						// @codeCoverageIgnoreStart
+					} else {
+						(new DomainModel())->delete($domain->id);
+						return $this->response->redirect('user/domain/');
+					}
+				} else if ($action === 'pay' && $metadata->price_unit === 'idr') {
+					$pay = (new IpaymuGate())->createPayment(
+						$current->id,
+						$metadata->price,
+						lang('Domain.formatInvoice', [
+							"$metadata->domain",
+							$metadata->price
+						]),
+						$metadata->_challenge
+					);
+					if ($pay && isset($pay->sessionID)) {
+						return $this->response->redirect(
+							$this->request->config->ipaymuURL . $pay->sessionID
+						);
+					}
+					return $this->response->redirect('/user/domain/invoices/' . $domain->id);
+				}
+				// @codeCoverageIgnoreEnd
+			}
 		return view('user/domain/invoice', [
 			'domain' => $domain,
 		]);
