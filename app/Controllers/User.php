@@ -549,7 +549,8 @@ class User extends BaseController
 						"$plan",
 						"$metadata->domain",
 					]) . lang("Host.formatInvoiceSum", ["$metadata->price"]),
-					$metadata->_challenge
+					$metadata->_challenge,
+					$host->login
 				);
 				if ($pay && isset($pay->sessionID)) {
 					return $this->response->redirect(
@@ -747,7 +748,8 @@ class User extends BaseController
 							"$metadata->domain",
 							$metadata->price
 						]),
-						$metadata->_challenge
+						$metadata->_challenge,
+						$domain->login
 					);
 					if ($pay && isset($pay->sessionID)) {
 						return $this->response->redirect(

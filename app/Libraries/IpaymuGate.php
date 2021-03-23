@@ -2,6 +2,7 @@
 
 namespace App\Libraries;
 
+use App\Entities\Login;
 use Config\Services;
 
 /**
@@ -9,7 +10,7 @@ use Config\Services;
  */
 class IpaymuGate
 {
-	public function createPayment($id, $amount, $name, $challenge)
+	public function createPayment($id, $amount, $name, $challenge, Login $login)
 	{
 		$url = Services::request()->config->ipaymuURL;
 		$key = Services::request()->config->ipaymuKey;
@@ -27,9 +28,9 @@ class IpaymuGate
 			'ureturn' => base_url("user/host/?status=return"),
 			'uncancel' => base_url('user/host/?status=cancel'),
 			'unotify' =>  base_url("api/notify?id=$id&challenge=$challenge&secret=$secret"),
-			'buyer_name' => Services::session()->name,
-			'buyer_email' => Services::session()->email,
-			'buyer_phone' => Services::session()->phone,
+			'buyer_name' => $login->name,
+			'buyer_email' => $login->email,
+			'buyer_phone' => $login->phone,
 			'auto_redirect' => 10,
 		]);
 
