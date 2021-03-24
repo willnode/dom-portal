@@ -1,7 +1,6 @@
 <?php
 
-use CodeIgniter\CLI\CLI;
-use Config\Database;
+use CodeIgniter\I18n\Time;
 use Config\Services;
 
 /**
@@ -71,4 +70,49 @@ function get_gravatar( $email, $s = 80, $d = 'mp', $r = 'g' ) {
 function calculateRemaining($current, $addons, $plan)
 {
     return floor(min($addons, max(0, $addons - ($current - $plan))));
+}
+
+function humanize(Time $time)
+{
+    $now  = IntlCalendar::fromDateTime(Time::now($time->timezone)->toDateTimeString());
+    $time = $time->getCalendar()->getTime();
+
+    $years   = $now->fieldDifference($time, IntlCalendar::FIELD_YEAR);
+    $months  = $now->fieldDifference($time, IntlCalendar::FIELD_MONTH);
+    $days    = $now->fieldDifference($time, IntlCalendar::FIELD_DAY_OF_YEAR);
+    $hours   = $now->fieldDifference($time, IntlCalendar::FIELD_HOUR_OF_DAY);
+    $minutes = $now->fieldDifference($time, IntlCalendar::FIELD_MINUTE);
+
+    $phrase = null;
+
+    if ($years !== 0) {
+        $phrase = lang('Time.years', [abs($years)]);
+        $before = $years < 0;
+    } else if ($months !== 0) {
+        $phrase = lang('Time.months', [abs($months)]);
+        $before = $months < 0;
+    } else if ($days !== 0 && (abs($days) >= 7)) {
+        $weeks  = ceil($days / 7);
+        $phrase = lang('Time.weeks', [abs($weeks)]);
+        $before = $days < 0;
+    } else if ($days !== 0) {
+        $before = $days < 0;
+
+        // Yesterday/Tomorrow special cases
+        if (abs($days) === 1) {
+            return $before ? lang('Time.yesterday') : lang('Time.tomorrow');
+        }
+
+        $phrase = lang('Time.days', [abs($days)]);
+    } else if ($hours !== 0) {
+        $phrase = lang('Time.hours', [abs($hours)]);
+        $before = $hours < 0;
+    } else if ($minutes !== 0) {
+        $phrase = lang('Time.minutes', [abs($minutes)]);
+        $before = $minutes < 0;
+    } else {
+        return lang('Time.now');
+    }
+
+    return $before ? lang('Time.ago', [$phrase]) : lang('Time.inFuture', [$phrase]);
 }

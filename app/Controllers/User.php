@@ -808,7 +808,7 @@ class User extends BaseController
 			'server' => $server,
 			'servers' => $servers,
 			'stat' => $server->stat ? $server->stat->metadata : null,
-			'stat_update' => $server->stat ? $server->stat->updated_at->humanize() : null,
+			'stat_update' => $server->stat ? humanize($server->stat->updated_at) : null,
 		]);
 	}
 

@@ -121,7 +121,7 @@
                   <small> <?= lang('Host.planDetail', [$plan->alias, format_bytes($plan->disk_bytes), format_bytes($plan->net_monthly_bytes)]) ?></small>
                 </div>
                 <div class="col-6 text-end">
-                  <small><?= lang('Interface.lastUpdated')?> <span title="<?=$stat->updated_at?> UTC"><?=$stat->updated_at->humanize()?></span></small>
+                  <small><?= lang('Interface.lastUpdated')?> <span title="<?=$stat->updated_at?> UTC"><?=humanize($stat->updated_at)?></span></small>
                 </div>
               </div>
             </div>

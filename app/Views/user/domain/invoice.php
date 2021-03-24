@@ -13,19 +13,13 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
-            <form method="post" class="my-2">
-              <?= csrf_field() ?>
-              <input type="hidden" name="action" value="pay">
-              <input type="submit" class="btn btn-primary" value="<?= lang('Host.finishPayment') ?>">
-            </form>
-            <div class="input-group mb-3">
-              <h3><?= ucfirst($domain->status) ?></h3>
-              <?php if ($domain->status === 'pending') : ?>
-                <a href="/user/domain/invoices/<?= $domain->id ?>" class="ms-auto btn btn-primary"><?= lang('Host.finishPayment') ?></a>
-              <?php elseif ($domain->status === 'active') : ?>
-                <a href="http://<?= $domain->name ?>" target="_blank" rel="noopener noreferrer" class="ms-auto btn btn-primary"><?= lang('Host.openWebsite') ?></a>
-              <?php endif ?>
-            </div>
+            <?php if ($domain->status === 'pending') : ?>
+              <form method="post" class="my-2">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="pay">
+                <input type="submit" class="btn btn-primary" value="<?= lang('Host.finishPayment') ?>">
+              </form>
+            <?php endif ?>
           </div>
 
         </div>

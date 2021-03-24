@@ -34,7 +34,7 @@
                   <td><?= $host->plan->alias ?></td>
                   <td><?= ucfirst($host->status) ?></td>
                   <td class="<?= $host->expiry_at->getTimestamp() < time() ?  'bg-dark text-danger font-weight-bold' : ( $host->expiry_at->subMonths(1)->getTimestamp() < time() ? 'bg-warning text-danger font-weight-bold' : '') ?>">
-                  <?= $host->expiry_at->humanize() ?> &mdash; <?= $host->expiry_at->toDateString() ?>
+                  <?= humanize($host->expiry_at) ?> &mdash; <?= $host->expiry_at->toDateString() ?>
                   </td>
                 </tr>
               <?php endforeach ?>

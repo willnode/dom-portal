@@ -3,6 +3,7 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity;
+use CodeIgniter\I18n\Time;
 
 /**
  * @property int $server_id

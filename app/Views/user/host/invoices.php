@@ -49,7 +49,7 @@
               </form>
             <?php elseif ($host->status === 'active') : ?>
               <p> Hosting anda sudah aktif dan dapat diakses sekarang. </p>
-              <p> Sisa Kadarluarsa Langganan: <?= $host->expiry_at->humanize() ?>. </p>
+              <p> Sisa Kadarluarsa Langganan: <?= humanize($host->expiry_at) ?>. </p>
               <p><a target="_blank" href="http://<?= $host->domain ?>">Buka Website</a></p>
               <p><a href="/user/host/see/<?= $host->id ?>">Edit Website</a></p>
               <?php elseif ($host->status === 'expired') : ?>

@@ -18,7 +18,7 @@
       <form class="card" method="POST" onsubmit="return putToDeploy(this)">
         <div class="card-body">
           <details <?= $i++ === 0 ? 'open' : '' ?>>
-            <summary><?= $deploy->updated_at->humanize() ?></summary>
+            <summary><?= humanize($deploy->updated_at) ?></summary>
             <div class="row my-2">
               <div class="col-md-6">
                 <textarea name="template" class="form-control font-monospace h-100" style="min-height: 200px;"><?= $deploy->template ?></textarea>
@@ -28,7 +28,7 @@
                   <pre class="output-highlight" style="white-space: pre-wrap;"><?= esc($deploy->result) ?></pre>
                 <?php else : ?>
                   <p class="text-center">
-                    <i><?= lang('Host.waitingDeployHint', [$deploy->created_at->addMinutes($host->plan_id * 5 + 5)->humanize()]) ?></i>
+                    <i><?= lang('Host.waitingDeployHint', [humanize($deploy->created_at->addMinutes($host->plan_id * 5 + 5))]) ?></i>
                   </p>
                 <?php endif ?>
               </div>
