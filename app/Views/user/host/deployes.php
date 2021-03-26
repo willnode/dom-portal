@@ -10,14 +10,14 @@
 
     <?php if ($host->status === 'active') : ?>
       <div class="d-flex">
-        <button type="button" class="btn btn-primary mb-3 mr-auto" data-bs-toggle="modal" data-bs-target="#deployModal">
+        <button type="button" class="btn btn-primary mb-3 me-auto" data-bs-toggle="modal" data-bs-target="#deployModal">
           Deploy New
         </button>
         <form method="POST">
           <?= csrf_field() ?>
           <input type="hidden" name="delete" value="y">
           <button onclick="return confirm('Hapus semua deploy?')" class="btn btn-danger mb-3">
-            <i class="fa fa-trash"></i>
+            Clear
           </button>
         </form>
       </div>
