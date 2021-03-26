@@ -513,9 +513,14 @@ class User extends BaseController
 	}
 	protected function deployesHost(Host $host)
 	{
-		if ($this->request->getMethod() === 'post' && $this->request->getPost('template')) {
+		if ($this->request->getMethod() === 'post') {
 			// @codeCoverageIgnoreStart
-			(new TemplateDeployer())->schedule($host->id, $host->domain, $this->request->getPost('template'));
+			if ($t = $this->request->getPost('template')) {
+				(new TemplateDeployer())->schedule($host->id, $host->domain, $t);
+			}
+			else if ($this->request->getPost('delete')) {
+				(new HostDeployModel())->atHost($host->id)->delete();
+			}
 			return $this->response->redirect('/user/host/deploys/' . $host->id);
 			// @codeCoverageIgnoreEnd
 		}

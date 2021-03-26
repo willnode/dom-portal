@@ -9,9 +9,18 @@
     <?= view('user/host/navbar') ?>
 
     <?php if ($host->status === 'active') : ?>
-      <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#deployModal">
-        Deploy New
-      </button>
+      <div class="d-flex">
+        <button type="button" class="btn btn-primary mb-3 mr-auto" data-bs-toggle="modal" data-bs-target="#deployModal">
+          Deploy New
+        </button>
+        <form method="POST">
+          <?= csrf_field() ?>
+          <input type="hidden" name="delete" value="y">
+          <button onclick="return confirm('Hapus semua deploy?')" class="btn btn-danger mb-3">
+            <i class="fa fa-trash"></i>
+          </button>
+        </form>
+      </div>
     <?php endif ?>
     <?php $i = 0;
     foreach (array_reverse($deploys) as $deploy) : ?>
