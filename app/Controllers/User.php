@@ -376,6 +376,7 @@ class User extends BaseController
 			'host' => $host,
 			'id' => $host->id,
 			'slave' => $host->server->alias,
+			'alias' => $host->server->domain,
 			'user' => $host->username,
 			'pass' => $shown ? esc($host->password) : str_repeat('&bullet;', 8),
 			'rawuser' => $host->username,
@@ -515,7 +516,7 @@ class User extends BaseController
 	{
 		if ($this->request->getMethod() === 'post') {
 			// @codeCoverageIgnoreStart
-			if ($t = $this->request->getPost('template')) {
+			if ($host->status == 'active' && ($t = $this->request->getPost('template'))) {
 				(new TemplateDeployer())->schedule($host->id, $host->domain, $t);
 			}
 			else if ($this->request->getPost('delete')) {

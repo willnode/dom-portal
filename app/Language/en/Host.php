@@ -38,6 +38,7 @@
 	'findDomain' => 'Find Domain',
 	'freeDomainHint' => 'Free domains only provide limited features.',
 	'findAvailableGLTDs' => 'See the list of top level domains available',
+	'findAvailableGLTDsLink' => 'https://domcloud.io/domain',
 	'findReady' => 'Please check domain availability before continuing.',
 	'findAvailable' => 'Domain available!',
 	'findWait' => 'Checking ...',
@@ -103,4 +104,6 @@
 	'renameHint' => 'You can change your hosting username here. Enter the new username:',
 	'showPassword' => 'Show Password',
 	'hidePassword' => 'Hide Password',
+	'openPortal' => 'Open Portal',
+	'invoiceNotFound' => 'Invoice not found for this host',
 ];

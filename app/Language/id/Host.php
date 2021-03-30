@@ -38,6 +38,7 @@
 	'findDomain' => 'Cari Domain',
 	'freeDomainHint' => 'Domain gratis hanya menyediakan fitur terbatas.',
 	'findAvailableGLTDs' => 'Lihat daftar top level domain tersedia',
+	'findAvailableGLTDsLink' => 'https://domcloud.id/domain',
 	'findReady' => 'Silahkan isi biodata dan cek ketersediaan domain sebelum lanjut.',
 	'findAvailable' => 'Domain tersedia!',
 	'findWait' => 'Sedang mengecek...',
@@ -104,4 +105,6 @@
 	'renameHint' => 'Anda dapat mengganti Username hosting disini. Masukkan username baru: ',
 	'showPassword' => 'Tampilkan Password',
 	'hidePassword' => 'Sembunyikan Password',
+	'openPortal' => 'Buka Portal',
+	'invoiceNotFound' => 'Data Pembelian tidak ditemukan untuk hosting ini',
 ];

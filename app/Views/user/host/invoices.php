@@ -118,7 +118,7 @@
               </div>
             <?php endforeach ?>
             <?php if (!$history) : ?>
-            <p class="text-center text-black-50">Data Pembelian tidak ditemukan untuk hosting ini</p>
+            <p class="text-center text-black-50"><?= lang('host.invoiceNotFound') ?></p>
             <?php endif ?>
           </div>
         </div>

@@ -18,8 +18,10 @@
             <form target="_blank" action="https://<?= $slave ?>.domcloud.id:<?= $webminport ?>/session_login.cgi" method="POST">
               <input name="user" class="d-none" value="<?= esc($user) ?>">
               <input name="pass" class="d-none" value="<?= esc($rawpass) ?>">
-              <p><small><a href="https://<?= $slave ?>.domcloud.id:<?= $webminport ?>/filemin/index.cgi?path=%2F&xnavigation=1" target="_blank">Buka Portal</a></small> / <input type="submit" value="Auto Login" class="btn btn-sm btn-link p-0"></p>
-              <p><small><a href="https://domcloud.id/faq#:~:text=Saya%20Mendapat%20cookie,portal%20Webmin." target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
+              <p><small><a href="https://<?= $slave ?>.domcloud.id:<?= $webminport ?>/filemin/index.cgi?path=%2F&xnavigation=1" target="_blank"><?= lang('Host.openPortal') ?></a></small> / <input type="submit" value="Auto Login" class="btn btn-sm btn-link p-0"></p>
+              <?php if (lang('Interface.code') === 'id') : ?>
+                <p><small><a href="https://domcloud.id/faq#:~:text=Saya%20Mendapat%20cookie,portal%20Webmin." target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
+              <?php endif ?>
             </form>
           </div>
         </div>
@@ -30,10 +32,12 @@
               Username:<br><b style="user-select: all;"><?= esc($user) ?></b><br>
               Password:<br><b style="user-select: all;"><?= $pass ?></b></p>
             <p><small>
-                <a href="https://phpmyadmin.dom.my.id/" target="_blank" rel="noreferrer">phpMyAdmin</a> /
-                <a href="https://phppgadmin.dom.my.id/" target="_blank" rel="noreferrer">phpPgAdmin</a>
+                <a href="https://phpmyadmin<?= $alias ?>/" target="_blank" rel="noreferrer">phpMyAdmin</a> /
+                <a href="https://phppgadmin<?= $alias ?>/" target="_blank" rel="noreferrer">phpPgAdmin</a>
               </small></p>
-            <p><small><a href="https://domcloud.id/faq#:~:text=Saya%20tidak%20bisa%20login%20ke%20database" target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
+            <?php if (lang('Interface.code') === 'id') : ?>
+              <p><small><a href="https://domcloud.id/faq#:~:text=Saya%20tidak%20bisa%20login%20ke%20database" target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
+            <?php endif ?>
           </div>
         </div>
         <div class="col-md-6 col-xl-3">
@@ -41,10 +45,12 @@
             <h2>SSH</h2>
             <p class="flex-grow-1">Run:<br><b style="user-select: all;">ssh <?= esc($user) ?>@<?= $slave ?>.domcloud.id</b><br>
               Password:<br><b style="user-select: all;"><?= $pass ?></b></p>
-              <p><small>
-                <a href="https://webssh.dom.my.id/?<?= http_build_query(['hostname' => 'localhost', 'username' => $user, 'password' => base64_encode($rawpass)]) ?>" target="_blank" rel="noreferrer">Web SSH</a>
+            <p><small>
+                <a href="https://webssh<?= $alias ?>/?<?= http_build_query(['hostname' => 'localhost', 'username' => $user, 'password' => base64_encode($rawpass)]) ?>" target="_blank" rel="noreferrer">Web SSH</a>
               </small></p>
-            <p><small><a href="https://domcloud.id/faq#:~:text=Bagaimana%20cara%20mengakses%20SSH?" target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
+            <?php if (lang('Interface.code') === 'id') : ?>
+              <p><small><a href="https://domcloud.id/faq#:~:text=Bagaimana%20cara%20mengakses%20SSH?" target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
+            <?php endif ?>
           </div>
         </div>
         <div class="col-md-6 col-xl-3">

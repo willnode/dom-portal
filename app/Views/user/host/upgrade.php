@@ -100,7 +100,7 @@
                   </div>
                   <fieldset id="dm-free">
                     <div class="mb-3">
-                      <input class="form-control" id="free_cname" value="<?= $data->username ?>.dom.my.id" disabled>
+                      <input class="form-control" id="free_cname" value="<?= $data->username ?><?= $data->server->alias ?>" disabled>
                       <small class="form-text text-muted">
                         <?= lang('Host.freeDomainHint') ?>
                         <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
@@ -127,7 +127,7 @@
                         <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
                       </div>
                       <small class="form-text text-muted">
-                        <a href="https://dom.my.id/domain" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
+                        <a href="<?= lang('Host.findAvailableGLTDsLink') ?>" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
                       </small>
                     </div>
                     <p id="buy-status-prompt" class="alert alert-primary">

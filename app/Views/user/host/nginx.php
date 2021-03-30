@@ -13,12 +13,12 @@
         <div class="row my-2">
           <div class="col-md-6">
             <div class="mb-3 ">
-              <h2>NginX Configurator (Beta)</h2>
+              <h2>NginX Configurator</h2>
             </div>
             <?php if ($host->plan_id > 2) : ?>
               <form method="GET">
                 <label for="subdomain">
-                  Cek Subdomain:&nbsp;
+                  Subdomain:&nbsp;
                 </label>
                 <input type="text" id="subdomain" name="subdomain" value="<?= $_GET['subdomain'] ?? '' ?>">
                 <input type="submit" value="Check" class="btn btn-primary btn-sm">
@@ -78,7 +78,7 @@
           l.split('\n').slice(1).forEach(ll => {
             var ls = ll.trim().split(' ');
             if (ls.length > 1)
-              y += '    ' + ls[0] + ': ' + ls.slice(1).join(' ').trim(';') + '\n';
+              y += '    ' + ls[0] + ': ' + ls.slice(1).join(' ').slice(0, -1) + '\n';
           });
           return y;
         }).join('');

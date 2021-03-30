@@ -34,10 +34,10 @@
                 <!-- Server -->
                 <div class="mb-3">
                   <label class="form-label" for="server"><?= lang('Host.slaveServer') ?></label>
-                  <select class="form-select" id="server" name="server" required>
+                  <select class="form-select" id="server" name="server" required onchange="recalculate()">
                     <?php foreach ($servers as $server) : ?>
                       <label class="form-check">
-                        <option value="<?= $server->id ?>"><?= $server->alias ?> &mdash; <?= $server->description ?></option>
+                        <option value="<?= $server->id ?>" <?= $server->lang == lang('Interface.code') ? 'selected' : '' ?> data-domain="<?= $server->domain ?>"><?= $server->alias ?> &mdash; <?= $server->description ?></option>
                       </label>
                     <?php endforeach ?>
                   </select>
@@ -126,7 +126,7 @@
                       <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
                     </div>
                     <small class="form-text text-muted">
-                      <a href="https://dom.my.id/domain" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
+                      <a href="<?= lang('Host.findAvailableGLTDsLink') ?>" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
                     </small>
                   </div>
                   <p id="buy-status-prompt" class="alert alert-primary">
@@ -377,7 +377,7 @@
             activedomain.domain === window.box.domain_name.value + schdata.alias) ? '1' : '');
           scheme = schdata[`price_${currency}`] + schdata[`renew_${currency}`] * (years - 1);
         } else if (dommod == 'free') {
-          form.free_cname.value = form.username.value + '.dom.my.id';
+          form.free_cname.value = form.username.value + $('#server :selected').data('domain');
         }
 
 
