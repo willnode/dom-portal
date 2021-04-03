@@ -13,6 +13,7 @@
 	'email' => 'Email',
 	'sales' => 'Penjualan',
 	'help' => 'Bantuan',
+	'helpLink' => 'https://github.com/domcloud/domcloud-id#readme',
 	'marketplace' => 'Marketplace',
 	'reseller' => 'Reseller',
 	'scheme' => 'Paket',

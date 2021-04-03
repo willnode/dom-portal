@@ -3,13 +3,14 @@
   <div class="modal-dialog">
     <form class="modal-content" name="domainBio">
       <div class="modal-header">
-        <h5 class="modal-title">Masukkan Biodata</h5>
+        <h5 class="modal-title"><?= lang('Domain.enterBio') ?></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <fieldset class="mb-3 card">
           <div class="card-header">
-            Biodata Publik / Pemilik Domain
+          <?= lang('Domain.publicBio') ?>
+
           </div>
           <div class="card-body">
             <div class="mb-1">
@@ -40,7 +41,7 @@
               </div>
             </div>
             <div class="mb-1">
-              <label for="">Alamat</label>
+              <label for=""><?= lang('Domain.address') ?></label>
               <div class="row g-1 mb-1">
                 <div class="col">
                   <select name="domain.owner.country" autocomplete="country" class="ccode form-select" required>
@@ -67,13 +68,13 @@
 
         <div class="mb-3">
           <label>
-            <input type="checkbox" checked onclick="$('#domainuserform').toggleClass('d-none', event.target.checked).prop('disabled', event.target.checked)"> Domain yang saya pesan merupakan milik sendiri
+            <input type="checkbox" checked onclick="$('#domainuserform').toggleClass('d-none', event.target.checked).prop('disabled', event.target.checked)"> <?= lang('Domain.myOwn') ?>
           </label>
         </div>
 
         <fieldset disabled id="domainuserform" class="mb-3 d-none card">
           <div class="card-header">
-            Biodata Pribadi / Penanggung-jawab Domain
+          <?= lang('Domain.personalBio') ?>
           </div>
           <div class="card-body">
             <div class="mb-1">

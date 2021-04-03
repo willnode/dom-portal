@@ -16,6 +16,8 @@ class App extends BaseConfig
 	public $ipaymuURL;
 	public $ipaymuKey;
 	public $ipaymuSecret = '';
+	public $paypalClient = '';
+	public $paypalSecret = '';
 	public $transferWiseURL;
 	public $transferWiseSecret;
 	public $transferWisePID;

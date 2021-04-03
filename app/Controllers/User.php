@@ -15,6 +15,7 @@ use App\Entities\Server;
 use App\Libraries\BannedNames;
 use App\Libraries\DigitalRegistra;
 use App\Libraries\IpaymuGate;
+use App\Libraries\PayPalGate;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\VirtualMinShell;
 use App\Models\DomainModel;
@@ -224,7 +225,7 @@ class User extends BaseController
 							$coupon->redeems--;
 							(new HostCouponModel())->save($coupon);
 						} else {
-							$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
+							$metadata->price += ['idr' => 5000, 'usd' => round($metadata->price * 0.044 + 0.3, 2)][$metadata->price_unit];
 						}
 						$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
 						$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
@@ -344,7 +345,7 @@ class User extends BaseController
 				$metadata->price = ($plan->price_local - $host->plan->price_local) * $metadata->years;
 			}
 			$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
-			$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
+			$metadata->price += ['idr' => 5000, 'usd' => round($metadata->price * 0.044 + 0.3, 2)][$metadata->price_unit];
 			$payment->metadata = $metadata;
 			$payment->host_id = $host->id;
 			if ($mode === 'new')
@@ -392,7 +393,7 @@ class User extends BaseController
 			if (!empty($this->request->getPost('sub'))) {
 				$domain = $this->request->getPost('sub') . '.' . $host->domain;
 			}
-			$heads = dns_get_record($domain, DNS_A | DNS_TXT | DNS_CNAME | DNS_MX | DNS_NS);
+			$heads = dns_get_record($domain, DNS_ANY);
 			return $this->response->setJSON($heads);
 			// @codeCoverageIgnoreEnd
 		}
@@ -518,8 +519,7 @@ class User extends BaseController
 			// @codeCoverageIgnoreStart
 			if ($host->status == 'active' && ($t = $this->request->getPost('template'))) {
 				(new TemplateDeployer())->schedule($host->id, $host->domain, $t);
-			}
-			else if ($this->request->getPost('delete')) {
+			} else if ($this->request->getPost('delete')) {
 				(new HostDeployModel())->atHost($host->id)->delete();
 			}
 			return $this->response->redirect('/user/host/deploys/' . $host->id);
@@ -546,22 +546,41 @@ class User extends BaseController
 					(new HostModel())->delete($host->id);
 					return $this->response->redirect('user/host');
 				}
-			} else if ($action === 'pay' && $metadata->price_unit === 'idr') {
+			} else if ($action === 'pay') {
 				$plan = (new PlanModel())->find($metadata->plan)->alias ?? '';
-				$pay = (new IpaymuGate())->createPayment(
-					$current->id,
-					$metadata->price,
-					lang('Host.formatInvoiceAlt', [
-						"$plan",
-						"$metadata->domain",
-					]) . lang("Host.formatInvoiceSum", ["$metadata->price"]),
-					$metadata->_challenge,
-					$host->login
-				);
-				if ($pay && isset($pay->sessionID)) {
-					return $this->response->redirect(
-						$this->request->config->ipaymuURL . $pay->sessionID
+				if ($metadata->price_unit === 'idr') {
+					$pay = (new IpaymuGate())->createPayment(
+						$current->id,
+						$metadata->price,
+						lang('Host.formatInvoiceAlt', [
+							"$plan",
+							"$metadata->domain",
+						]) . lang("Host.formatInvoiceSum", ["$metadata->price"]),
+						$metadata->_challenge,
+						$host->login
 					);
+					if ($pay && isset($pay->sessionID)) {
+						return $this->response->redirect(
+							$this->request->config->ipaymuURL . $pay->sessionID
+						);
+					}
+				} else if ($metadata->price_unit === 'usd') {
+					$pay = (new PayPalGate())->createPayment(
+						$current->id,
+						$metadata->price,
+						lang('Host.formatInvoiceAlt', [
+							"$plan",
+							"$metadata->domain",
+						]) . lang("Host.formatInvoiceSum", ["$metadata->price"]),
+						$metadata->_challenge,
+						$host->login
+					);
+					if ($pay && isset($pay->id)) {
+						return $this->response->redirect(
+							(ENVIRONMENT === 'production' ? 'https://paypal.com' : 'https://sandbox.paypal.com') .
+								"/checkoutnow?token=".urlencode($pay->id)
+						);
+					}
 				}
 				return $this->response->redirect('/user/host/invoices/' . $host->id);
 			}
@@ -706,7 +725,7 @@ class User extends BaseController
 						$payment->metadata = $metadata;
 						$payment->domain_id = $newdomain->id;
 						(new PurchaseModel())->save($payment);
-						return $this->response->redirect('/user/domain/invoices/'.$newdomain->id);
+						return $this->response->redirect('/user/domain/invoices/' . $newdomain->id);
 					}
 				}
 			}
@@ -732,40 +751,40 @@ class User extends BaseController
 	}
 	protected function invoicesDomain(Domain $domain)
 	{
-			/** @var Purchase[] */
-			$history = (new PurchaseModel())->atDomain($domain->id)->descending()->find();
-			$current = $history[0] ?? null;
-			if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending') {
-				$metadata = $current->metadata;
-				if ($action === 'cancel') {
-					if (count($history) > 1 || $domain->status !== 'pending') {
-						(new PurchaseModel())->delete($current->id);
-						return $this->response->redirect('/user/domain/invoices/' . $domain->id);
-						// @codeCoverageIgnoreStart
-					} else {
-						(new DomainModel())->delete($domain->id);
-						return $this->response->redirect('user/domain/');
-					}
-				} else if ($action === 'pay' && $metadata->price_unit === 'idr') {
-					$pay = (new IpaymuGate())->createPayment(
-						$current->id,
-						$metadata->price,
-						lang('Domain.formatInvoice', [
-							"$metadata->domain",
-							$metadata->price
-						]),
-						$metadata->_challenge,
-						$domain->login
-					);
-					if ($pay && isset($pay->sessionID)) {
-						return $this->response->redirect(
-							$this->request->config->ipaymuURL . $pay->sessionID
-						);
-					}
+		/** @var Purchase[] */
+		$history = (new PurchaseModel())->atDomain($domain->id)->descending()->find();
+		$current = $history[0] ?? null;
+		if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending') {
+			$metadata = $current->metadata;
+			if ($action === 'cancel') {
+				if (count($history) > 1 || $domain->status !== 'pending') {
+					(new PurchaseModel())->delete($current->id);
 					return $this->response->redirect('/user/domain/invoices/' . $domain->id);
+					// @codeCoverageIgnoreStart
+				} else {
+					(new DomainModel())->delete($domain->id);
+					return $this->response->redirect('user/domain/');
 				}
-				// @codeCoverageIgnoreEnd
+			} else if ($action === 'pay' && $metadata->price_unit === 'idr') {
+				$pay = (new IpaymuGate())->createPayment(
+					$current->id,
+					$metadata->price,
+					lang('Domain.formatInvoice', [
+						"$metadata->domain",
+						$metadata->price
+					]),
+					$metadata->_challenge,
+					$domain->login
+				);
+				if ($pay && isset($pay->sessionID)) {
+					return $this->response->redirect(
+						$this->request->config->ipaymuURL . $pay->sessionID
+					);
+				}
+				return $this->response->redirect('/user/domain/invoices/' . $domain->id);
 			}
+			// @codeCoverageIgnoreEnd
+		}
 		return view('user/domain/invoice', [
 			'domain' => $domain,
 		]);
@@ -838,7 +857,7 @@ class User extends BaseController
 		$item_plans = [];
 		foreach ($hosts as $h) {
 			if ($h->status == 'active' || $h->status == 'suspended')
-			$plans[$h->plan_id] = ($plans[$h->plan_id] ?? 0) + 1;
+				$plans[$h->plan_id] = ($plans[$h->plan_id] ?? 0) + 1;
 			isset($item_plans[$h->plan_id]) or ($item_plans[$h->plan_id] = $h->plan);
 		}
 		/** @var \App\Entities\Domain[] $domains */
@@ -847,7 +866,7 @@ class User extends BaseController
 		$item_schemes = [];
 		foreach ($domains as $h) {
 			if ($h->status == 'active')
-			$schemes[$h->scheme_id] = ($schemes[$h->scheme_id] ?? 0) + 1;
+				$schemes[$h->scheme_id] = ($schemes[$h->scheme_id] ?? 0) + 1;
 			isset($item_schemes[$h->scheme_id]) or ($item_schemes[$h->scheme_id] = $h->scheme);
 		}
 		return view('user/sales', [

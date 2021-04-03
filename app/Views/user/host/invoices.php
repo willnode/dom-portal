@@ -28,16 +28,11 @@
                 ])) . lang("Host.formatInvoiceSum", ["<b>$money</b>"]) ?>
               </p>
 
-              <?php if (lang('Interface.code') == 'en') : ?>
-                <p>We currently only support Indonesian payments</p>
-                <p>Please <a href="mailto:support@domcloud.id">Contact us</a> to finish transaction</p>
-              <?php else : ?>
-                <form method="post" class="my-2">
-                  <?= csrf_field() ?>
-                  <input type="hidden" name="action" value="pay">
-                  <input type="submit" class="btn btn-primary" value="<?= lang('Host.finishPayment') ?>">
-                </form>
-              <?php endif ?>
+              <form method="post" class="my-2">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="pay">
+                <input type="submit" class="btn btn-primary" value="<?= lang('Host.finishPayment') ?>">
+              </form>
 
               <p>
                 <?= lang('Host.cancelInvoiceHint') ?>

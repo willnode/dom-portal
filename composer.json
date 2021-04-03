@@ -10,7 +10,8 @@
         "sonata-project/google-authenticator": "^2.2",
         "symfony/yaml": "^5.1",
         "codeigniter4/framework": "^4.0",
-        "google/apiclient": "^2.8"
+        "google/apiclient": "^2.8",
+        "paypal/paypal-checkout-sdk": "^1.0"
     },
     "require-dev": {
         "mikey179/vfsstream": "1.6.*",

@@ -13,6 +13,7 @@
 	'email' => 'Email',
 	'sales' => 'Sales',
 	'help' => 'Help',
+	'helpLink' => 'https://github.com/domcloud/domcloud-io#readme',
 	'marketplace' => 'Marketplace',
 	'reseller' => 'Reseller',
 	'scheme' => 'Plan',

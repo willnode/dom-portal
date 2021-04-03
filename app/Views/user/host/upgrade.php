@@ -111,7 +111,7 @@
                     <div class="mb-3">
                       <label class="form-label d-flex align-items-center"><?= lang('Host.findDomain') ?>
                         <button type="button" id="domainBioModalBtn" class="ms-auto btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#domainBioModal">
-                          Isi Biodata Domain
+                          <?= lang('Domain.fillBiodata') ?>
                         </button>
                       </label>
                       <div class="input-group">
@@ -124,7 +124,7 @@
                           <?php endif;
                           endforeach; ?>
                         </select>
-                        <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
+                        <input onclick="checkDomain()" type="button" value="<?= lang('Domain.check') ?>" class="btn btn-primary">
                       </div>
                       <small class="form-text text-muted">
                         <a href="<?= lang('Host.findAvailableGLTDsLink') ?>" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
@@ -289,7 +289,7 @@
     function recalculate() {
       // Get values
       var tip = {
-        'usd': 0.5,
+        'usd': 0.3,
         'idr': 5000
       } [currency];
       var bww = {
@@ -338,6 +338,11 @@
         var cashback = mode === 'upgrade' ? oldval * oldyr : 0;
         var exp = mode === 'new' ? new Date(Date.now() + 1000 * 86400 * 365 * years) : (
           mode === 'extend' ? new Date(Number(oldexp) + 1000 * 86400 * 365 * years) : oldexp);
+
+
+        if (currency === 'usd') {
+          tip += Math.round((unit * years - cashback + addons * bww + scheme) * 0.044 * 100) / 100 // paypal fee
+        }
 
         // Show values
         if (unit == 0 && mode !== 'topup') {

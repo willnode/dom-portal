@@ -110,7 +110,7 @@
                   <div class="mb-3">
                     <label class="form-label d-flex align-items-center"><?= lang('Host.findDomain') ?>
                       <button type="button" id="domainBioModalBtn" class="ms-auto btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#domainBioModal">
-                        Isi Biodata Domain
+                        <?= lang('Domain.fillBiodata') ?>
                       </button>
                     </label>
                     <div class="input-group">
@@ -123,7 +123,7 @@
                         <?php endif;
                         endforeach; ?>
                       </select>
-                      <input onclick="checkDomain()" type="button" value="Cek" class="btn btn-primary">
+                      <input onclick="checkDomain()" type="button" value="<?= lang('Domain.check') ?>" class="btn btn-primary">
                     </div>
                     <small class="form-text text-muted">
                       <a href="<?= lang('Host.findAvailableGLTDsLink') ?>" target="_blank"><?= lang('Host.findAvailableGLTDs') ?></a>.
@@ -329,7 +329,7 @@
       function recalculate() {
         // Get values
         var tip = {
-          'usd': 0.5,
+          'usd': 0.3,
           'idr': 5000
         } [currency];
         var bww = {
@@ -378,6 +378,10 @@
           scheme = schdata[`price_${currency}`] + schdata[`renew_${currency}`] * (years - 1);
         } else if (dommod == 'free') {
           form.free_cname.value = form.username.value + $('#server :selected').data('domain');
+        }
+
+        if (currency === 'usd') {
+          tip += Math.round((unit * years + addons * bww + scheme) * 0.044 * 100) / 100 // paypal fee
         }
 
 

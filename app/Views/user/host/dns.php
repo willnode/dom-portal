@@ -18,7 +18,7 @@
             </p>
             <p class="mb-0">Domain yang dites: </p>
             <p><input id="sub" placeholder="subdomain" class="form-inline" style="max-width: 120px;"><b>.<?= $host->domain ?></b>
-              <input type="button" value="Cek" onclick="cek()"></p>
+              <input type="button" value="<?= lang('Domain.check') ?>" onclick="cek()"></p>
           </div>
         </div>
       </div>

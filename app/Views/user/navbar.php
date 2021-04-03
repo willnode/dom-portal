@@ -25,7 +25,7 @@
           </li>
         <?php endif ?>
         <li class="nav-item">
-          <a class="nav-link" href="https://domcloud.id/faq"><?= lang('Interface.help') ?>?</a>
+            <a class="nav-link" href="<?= lang('Interface.helpLink') ?>"><?= lang('Interface.help') ?>?</a>
         </li>
       </ul>
 

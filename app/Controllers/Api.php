@@ -272,13 +272,26 @@ class Api extends BaseController
     /**
      * @codeCoverageIgnore
      */
-    public function notifypp()
+    public function notifypp($secret)
     {
-        if ($this->request->getMethod() === 'post') {
-            log_message('notice', json_encode($this->request->getHeaders()));
-            log_message('notice', $this->request->getBody());
-            return 'OK';
+        $r = $this->request;
+        if ($r->getMethod() === 'post') {
+            $body = json_decode($this->request->getBody());
+            if (($body->event_type ?? '') == 'CHECKOUT.ORDER.APPROVED' && isset($body->resource->purchase_units[0])) {
+                $r->setGlobal('get', $get_data = [
+                    'id' => $body->resource->purchase_units[0]->reference_id,
+                    'challenge' => $body->resource->purchase_units[0]->custom_id,
+                    'secret' => $secret,
+                ]);
+                $r->setGlobal('post', $post_data = [
+                    'trx_id' => $body->id,
+                    'via' => 'PayPal',
+                    'status' => 'berhasil',
+                ]);
+                $r->setGlobal('request', array_merge($get_data, $post_data));
+                return $this->notify();
+            }
         }
-        throw new PageNotFoundException(); // @codeCoverageIgnore
+        return 'OK';
     }
 }
