@@ -290,6 +290,9 @@ class Api extends BaseController
                 ]);
                 $r->setGlobal('request', array_merge($get_data, $post_data));
                 return $this->notify();
+            } else {
+                // further inspection
+                log_message('notice', $this->request->getBody());
             }
         }
         return 'OK';
