@@ -32,7 +32,7 @@
                 <option value="en" <?= $data->lang === 'en' ? 'selected' : '' ?>>English</option>
               </select>
               <?php if ($data->lang === 'en') : ?>
-                <p class="mt-2"><small><i> By using English language, all purchases will be translated to usd dollar with different variations of fixed price. Also, all future transaction will made through using international payment gate instead of local payment gate (Currently has to be done manually using support request).</i></small></p>
+                <p class="mt-2 alert alert-info"><small><i> By using English Language, all purchases will be translated to USD dollar and payments will be processed through PayPal.</i></small></p>
               <?php endif ?>
             </div>
             <p><input type="submit" class="btn btn-primary" value="<?= lang('Interface.saveProfile') ?>"></p>

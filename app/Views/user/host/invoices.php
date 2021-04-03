@@ -34,6 +34,9 @@
                 <input type="submit" class="btn btn-primary" value="<?= lang('Host.finishPayment') ?>">
               </form>
 
+              <?php if (lang('Interface.code') === 'en') : ?>
+                <p class="mt-2 alert alert-info"><small><i> Heads up! The merchant displayed in the PayPal confirmation page will be "Wello Soft", which means the fund will going directly to <a href="https://wellosoft.net" target="_blank">the creator of DOM Cloud</a>.</i></small></p>
+              <?php endif ?>
               <p>
                 <?= lang('Host.cancelInvoiceHint') ?>
               </p>
@@ -47,7 +50,7 @@
               <p> Sisa Kadarluarsa Langganan: <?= humanize($host->expiry_at) ?>. </p>
               <p><a target="_blank" href="http://<?= $host->domain ?>">Buka Website</a></p>
               <p><a href="/user/host/see/<?= $host->id ?>">Edit Website</a></p>
-              <?php elseif ($host->status === 'expired') : ?>
+            <?php elseif ($host->status === 'expired') : ?>
               <p> PERHATIAN: Status Langganan anda sudah ekspired dan perlu diperbarui segera sebelum terhapus oleh sistem secara permanen. </p>
             <?php elseif ($host->status === 'starting') : ?>
               <p><?= lang('Host.preparingHint') ?> </p>
@@ -60,60 +63,61 @@
           <div class="card-body">
             <h3 class="text-center mb-3"><?= lang('Interface.archives') ?></h3>
             <?php /** @var \App\Entities\Purchase[] $history */
-                use App\Models\PlanModel;
-?>
+
+            use App\Models\PlanModel;
+            ?>
             <?php foreach ($history as $item) : ?>
               <div class="card">
                 <div class="card-body">
-                <table class="table table-sm">
-                  <tbody>
-                    <tr>
-                      <td>ID Pembelian</td>
-                      <td><b><?= $item->metadata->_id ?></b></td>
-                    </tr>
-                    <tr>
-                      <td>Status</td>
-                      <td><b><?= ucfirst($item->status) ?></b></td>
-                    </tr>
-                    <tr>
-                      <td>Tanggal Beli</td>
-                      <td><?= $item->metadata->_issued ?></td>
-                    </tr>
-                    <tr>
-                      <td>Tanggal Kadarluarsa</td>
-                      <td><?= $item->metadata->expiration ?></td>
-                    </tr>
-                    <tr>
-                      <td>Paket Hosting</td>
-                      <td><?= $item->metadata->plan ? (new PlanModel())->find($item->metadata->plan)->alias : '-' ?></td>
-                    </tr>
-                    <tr>
-                      <td>Registrasi Domain</td>
-                      <td><?= $item->metadata->registrar['domain'] ?? '-' ?></td>
-                    </tr>
-                    <tr>
-                      <td>Tambahan Addons</td>
-                      <td><?= $item->metadata->addons ? $item->metadata->addons.' GB' : '-' ?></td>
-                    </tr>
-                    <tr>
-                      <td>Durasi</td>
-                      <td><?= $item->metadata->years ?> Tahun</td>
-                    </tr>
-                    <tr>
-                      <td>Harga</td>
-                      <td><?= format_money($item->metadata->price, $item->metadata->price_unit) ?></td>
-                    </tr>
-                    <tr>
-                      <td>Via</td>
-                      <td><?= $item->metadata->_via ?></td>
-                    </tr>
-                  </tbody>
-                </table>
+                  <table class="table table-sm">
+                    <tbody>
+                      <tr>
+                        <td>ID Pembelian</td>
+                        <td><b><?= $item->metadata->_id ?></b></td>
+                      </tr>
+                      <tr>
+                        <td>Status</td>
+                        <td><b><?= ucfirst($item->status) ?></b></td>
+                      </tr>
+                      <tr>
+                        <td>Tanggal Beli</td>
+                        <td><?= $item->metadata->_issued ?></td>
+                      </tr>
+                      <tr>
+                        <td>Tanggal Kadarluarsa</td>
+                        <td><?= $item->metadata->expiration ?></td>
+                      </tr>
+                      <tr>
+                        <td>Paket Hosting</td>
+                        <td><?= $item->metadata->plan ? (new PlanModel())->find($item->metadata->plan)->alias : '-' ?></td>
+                      </tr>
+                      <tr>
+                        <td>Registrasi Domain</td>
+                        <td><?= $item->metadata->registrar['domain'] ?? '-' ?></td>
+                      </tr>
+                      <tr>
+                        <td>Tambahan Addons</td>
+                        <td><?= $item->metadata->addons ? $item->metadata->addons . ' GB' : '-' ?></td>
+                      </tr>
+                      <tr>
+                        <td>Durasi</td>
+                        <td><?= $item->metadata->years ?> Tahun</td>
+                      </tr>
+                      <tr>
+                        <td>Harga</td>
+                        <td><?= format_money($item->metadata->price, $item->metadata->price_unit) ?></td>
+                      </tr>
+                      <tr>
+                        <td>Via</td>
+                        <td><?= $item->metadata->_via ?></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             <?php endforeach ?>
             <?php if (!$history) : ?>
-            <p class="text-center text-black-50"><?= lang('host.invoiceNotFound') ?></p>
+              <p class="text-center text-black-50"><?= lang('host.invoiceNotFound') ?></p>
             <?php endif ?>
           </div>
         </div>
