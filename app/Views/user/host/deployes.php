@@ -42,7 +42,7 @@
                 <?php endif ?>
               </div>
             </div>
-            <input type="submit" value="Deploy Ulang">
+            <input type="submit" value="<?= lang('Host.redeploy') ?>">
           </details>
         </div>
       </form>
@@ -62,8 +62,8 @@
           <a href="https://github.com/domcloud/dom-templates" target="_blank" rel="noopener noreferrer">Deploy Config Reference</a>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary">Deploy Sekarang</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= lang('Interface.cancel') ?></button>
+          <button type="submit" class="btn btn-primary"><?= lang('Host.deployNow') ?></button>
         </div>
       </form>
     </div>

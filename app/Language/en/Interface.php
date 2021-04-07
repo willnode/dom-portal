@@ -71,4 +71,5 @@
 	'upgrade' => 'Upgrade',
 	'extend' => 'Extend',
 	'processing' => 'Processing',
+	'cancel' => 'Batal',
 ];

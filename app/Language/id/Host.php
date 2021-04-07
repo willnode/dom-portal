@@ -107,4 +107,6 @@
 	'hidePassword' => 'Sembunyikan Password',
 	'openPortal' => 'Buka Portal',
 	'invoiceNotFound' => 'Data Pembelian tidak ditemukan untuk hosting ini',
+	'redeploy' => 'Deploy Ulang',
+	'deployNow' => 'Execute!',
 ];

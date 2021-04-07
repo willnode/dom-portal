@@ -62,10 +62,7 @@
         <div class="card">
           <div class="card-body">
             <h3 class="text-center mb-3"><?= lang('Interface.archives') ?></h3>
-            <?php /** @var \App\Entities\Purchase[] $history */
-
-            use App\Models\PlanModel;
-            ?>
+            <?php /** @var \App\Entities\Purchase[] $history */ ?>
             <?php foreach ($history as $item) : ?>
               <div class="card">
                 <div class="card-body">
@@ -89,7 +86,7 @@
                       </tr>
                       <tr>
                         <td>Paket Hosting</td>
-                        <td><?= $item->metadata->plan ? (new PlanModel())->find($item->metadata->plan)->alias : '-' ?></td>
+                        <td><?= $item->metadata->plan ? (new App\Models\PlanModel())->find($item->metadata->plan)->alias : '-' ?></td>
                       </tr>
                       <tr>
                         <td>Registrasi Domain</td>
@@ -117,7 +114,7 @@
               </div>
             <?php endforeach ?>
             <?php if (!$history) : ?>
-              <p class="text-center text-black-50"><?= lang('host.invoiceNotFound') ?></p>
+              <p class="text-center text-black-50"><?= lang('Host.invoiceNotFound') ?></p>
             <?php endif ?>
           </div>
         </div>

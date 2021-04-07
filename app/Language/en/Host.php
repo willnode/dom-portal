@@ -106,4 +106,6 @@
 	'hidePassword' => 'Hide Password',
 	'openPortal' => 'Open Portal',
 	'invoiceNotFound' => 'Invoice not found for this host',
+	'redeploy' => 'Redeploy',
+	'deployNow' => 'Eksekusi!',
 ];

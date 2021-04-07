@@ -109,19 +109,8 @@ class TemplateDeployer
                 $log .= 'Error: unknown URL scheme. must be either HTTP or HTTPS' . "\n";
             }
         }
-        if (!empty($config['nginx'])) {
-            $log .= '#----- APPLYING NGINX CONFIG -----#' . "\n";
-            $log .= '$> ' . ($nginx = json_encode($config['nginx'])) . "\n";
-            $res = (new VirtualMinShell)->setNginxConfig($domain, $server, $nginx);
-            if ($res) {
-                $log .= "$res\nExit status: config discarded.\n";
-            } else {
-                $res = (new VirtualMinShell)->getNginxConfig($domain, $server);
-                $log .= "$res\nExit status: config applied.\n";
-            }
-        }
         if (!empty($config['features'])) {
-            $log .= '#----- APPLYING OPTIONAL FEATURES -----#' . "\n";
+            $log .= '#----- APPLYING FEATURES -----#' . "\n";
             foreach ($config['features'] as $feature) {
                 $args = explode(' ', $feature);
                 if (!$args) continue;
@@ -163,6 +152,17 @@ class TemplateDeployer
             $log .= str_replace($password, '[password]', "$> $cmd\n\n");
             $log .= str_replace($password, '[password]', $ssh->exec($cmd));
             $log .= "\nExit status: " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
+        }
+        if (!empty($config['nginx'])) {
+            $log .= '#----- APPLYING NGINX CONFIG -----#' . "\n";
+            $log .= '$> ' . ($nginx = json_encode($config['nginx'])) . "\n";
+            $res = (new VirtualMinShell)->setNginxConfig($domain, $server, $nginx);
+            if ($res) {
+                $log .= "$res\nExit status: config discarded.\n";
+            } else {
+                $res = (new VirtualMinShell)->getNginxConfig($domain, $server);
+                $log .= "$res\nExit status: config applied.\n";
+            }
         }
         $log .= '#----- DEPLOYMENT ENDED -----#' . "\n";
         $log .= "execution time: " . number_format(microtime(true) - $timing, 3) . " s";

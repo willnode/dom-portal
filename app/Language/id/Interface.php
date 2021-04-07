@@ -72,4 +72,5 @@
 	'extend' => 'Perpanjang',
 	'topup' => 'Topup',
 	'processing' => 'Memproses',
+	'cancel' => 'Batal',
 ];

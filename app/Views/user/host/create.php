@@ -50,7 +50,7 @@
                       <?= lang('Host.chooseTemplate') ?>
                     </button>
                   </div>
-                  <textarea name="template" class="form-control font-monospace text-nowrap" placeholder="Config File" rows=7>features: ['mysql', 'ssl']</textarea>
+                  <textarea name="template" class="form-control font-monospace text-nowrap" placeholder="Config File" rows=7><?= "features: ['mysql', 'ssl']\nnginx:\n  ssl: on" ?></textarea>
                 </div>
               </div>
             </div>
