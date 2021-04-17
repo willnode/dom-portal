@@ -49,10 +49,8 @@ class WebViewTest extends CIDatabaseTestCase
         $this->assertTrue(is_string($user->profile()));
 
         // server page
-        $this->assertTrue($user->status()->getStatusCode() === 302);
-        $req->setGlobal('get', ['server' => 1]);
-        $this->assertTrue(is_string($user->profile()));
         $this->assertTrue(is_string($user->status()));
+        $this->assertTrue(is_string($user->profile()));
         $this->assertTrue(is_string($user->delete()));
 
         // hosts page

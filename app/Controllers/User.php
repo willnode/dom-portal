@@ -822,7 +822,6 @@ class User extends BaseController
 
 	public function status()
 	{
-		$id = $this->request->getGet('server');
 		return view('user/status', [
 			'page' => 'status',
 			'servers' => (new ServerModel())->findAll(),
