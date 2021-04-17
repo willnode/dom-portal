@@ -7,8 +7,10 @@
   <?= view('user/navbar') ?>
 
   <div class="container">
-    <h1 class="mb">Server Status @ <?= $server->description ?> (<?= $server->alias ?> &mdash; <?= $server->domain ?>)</h1>
-    <div class="row">
+    <h1 class="mb-4">Server Status</h1>
+    <?php foreach ($servers as $server) : $stat = $server->stat ? $server->stat->metadata : null; $stat_update = $server->stat ? humanize($server->stat->updated_at) : null ?>
+    <h3> <?= $server->description ?> Server &mdash; <?= $server->alias ?>.domcloud.id &mdash; *<?= $server->domain ?></h3>
+    <div class="row mb-3">
       <?php if ($stat) : ?>
         <div class="col-md-8">
           <div class="card">
@@ -17,17 +19,12 @@
                 <tbody>
                   <tr>
                     <td class="text-center">
-                      <?= $stat->host->os ?>
+                      <?= $server->ip ?> &mdash; <?= $stat->host->os ?>
                     </td>
                   </tr>
                   <tr>
                     <td class="text-center">
-                      <?= $stat->load[4] ?>, <?= $stat->load[7] ?>&nbsp;cores
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="text-center">
-                      <?= $stat->procs ?>&nbsp;processes, <?= $stat->fcount->doms ?>&nbsp;hosts, <?= $stat->fcount->dbs ?>&nbsp;databases
+                      <?= $stat->load[7] ?>&nbsp;cores, <?= $stat->procs ?>&nbsp;processes, <?= $stat->fcount->doms ?>&nbsp;hosts, <?= $stat->fcount->dbs ?>&nbsp;databases
                     </td>
                   </tr>
                 </tbody>
@@ -91,6 +88,7 @@
         </div>
       <?php endif ?>
     </div>
+    <?php endforeach ?>
   </div>
 </body>
 
