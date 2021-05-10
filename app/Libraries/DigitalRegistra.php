@@ -70,6 +70,11 @@ class DigitalRegistra
 		return $this->callApi('/domain/register', $data);
 	}
 
+	public function domainTransfer($data)
+	{
+		return $this->callApi('/domain/transfer', $data);
+	}
+
 	/**
 	 * @param array $bio
 	 * @param array $user
