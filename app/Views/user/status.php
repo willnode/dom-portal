@@ -34,20 +34,32 @@
                   <td width="100px">Memory</td>
                   <td>
                     <div class="progress my-1">
-                      <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * ($stat->mem[0] - $stat->mem[1]) / $stat->mem[0] ?>%"></div>
-                      <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: <?= 100 * ($stat->mem[4]) / $stat->mem[0] ?>%"></div>
+                      <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * ($stat->mem[0] - $stat->mem[1] + 1) / ($stat->mem[0] + 1) ?>%"></div>
+                      <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: <?= 100 * ($stat->mem[4] + 1) / ($stat->mem[0] + 1) ?>%"></div>
                     </div>
                   </td>
-                  <td width="150px" class="text-end">
+                  <td width="180px" class="text-end">
                     <?= format_bytes(($stat->mem[0] - $stat->mem[1]) * 1024) ?> /
                     <?= format_bytes($stat->mem[0] * 1024) ?>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Swap</td>
+                  <td>
+                    <div class="progress my-1">
+                      <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * ($stat->mem[2] - $stat->mem[3] + 1) / ($stat->mem[2] + 1) ?>%"></div>
+                    </div>
+                  </td>
+                  <td class="text-end">
+                    <?= format_bytes(($stat->mem[2] - $stat->mem[3]) * 1024) ?> /
+                    <?= format_bytes($stat->mem[2] * 1024) ?>
                   </td>
                 </tr>
                 <tr>
                   <td>Disk</td>
                   <td>
                     <div class="progress my-1">
-                      <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * ($stat->disk_total - $stat->disk_free) / $stat->disk_total ?>%"></div>
+                      <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: <?= 100 * ($stat->disk_total - $stat->disk_free + 1) / ($stat->disk_total + 1) ?>%"></div>
                     </div>
                   </td>
                   <td class="text-end">
