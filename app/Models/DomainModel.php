@@ -8,7 +8,7 @@ class DomainModel extends Model
 {
     protected $table         = 'domains';
     protected $allowedFields = [
-        'login_id', 'name', 'scheme_id', 'status'
+        'login_id', 'name', 'scheme_id', 'status', 'expiry_at'
     ];
     protected $primaryKey = 'id';
     protected $returnType = 'App\Entities\Domain';

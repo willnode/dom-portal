@@ -29,7 +29,9 @@
                   </a>
                 </td>
                 <td><?= ucfirst($domain->status) ?></td>
-                <td><?= $domain->expiry_at ?></td>
+                <td>
+                  <?= $domain->expiry_at ? humanize(new \CodeIgniter\I18n\Time($domain->expiry_at)) : '' ?>
+                </td>
               </tr>
             <?php endforeach ?>
           </tbody>

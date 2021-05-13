@@ -914,9 +914,18 @@ class User extends BaseController
 					case 'invoices':
 						return $this->invoicesDomain($domain);
 					case 'info_domain':
-						return $this->response->setJSON((new DigitalRegistra())->domainInfo($domain->name, $domain->id));
+						$info = (new DigitalRegistra())->domainInfo($domain->name, $domain->id);
+						if ($info['unixenddate'] ?? '') {
+							if (!$domain->expiry_at || ($info['unixenddate']) != strtotime($domain->expiry_at)) {
+								// update expiration
+								$domain->expiry_at = date('Y-m-d H:i:s', $info['unixenddate']);
+								(new DomainModel())->save($domain);
+							}
+						}
+						return $this->response->setJSON($info);
 					case 'info_dns':
-						return $this->response->setJSON((new DigitalRegistra())->dnsInfo($domain->name));
+						$info = (new DigitalRegistra())->dnsInfo($domain->name);
+						return $this->response->setJSON($info);
 				}
 			}
 		}

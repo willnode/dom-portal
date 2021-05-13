@@ -2,6 +2,7 @@
     'check' => 'Cek',
 	'listTitle' => 'Daftar Domain',
 	'newOrder' => 'Order Baru',
+    'transferDomain' => 'Transfer Domain',
     'registerTitle' => 'Registrasi Akun Domain',
     'registerHint' => 'Sebelum anda dapat membeli domain, kami perlu memerlukan data berikut. Data berikut digunakan untuk keperluan administrasi domain, seperti WHOIS.',
     'administrationData' => 'Data Administrasi',

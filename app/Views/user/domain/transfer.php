@@ -105,7 +105,7 @@
 
     function recalculate() {
       var tip = {
-        'usd': 0.5,
+        'usd': 0.3,
         'idr': 5000
       } [currency];
       var form = window.box;
@@ -116,13 +116,16 @@
       var exp = new Date(Date.now() + 1000 * 86400 * 365 * years);
       var price = schdata[`renew_${currency}`] * (years);
 
+      if (currency === 'usd') {
+        tip += Math.round(price * 0.044 * 100) / 100 // paypal fee
+      }
+
       $('#domainname').text(activedomain && activedomain.domain);
       $('#outstat').text(activedomain && activedomain.status);
       $('#outprice').text(formatter.format(price));
       $('#outtip').text(formatter.format(tip));
       $('#outtotal').text(formatter.format(tip + price));
       $('#outexp').text(exp.toISOString().substr(0, 10));
-
 
       var valid = form.checkValidity();
       $('#submitBtn')

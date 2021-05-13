@@ -2,6 +2,7 @@
     'check' => 'Check',
     'listTitle' => 'List Domain',
     'newOrder' => 'New Order',
+    'transferDomain' => 'Transfer Domain',
     'registerTitle' => 'Domain Account Registration',
     'registerHint' => 'Before you can buy domains, we need some data. The following data points are used for domain administration purposes, such as WHOIS.',
     'administrationData' => 'Administration Data',
