@@ -96,12 +96,21 @@ class Api extends BaseController
 
                 log_message('notice', 'PURCHASE: ' . json_encode($metadata));
 
-                if ($purchase->domain_id && $metadata->registrar) {
+                if ($purchase->domain_id) {
                     $domain = $purchase->domain;
-                    if ($domain->status === 'pending') {
-                        (new DigitalRegistra())->domainRegister($metadata->registrar);
-                        $domain->status = 'active';
-                        (new DomainModel())->save($domain);
+                    if ($metadata->registrar ?? null) {
+                        if ($domain->status === 'pending') {
+                            (new DigitalRegistra())->domainRegister($metadata->registrar);
+                            $domain->status = 'active';
+                            (new DomainModel())->save($domain);
+                        }
+                    }
+                    else if ($metadata->registrarTransfer ?? null) {
+                        if ($domain->status === 'pending') {
+                            (new DigitalRegistra())->domainTransfer($metadata->registrarTransfer);
+                            $domain->status = 'active';
+                            (new DomainModel())->save($domain);
+                        }
                     }
                     $login = $domain->login;
                 }

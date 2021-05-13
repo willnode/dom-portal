@@ -137,6 +137,65 @@ class User extends BaseController
 	}
 
 	/**
+	 * @param PurchaseMetadata $metadata
+	 * @param mixed $input
+	 * @param String $secret
+	 * @param Login $login
+	 * @return Domain|string|null if valid, return final domain object/string
+	 */
+	protected function processTransferDomainTransaction($metadata, $input, $login = null)
+	{
+		if (!$login) {
+			$login = $this->login;
+		}
+		if (!is_array($input)) {
+			return null; // @codeCoverageIgnore
+		} elseif ($this->validator->reset()->setRules([
+			'scheme' => 'required|is_not_unique[schemes.id]',
+			'name' => 'required|regex_match[/^[-\w]+$/]',
+			'secret' => 'required',
+		])->run($input)) {
+			if (empty($input['bio']) || !$this->validator->reset()->setRules([
+				'fname' => 'required|max_length[32]',
+				'company' => 'required|max_length[32]',
+				'email' => 'required|valid_email|max_length[63]',
+				'tel' => 'required|max_length[15]',
+				'country' => 'required|max_length[3]',
+				'state' => 'required|max_length[32]',
+				'city' => 'required|max_length[32]',
+				'postal' => 'required|max_length[8]',
+				'address1' => 'required|max_length[255]',
+			])->run(($bio = json_decode($input['bio'], true))['owner']))
+				return null; // @codeCoverageIgnore
+			/** @var Scheme */
+			$scheme = (new SchemeModel())->find($input['scheme']);
+			$domain = new Domain([
+				'name' => $input['name'] . $scheme->alias,
+				'login_id' => $login->id,
+				'scheme_id' => $scheme->id,
+				'status' => 'pending',
+			]);
+			$model = new DomainModel();
+			if (!$model->save($domain)) return null;
+			$domain->id = $model->getInsertID();
+			$metadata->domain = $domain->name;
+			$metadata->price += $scheme->renew_local * ($metadata->years);
+			$metadata->registrarTransfer = (new DigitalRegistra())->normalizeDomainInput(
+				$bio['owner'],
+				$bio['user'] ?? [],
+				$metadata->years,
+				$domain,
+				$domain->scheme,
+				null,
+				$login
+			);
+			$metadata->registrarTransfer['transfersecret'] = $input['secret'];
+			unset($metadata->registrarTransfer['autoactive']);
+			return $domain;
+		} else return null; // @codeCoverageIgnore
+	}
+
+	/**
 	 * @param IncomingRequest $request
 	 * @param Purchase $payment
 	 * @param Host $hosting
@@ -718,7 +777,7 @@ class User extends BaseController
 					"_invoiced" => null,
 					"_status" => null,
 				]);
-				$metadata->price += ['idr' => 5000, 'usd' => 0.5][$metadata->price_unit];
+				$metadata->price += ['idr' => 5000, 'usd' => round($metadata->price * 0.044 + 0.3, 2)][$metadata->price_unit];
 				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
 				if ($newdomain = $this->processNewDomainTransaction($metadata, $r->getPost('domain'))) {
 					if ($newdomain instanceof Domain) {
@@ -735,6 +794,48 @@ class User extends BaseController
 			'schemes' => (new SchemeModel())->findAll(),
 		]);
 	}
+
+	protected function transferDomain()
+	{
+		$r = $this->request;
+		if ($r->getMethod() === 'post') {
+			if ($this->validate([
+				'years' => 'required|greater_than[0]|less_than[6]',
+			])) {
+				$payment = new Purchase([
+					'status' => 'pending',
+				]);
+				$metadata = new PurchaseMetadata([
+					"type" => "domain",
+					"price" => 0.0,
+					"price_unit" => lang('Interface.currency'),
+					"expiration" => null,
+					"years" => intval($r->getPost('years')),
+					"_challenge" => random_int(111111111, 999999999),
+					"_id" => null,
+					"_via" => null,
+					"_issued" => date('Y-m-d H:i:s'),
+					"_invoiced" => null,
+					"_status" => null,
+				]);
+				$metadata->price += ['idr' => 5000, 'usd' => round($metadata->price * 0.044 + 0.3, 2)][$metadata->price_unit];
+				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
+				if ($newdomain = $this->processTransferDomainTransaction($metadata, $r->getPost('domain'))) {
+					if ($newdomain instanceof Domain) {
+						$payment->metadata = $metadata;
+						$payment->domain_id = $newdomain->id;
+						(new PurchaseModel())->save($payment);
+						return $this->response->redirect('/user/domain/invoices/' . $newdomain->id);
+					}
+				}
+			}
+		}
+
+		return view('user/domain/transfer', [
+			'schemes' => (new SchemeModel())->findAll(),
+		]);
+	}
+
 	protected function listDomain()
 	{
 		return view('user/domain/list', [
@@ -802,6 +903,8 @@ class User extends BaseController
 			return $this->checkDomain(); // @codeCoverageIgnore
 		} else if ($page == 'create') {
 			return $this->createDomain();
+		} else if ($page == 'transfer') {
+			return $this->transferDomain();
 		} else {
 			/** @var Domain $domain */
 			if ($domain = (new DomainModel())->atLogin($this->login->id)->find($id)) {
