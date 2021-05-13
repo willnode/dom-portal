@@ -33,8 +33,8 @@ class DigitalRegistra
 			if ($response) {
 				$response = new SimpleXMLElement($response);
 				log_message('notice', 'DOMAIN: ' . $route . "\n" . $response->asXML());
-				$d = $response->children('resultData');
-				return $d->count() === 0 ? (string)$response->result->resultMsg : $this->xml2array($d);
+				$d = $response->resultData;
+				return $d ? $this->xml2array($d) : (string)$response->result->resultMsg;
 			} else {
 				return '';
 			}
