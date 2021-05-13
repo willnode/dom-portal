@@ -98,19 +98,20 @@ class Api extends BaseController
 
                 if ($purchase->domain_id) {
                     $domain = $purchase->domain;
-                    if ($metadata->registrar ?? null) {
-                        if ($domain->status === 'pending') {
+                    if ($domain->status === 'pending') {
+                        if ($metadata->registrar ?? null) {
                             (new DigitalRegistra())->domainRegister($metadata->registrar);
                             $domain->status = 'active';
                             (new DomainModel())->save($domain);
-                        }
-                    }
-                    else if ($metadata->registrarTransfer ?? null) {
-                        if ($domain->status === 'pending') {
+                        } else if ($metadata->registrarTransfer ?? null) {
                             (new DigitalRegistra())->domainTransfer($metadata->registrarTransfer);
                             $domain->status = 'active';
                             (new DomainModel())->save($domain);
                         }
+                    } else if ($metadata->registrarRenew ?? null) {
+                        (new DigitalRegistra())->domainRenew($domain->name, $domain->id, $metadata->registrarRenew);
+                        $domain->status = 'active';
+                        (new DomainModel())->save($domain);
                     }
                     $login = $domain->login;
                 }

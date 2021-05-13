@@ -13,13 +13,6 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
-            <?php if ($domain->status === 'pending') : ?>
-              <form method="post" class="my-2">
-                <?= csrf_field() ?>
-                <input type="hidden" name="action" value="pay">
-                <input type="submit" class="btn btn-primary" value="<?= lang('Host.finishPayment') ?>">
-              </form>
-            <?php endif ?>
           </div>
 
         </div>

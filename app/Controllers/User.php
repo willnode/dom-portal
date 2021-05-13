@@ -414,7 +414,7 @@ class User extends BaseController
 			return $this->response->redirect('/user/host/invoices/' . $host->id);
 		}
 		return view('user/host/upgrade', [
-			'data' => $host,
+			'host' => $host,
 			'purchase' => $host->purchase,
 			'schemes' => (new SchemeModel())->find(),
 			'plans' => (new PlanModel())->find(),
@@ -891,6 +891,20 @@ class User extends BaseController
 		]);
 	}
 
+	protected function renewDomain(Domain $domain)
+	{
+		return view('user/domain/renew', [
+			'domain' => $domain,
+		]);
+	}
+
+	protected function dnsDomain(Domain $domain)
+	{
+		return view('user/domain/dns', [
+			'domain' => $domain,
+		]);
+	}
+
 
 	/** @var Liquid */
 	protected $liquid;
@@ -913,6 +927,10 @@ class User extends BaseController
 						return $this->detailDomain($domain);
 					case 'invoices':
 						return $this->invoicesDomain($domain);
+					case 'dns':
+						return $this->dnsDomain($domain);
+					case 'renew':
+						return $this->renewDomain($domain);
 					case 'info_domain':
 						$info = (new DigitalRegistra())->domainInfo($domain->name, $domain->id);
 						if ($info['unixenddate'] ?? '') {

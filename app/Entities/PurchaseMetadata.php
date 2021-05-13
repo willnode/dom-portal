@@ -15,6 +15,7 @@ use CodeIgniter\Entity;
  * @property string|null $template Zip/Git path to template to be applied
  * @property array|null $registrar Parameter list to registering new domain
  * @property array|null $registrarTransfer Parameter list to transfer existing domain
+ * @property int|null $registrarRenew Parameter to expand domain expiration in years
  * @property string|null $_challenge Purchase Challenge Code (iPaymu only)
  * @property string|null $_status Status ID from Gateway (TransferWise only)
  * @property string|null $_id Purchase ID from Gateway

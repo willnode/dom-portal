@@ -7,7 +7,7 @@
   <?= view('user/navbar') ?>
 
   <div class="container">
-    <h1><?= lang('Host.upgradeHost') ?></h1>
+    <?= view('user/host/navbar') ?>
     <?php if ($purchase && $purchase->status === 'pending') : ?>
       <div class="alert alert-danger">
         Anda tidak dapat melakukan upgrade apabila masih ada transaksi belum selesai.
@@ -22,7 +22,7 @@
               <div class="radio">
                 <label>
                   <div>
-                    <input type="radio" name="mode" value="new" onchange="syncPlans()" required class="me-2" <?= $purchase && (($data->notification & 1) != 1) ? 'disabled' : 'checked' ?>>
+                    <input type="radio" name="mode" value="new" onchange="syncPlans()" required class="me-2" <?= $purchase && (($host->notification & 1) != 1) ? 'disabled' : 'checked' ?>>
                     <b><?= lang('Interface.renew') ?></b>
                   </div>
                   <div class="pl-4">
@@ -89,7 +89,7 @@
                 </div>
               </div>
               <div id="domain-renew" class="d-none">
-                <?php if ($data->scheme_id == 1 || $data->scheme_id === null) : ?>
+                <?php if ($host->scheme_id == 1 || $host->scheme_id === null) : ?>
                   <div class="mb-3">
                     <label class="form-label" for="domain_mode"><?= lang('Host.selectDomainKind') ?></label>
                     <select id="domain_mode" class="form-select" onchange="recalculate()">
@@ -100,7 +100,7 @@
                   </div>
                   <fieldset id="dm-free">
                     <div class="mb-3">
-                      <input class="form-control" id="free_cname" value="<?= $data->username ?><?= $data->server->alias ?>" disabled>
+                      <input class="form-control" id="free_cname" value="<?= $host->username ?><?= $host->server->alias ?>" disabled>
                       <small class="form-text text-muted">
                         <?= lang('Host.freeDomainHint') ?>
                         <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
@@ -206,7 +206,7 @@
         </div>
       </form>
     <?php endif ?>
-    <a href="/user/host/detail/<?= $data->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
+    <a href="/user/host/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
 
   </div>
 
@@ -302,10 +302,10 @@
       var years = Math.min(5, parseInt(form.years.value));
       var addons = Math.min(10000, parseInt(form.addons.value));
       var oldyr = parseInt('<?= $purchase->metadata->years ?? 0 ?>');
-      var oldplan = parseInt('<?= $data->plan_id ?>');
-      var oldval = parseInt('<?= $data->plan->{'price_' . lang('Interface.currency')} ?? 0 ?>');
-      var oldexp = new Date('<?= $data->expiry_at ?>');
-      var oldadd = Math.floor(parseInt('<?= $data->addons ?>') / 1024 * 10) / 10;
+      var oldplan = parseInt('<?= $host->plan_id ?>');
+      var oldval = parseInt('<?= $host->plan->{'price_' . lang('Interface.currency')} ?? 0 ?>');
+      var oldexp = new Date('<?= $host->expiry_at ?>');
+      var oldadd = Math.floor(parseInt('<?= $host->addons ?>') / 1024 * 10) / 10;
       if (mode && (plan || mode == 'topup')) {
         var scheme = 0;
 

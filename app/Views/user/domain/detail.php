@@ -7,8 +7,8 @@
   <?= view('user/navbar') ?>
 
   <div class="container">
+    <?= view('user/domain/navbar') ?>
     <?php /** @var \App\Entities\Domain $domain */ ?>
-    <h1 class="mb-2">Detail Domain</h1>
     <div class="row">
       <div class="col-md-6">
         <div class="card">
@@ -69,7 +69,7 @@
         </div>
       </div>
     </div>
-    <a href="/user/domain" class="mt-3 btn btn-secondary">Kembali</a>
+    <a href="/user/domain" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
   </div>
   <script>
       window.addEventListener('DOMContentLoaded', (event) => {
