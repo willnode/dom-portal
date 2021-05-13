@@ -52,6 +52,7 @@ class WebViewTest extends CIDatabaseTestCase
         $this->assertTrue(is_string($user->status()));
         $this->assertTrue(is_string($user->profile()));
         $this->assertTrue(is_string($user->delete()));
+        $this->assertTrue(is_string($user->sales()));
 
         // hosts page
         (new HostModel())->insert([
@@ -93,13 +94,15 @@ class WebViewTest extends CIDatabaseTestCase
             foreach ([
                 'detail', 'see', 'nginx', 'invoices', 'upgrade',
                 'dns', 'ssl', 'rename', 'cname', 'delete', 'deploys',
+                'transfer'
             ] as $page) {
                 $this->assertTrue(is_string($user->host($page, 1)));
             }
             $this->assertTrue(is_string($user->domain('list')));
             $this->assertTrue(is_string($user->domain('create')));
+            $this->assertTrue(is_string($user->domain('transfer')));
             foreach ([
-                'detail', 'invoices',
+                'detail', 'invoices', 'dns', 'renew'
             ] as $page) {
                 $this->assertTrue(is_string($user->domain($page, 1)));
             }

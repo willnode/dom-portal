@@ -180,7 +180,7 @@ class User extends BaseController
 			$domain->id = $model->getInsertID();
 			$metadata->domain = $domain->name;
 			$metadata->price += $scheme->renew_local * ($metadata->years);
-			$metadata->registrarTransfer = (new DigitalRegistra())->normalizeDomainInput(
+			$registrarTransfer = (new DigitalRegistra())->normalizeDomainInput(
 				$bio['owner'],
 				$bio['user'] ?? [],
 				$metadata->years,
@@ -189,8 +189,9 @@ class User extends BaseController
 				null,
 				$login
 			);
-			$metadata->registrarTransfer['transfersecret'] = $input['secret'];
-			unset($metadata->registrarTransfer['autoactive']);
+			$registrarTransfer['transfersecret'] = $input['secret'];
+			unset($registrarTransfer['autoactive']);
+			$metadata->registrarTransfer = $registrarTransfer;
 			return $domain;
 		} else return null; // @codeCoverageIgnore
 	}
@@ -637,7 +638,7 @@ class User extends BaseController
 					if ($pay && isset($pay->id)) {
 						return $this->response->redirect(
 							(ENVIRONMENT === 'production' ? 'https://paypal.com' : 'https://sandbox.paypal.com') .
-								"/checkoutnow?token=".urlencode($pay->id)
+								"/checkoutnow?token=" . urlencode($pay->id)
 						);
 					}
 				}
@@ -856,12 +857,12 @@ class User extends BaseController
 		$history = (new PurchaseModel())->atDomain($domain->id)->descending()->find();
 		$current = $history[0] ?? null;
 		if ($this->request->getMethod() === 'post' && !empty($action = $this->request->getPost('action')) && $current && $current->status === 'pending') {
+			// @codeCoverageIgnoreStart
 			$metadata = $current->metadata;
 			if ($action === 'cancel') {
 				if (count($history) > 1 || $domain->status !== 'pending') {
 					(new PurchaseModel())->delete($current->id);
 					return $this->response->redirect('/user/domain/invoices/' . $domain->id);
-					// @codeCoverageIgnoreStart
 				} else {
 					(new DomainModel())->delete($domain->id);
 					return $this->response->redirect('user/domain/');
@@ -931,6 +932,7 @@ class User extends BaseController
 						return $this->dnsDomain($domain);
 					case 'renew':
 						return $this->renewDomain($domain);
+						// @codeCoverageIgnoreStart
 					case 'info_domain':
 						$info = (new DigitalRegistra())->domainInfo($domain->name, $domain->id);
 						if ($info['unixenddate'] ?? '') {
@@ -944,6 +946,7 @@ class User extends BaseController
 					case 'info_dns':
 						$info = (new DigitalRegistra())->dnsInfo($domain->name);
 						return $this->response->setJSON($info);
+						// @codeCoverageIgnoreEnd
 				}
 			}
 		}

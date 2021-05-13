@@ -21,6 +21,9 @@ use Google\Client;
 
 class Api extends BaseController
 {
+    /**
+     * @codeCoverageIgnore
+     */
     protected function signinoauth($email, $name = null)
     {
         $login = (new LoginModel())->atEmail($email);
@@ -40,7 +43,9 @@ class Api extends BaseController
         }
         return $this->response->redirect(base_url($r ?? 'user'));
     }
-
+    /**
+     * @codeCoverageIgnore
+     */
     public function signin($provider)
     {
         if ($provider === 'google') {

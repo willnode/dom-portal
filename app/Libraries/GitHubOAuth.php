@@ -3,8 +3,10 @@
 namespace App\Libraries;
 
 use Config\Services;
-use Google\Task\Retryable;
 
+/**
+ * @codeCoverageIgnore
+ */
 class GitHubOAuth
 {
     public $client;

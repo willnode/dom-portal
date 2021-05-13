@@ -16,6 +16,7 @@ class AddDomains extends Migration
             `status` ENUM('pending','active','expired') NULL DEFAULT 'pending',
             `created_at` TIMESTAMP NULL DEFAULT NULL,
             `updated_at` TIMESTAMP NULL DEFAULT NULL,
+            `expiry_at` TIMESTAMP NULL DEFAULT NULL,
             PRIMARY KEY (`id`),
             INDEX (`login_id`),
             INDEX (`scheme_id`),

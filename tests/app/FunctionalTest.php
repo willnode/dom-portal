@@ -527,6 +527,85 @@ class FunctionalTest extends CIDatabaseTestCase
         ]);
     }
 
+    public function testRenewDomain()
+    {
+        (new LoginModel())->register([
+            'name' => 'Contoso User',
+            'email' => 'contoso@example.com',
+            'password' => 'mycontosouser',
+        ], true, true);
+        ($user = new User())->initController($req = Services::request(), Services::response(), Services::logger());
+        $req->setMethod('post');
+        $req->setGlobal('post', $post_data = [
+            'years' => 1,
+            'domain' => [
+                'scheme' => 1,
+                'name' => 'example',
+                'secret' => 'ABCDEFG',
+                'bio' => json_encode([
+                    'owner' => [
+                        'fname' => 'Contoso',
+                        'company' => 'Contoso Company',
+                        'email' => 'contoso@example.com',
+                        'tel' => '15556667',
+                        'country' => 'US',
+                        'state' => 'California',
+                        'city' => 'Vancouver',
+                        'postal' => '11101',
+                        'address1' => 'St. John',
+                    ]
+                ])
+            ]
+        ]);
+        $req->setGlobal('request', $post_data);
+        $user->domain('transfer');
+
+        /** @var Domain */
+        $domain = (new DomainModel())->find(1);
+        $this->assertTrue(isset($domain, $domain->purchase));
+        $this->assertTrue($domain->status === 'pending');
+        $meta = $domain->purchase->metadata;
+        $this->assertEquals($meta->toRawArray(), [
+            'type' => "domain",
+            'price' => 165000,
+            'price_unit' => "idr",
+            'expiration' =>  $meta->expiration,
+            'years' =>  1,
+            'domain' =>  'example.com',
+            '_challenge' =>  $meta->_challenge,
+            '_id' => NULL,
+            '_via' =>  NULL,
+            '_issued' => $meta->_issued,
+            '_invoiced' => null,
+            '_status' => null,
+            'registrarTransfer' => [
+                'domain' => "example.com",
+                'api_id' => 1,
+                'periode' => 1,
+                'ns1' => "ns1.mysrsx.com",
+                'ns2' => "ns2.mysrsx.net",
+                'fname' => "Contoso",
+                'company' => "Contoso Company",
+                'address1' => "St. John",
+                'city' => "Vancouver",
+                'state' => "California",
+                'country' => "US",
+                'postcode' => "11101",
+                'phonenumber' => "15556667",
+                'email' => "contoso@example.com",
+                'user_username' => "contoso@example.com",
+                'user_fname' => "Contoso",
+                'user_company' => "Contoso Company",
+                'user_address' => "St. John",
+                'user_city' => "Vancouver",
+                'user_province' => "California",
+                'user_country' => "US",
+                'user_postal_code' => "11101",
+                'transfersecret' => "ABCDEFG",
+            ]
+        ]);
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
