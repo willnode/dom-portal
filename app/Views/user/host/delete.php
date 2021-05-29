@@ -7,7 +7,7 @@
   <?= view('user/navbar') ?>
   <div class="container text-center" style="max-width: 576px;">
     <h1 class="mb-3"><?= lang('Host.deleteTitle') ?></h1>
-    <?php if ($host->plan_id === 1) : ?>
+    <?php if ($host->plan_id === 1 && $host->status != 'banned') : ?>
       <div class="card">
         <div class="card-body">
           <div class="alert alert-danger">

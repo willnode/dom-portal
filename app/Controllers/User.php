@@ -671,7 +671,7 @@ class User extends BaseController
 	}
 	protected function deleteHost(Host $host)
 	{
-		if ($this->request->getMethod() === 'post' && $host->plan_id === 1 && ($this->request->getPost('wordpass')) === $host->username) {
+		if ($this->request->getMethod() === 'post' && $host->status != 'banned' && $host->plan_id === 1 && ($this->request->getPost('wordpass')) === $host->username) {
 			// @codeCoverageIgnoreStart
 			(new VirtualMinShell())->deleteHost($host->domain, $host->server->alias);
 			(new HostModel())->delete($host->id);
