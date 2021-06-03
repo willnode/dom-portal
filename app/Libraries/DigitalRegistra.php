@@ -34,7 +34,7 @@ class DigitalRegistra
 				$response = new SimpleXMLElement($response);
 				log_message('notice', 'DOMAIN: ' . $route . "\n" . $response->asXML());
 				$d = $response->resultData;
-				return $d ? $this->xml2array($d) : (string)$response->result->resultMsg;
+				return ((array)$d) ? $this->xml2array($d) : ((string)$response->result->resultMsg);
 			} else {
 				return '';
 			}
