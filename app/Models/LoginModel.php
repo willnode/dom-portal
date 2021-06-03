@@ -43,6 +43,7 @@ class LoginModel extends Model
             $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
         if ($autoVerified) {
             $data['email_verified_at'] = date('Y-m-d H:i:s');
+            $data['trustiness'] = 1;
         }
         if ($this->save($data)) {
             if ($thenLogin) {

@@ -220,7 +220,7 @@ class User extends BaseController
 	{
 		$r = $this->request;
 		$count = $this->db->table('hosts')->where('login_id', $this->login->id)->countAllResults();
-		$ok = $count < ($this->login->trustiness === 0 ? 1 : ($this->login->trustiness * 5));
+		$ok = $count < ($this->login->trustiness === 0 ? 0 : ($this->login->trustiness * 5));
 		if ($coupon = $this->request->getGet('code')) {
 			/** @var HostCoupon */
 			$coupon = (new HostCouponModel())->find($coupon);
