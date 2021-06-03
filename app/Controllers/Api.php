@@ -174,6 +174,10 @@ class Api extends BaseController
                                 $host->server->alias,
                                 $plan->alias,
                             );
+                            (new VirtualMinShell())->delIpTablesLimit(
+                                $host->username,
+                                $host->server->alias,
+                            );
                         }
                         $host->plan_id = $metadata->plan;
                         $host->status = 'active';

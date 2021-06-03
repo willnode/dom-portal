@@ -191,6 +191,7 @@ class CronJob extends BaseCommand
                 'updated_at' => date('Y-m-d H:i:s'),
             ];
             (new ServerStatModel())->replace($data);
+            (new VirtualMinShell())->updateIpTables($server->alias);
         }
     }
 }

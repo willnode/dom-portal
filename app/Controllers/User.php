@@ -309,6 +309,7 @@ class User extends BaseController
 						$server->alias,
 						$plan->alias
 					);
+					(new VirtualMinShell())->addIpTablesLimit($hosting->username, $server->alias);
 					log_message('notice', VirtualMinShell::$output);
 				}
 				// Send to Database
