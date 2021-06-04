@@ -529,6 +529,8 @@ class User extends BaseController
 				$username
 			);
 			if ($host->plan_id === 1) {
+				(new VirtualMinShell())->delIpTablesLimit($host->username, $host->server->alias);
+				(new VirtualMinShell())->addIpTablesLimit($username, $host->server->alias);
 				$newcname = $username . $host->server->domain;
 				(new VirtualMinShell())->cnameHost(
 					$host->domain,
@@ -674,6 +676,7 @@ class User extends BaseController
 	{
 		if ($this->request->getMethod() === 'post' && $host->status != 'banned' && $host->plan_id === 1 && ($this->request->getPost('wordpass')) === $host->username) {
 			// @codeCoverageIgnoreStart
+			(new VirtualMinShell())->delIpTablesLimit($host->username, $host->server->alias);
 			(new VirtualMinShell())->deleteHost($host->domain, $host->server->alias);
 			(new HostModel())->delete($host->id);
 			log_message('notice', VirtualMinShell::$output);
