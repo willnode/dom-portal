@@ -132,9 +132,9 @@ class Api extends BaseController
                             $metadata->domain
                         );
                         if ($purchase->domain_id && $host->status != 'pending') {
-                            (new VirtualMinShell())->enableFeature($metadata->domain, $sv, ['dns']);
+                            (new VirtualMinShell())->enableFeature($metadata->domain, $sv, 'dns');
                         } else if (!$purchase->domain_id && $host->status != 'pending') {
-                            (new VirtualMinShell())->disableFeature($metadata->domain, $sv, ['dns']);
+                            (new VirtualMinShell())->disableFeature($metadata->domain, $sv, 'dns');
                         }
                         $host->domain = $metadata->domain;
                     }
@@ -152,7 +152,7 @@ class Api extends BaseController
                                 $plan->alias
                             );
                             if ($purchase->domain_id) {
-                                (new VirtualMinShell())->enableFeature($host->domain, $sv, ['dns']);
+                                (new VirtualMinShell())->enableFeature($host->domain, $sv, 'dns');
                             }
                             if ($metadata->template) {
                                 // @codeCoverageIgnoreStart

@@ -30,7 +30,7 @@ class VirtualMinShell
 		if ($title !== NULL)
 			VirtualMinShell::$output .= $response . "\n";
 		curl_close($ch);
-		return $response;
+		return $title . "\n" . $response;
 	}
 	protected function wrapWget($params, $server)
 	{
@@ -85,25 +85,21 @@ class VirtualMinShell
 		$cmd = "program=generate-letsencrypt-cert&domain=$domain&renew=2";
 		return $this->execute($this->wrapWget($cmd, $server), " Let's Encrypt for $domain ");
 	}
-	public function enableFeature($domain, $server, $features)
+	public function enableFeature($domain, $server, $feature)
 	{
-		$cmd = "program=enable-feature&domain=$domain" . implode('', array_map(function ($x) {
-			return "&$x=";
-		}, $features));
-		return $this->execute($this->wrapWget($cmd, $server), " Enable Features for $domain ");
+		$cmd = "program=enable-feature&domain=$domain&$feature=";
+		return $this->execute($this->wrapWget($cmd, $server), " Enable $feature for $domain ");
 	}
-	public function disableFeature($domain, $server, $features)
+	public function disableFeature($domain, $server, $feature)
 	{
-		$cmd = "program=disable-feature&domain=$domain" . implode('', array_map(function ($x) {
-			return "&$x=";
-		}, $features));
-		return $this->execute($this->wrapWget($cmd, $server), " Disable Features for $domain ");
+		$cmd = "program=disable-feature&domain=$domain&$feature=";
+		return $this->execute($this->wrapWget($cmd, $server), " Disable $feature for $domain ");
 	}
 	public function adjustBandwidthHost($bw_mb, $domain, $server)
 	{
 		$bw_bytes = floor($bw_mb) * 1024 * 1024;
 		$cmd = "program=modify-domain&domain=$domain&bw=$bw_bytes";
-		return $this->execute($this->wrapWget($cmd, $server), " Adjust Bandwidth $domain to $bw_bytes bytes ");
+		return $this->execute($this->wrapWget($cmd, $server), " Adjust $domain Bandwidth to $bw_bytes bytes ");
 	}
 	public function createDatabase($name, $type, $domain, $server)
 	{

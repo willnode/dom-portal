@@ -481,11 +481,11 @@ class User extends BaseController
 		if ($this->request->getMethod() === 'post') {
 			// @codeCoverageIgnoreStart
 			if (($this->request->getPost('action')) == 'fix3') {
-				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, ['ssl']);
+				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, 'ssl');
 				(new VirtualMinShell())->requestLetsEncrypt($host->domain, $host->server->alias);
 				return $this->response->redirect('/user/host/ssl/' . $host->id);
 			} else if (($this->request->getPost('action')) == 'fix4') {
-				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, ['ssl']);
+				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, 'ssl');
 				(new VirtualMinShell())->requestLetsEncrypt($host->domain, $host->server->alias);
 				return $this->response->redirect('/user/host/ssl/' . $host->id);
 			}

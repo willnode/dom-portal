@@ -64,10 +64,10 @@ class TemplateDeployer
                     // use git clone
                     $cloning = true;
                     if ($directory) {
-                        $directory = " -b ".$directory;
+                        $directory = " -b " . $directory;
                     }
                     if (isset($config['args'])) {
-                        $directory .= " ".$config['args']; // maybe couple finetuning
+                        $directory .= " " . $config['args']; // maybe couple finetuning
                     } else {
                         $directory .= " --depth 1"; // faster clone
                     }
@@ -112,21 +112,45 @@ class TemplateDeployer
         if (!empty($config['features'])) {
             $log .= '#----- APPLYING FEATURES -----#' . "\n";
             foreach ($config['features'] as $feature) {
-                $args = explode(' ', $feature);
+                $args = null;
+                if (is_string($feature)) {
+                    $args = explode(' ', $feature);
+                } else if (is_object($feature)) {
+                    foreach ($feature as $key => $value) {
+                        $args = [$key] + explode(' ', $value);
+                        break;
+                    }
+                }
                 if (!$args) continue;
                 switch ($args[0]) {
                     case 'dns':
-                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, ['dns']));
+                        if (count($args) == 1 || $args[1] == 'on') {
+                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, 'dns'));
+                        } else if (count($args) == 2 && $args[1] == 'off') {
+                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->disableFeature($domain, $server, 'dns'));
+                        }
                         break;
                     case 'mysql':
-                        $dbname = ($username . '_' . ($args[1] ?? 'db'));
-                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, ['mysql']));
-                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->createDatabase($dbname, 'mysql', $domain, $server));
+                        if (count($args) == 1 || $args[1] == 'on') {
+                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, 'mysql'));
+                        } else if (count($args) == 2 && $args[1] == 'off') {
+                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->disableFeature($domain, $server, 'mysql'));
+                        }
+                        if (count($args) == 1 || $args[1] === 'create') {
+                            $dbname = ($username . '_' . ($args[2] ?? $config['subdomain'] ?? 'db'));
+                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->createDatabase($dbname, 'mysql', $domain, $server));
+                        }
                         break;
                     case 'postgres':
-                        $dbname = ($username . '_' . ($args[1] ?? 'db'));
-                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, ['postgres']));
-                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->createDatabase($dbname, 'postgres', $domain, $server));
+                        if (count($args) == 1 || $args[1] == 'on') {
+                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, 'postgres'));
+                        } else if (count($args) == 2 && $args[1] == 'off') {
+                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->disableFeature($domain, $server, 'postgres'));
+                        }
+                        if (count($args) == 1 || $args[1] === 'create') {
+                            $dbname = ($username . '_' . ($args[2] ?? $config['subdomain'] ?? 'db'));
+                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->createDatabase($dbname, 'postgres', $domain, $server));
+                        }
                         break;
                     case 'ssl':
                         // SSL is enabled by default
@@ -137,6 +161,18 @@ class TemplateDeployer
                         }
                         $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->requestLetsEncrypt($domain, $server));
                         break;
+                    case 'firewall':
+                        if (count($args) == 1 || $args[1] == 'on') {
+                            $log .= "Adding user to firewall list\n";
+                            $log .= (new VirtualMinShell())->addIpTablesLimit($username, $server);
+                        } else if (count($args) == 2 && $args[1] == 'off') {
+                            if (str_ends_with(trim($config['root'] ?? '', '/'), '/public') || ($config['nginx']['fastcgi'] ?? '') == 'off') {
+                                $log .= "Removing user to firewall list\n";
+                                $log .= (new VirtualMinShell())->delIpTablesLimit($username, $server);
+                            } else {
+                                $log .= "Can't remove user from firewall list due to unsatisfied condition.\n";
+                            }
+                        }
                 }
             }
         }
@@ -162,6 +198,12 @@ class TemplateDeployer
             } else {
                 $res = (new VirtualMinShell)->getNginxConfig($domain, $server);
                 $log .= "$res\nExit status: config applied.\n";
+            }
+        }
+        if (($config['root'] ?? '') || ($config['nginx'] ?? '')) {
+            if (!str_ends_with(trim($config['root'] ?? '', '/'), '/public') || ($config['nginx']['fastcgi'] ?? '') != 'off') {
+                $log .= "Firewall condition breaks! Making sure user is on firewall back.\n";
+                $log .= (new VirtualMinShell())->addIpTablesLimit($username, $server);
             }
         }
         $log .= '#----- DEPLOYMENT ENDED -----#' . "\n";
