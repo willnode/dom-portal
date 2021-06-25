@@ -218,6 +218,18 @@ class VirtualMinShell
 		curl_close($ch);
 		return $response;
 	}
+	public function checkIpTablesLimit($user, $server)
+	{
+		set_time_limit(300);
+		$secret = Services::request()->config->sudoNginxSecret;
+		$ch = curl_init("https://$server.rootkit.domcloud.id/iptables.php?" . http_build_query([
+			'secret' => $secret, 'action' => 'check', 'user' => $user
+		]));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		curl_close($ch);
+		return intval($response);
+	}
 	public function addIpTablesLimit($user, $server)
 	{
 		set_time_limit(300);
