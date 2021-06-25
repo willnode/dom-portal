@@ -201,7 +201,7 @@ class TemplateDeployer
             }
         }
         if (($config['root'] ?? '') || ($config['nginx'] ?? '')) {
-            if (!str_ends_with(trim($config['root'] ?? '', '/'), '/public') || ($config['nginx']['fastcgi'] ?? '') != 'off') {
+            if (!str_ends_with(trim($config['root'] ?? '', '/'), '/public') && ($config['nginx']['fastcgi'] ?? '') != 'off') {
                 $log .= "Firewall condition breaks! Making sure user is on firewall back.\n";
                 $log .= (new VirtualMinShell())->addIpTablesLimit($username, $server);
             }
