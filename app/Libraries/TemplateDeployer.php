@@ -115,7 +115,7 @@ class TemplateDeployer
                 $args = null;
                 if (is_string($feature)) {
                     $args = explode(' ', $feature);
-                } else if (is_object($feature)) {
+                } else if (is_array($feature)) {
                     foreach ($feature as $key => $value) {
                         $args = array_merge([$key], explode(' ', $value));
                         break;
