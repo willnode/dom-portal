@@ -117,7 +117,7 @@ class TemplateDeployer
                     $args = explode(' ', $feature);
                 } else if (is_object($feature)) {
                     foreach ($feature as $key => $value) {
-                        $args = [$key] + explode(' ', $value);
+                        $args = array_merge([$key], explode(' ', $value));
                         break;
                     }
                 }
