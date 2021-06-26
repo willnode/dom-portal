@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": ">=7.3",
-        "phpseclib/phpseclib": "^2.0",
+        "phpseclib/phpseclib": "^3.0",
         "sonata-project/google-authenticator": "^2.2",
         "symfony/yaml": "^5.1",
         "codeigniter4/framework": "^4.0",
