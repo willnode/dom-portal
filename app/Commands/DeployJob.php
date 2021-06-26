@@ -38,14 +38,8 @@ class DeployJob extends BaseCommand
                 if ($deploy->hasChanged()) {
                     (new HostDeployModel())->save($deploy);
                 }
-                // register_shutdown_function(function () use ($deploy) {
-                    // $deploy = (new HostDeployModel())->find($deploy->id);
-                    // if (!($_SERVER['finished'] ?? false)) {
-                    //     $deploy->result .= 'Sorry, this task didn\'t finish in time.';
-                    //     $deploy->result = preg_replace('/^.+\n/', '', $deploy->result);
-                    //     (new HostDeployModel())->save($deploy);
-                    // }
-                // });
+                // doesn't work I think
+                // }, $deploy->id);
                 (new TemplateDeployer())->deploy(
                     $host->server->alias,
                     $deploy->domain,

@@ -19,7 +19,6 @@ class VirtualMinShell
 			VirtualMinShell::$mockTest .= parse_url($cmd, PHP_URL_QUERY) . "\n";
 			return $cmd;
 		}
-		set_time_limit(300);
 		$username = Services::request()->config->sudoWebminUser;
 		$password = Services::request()->config->sudoWebminPass;
 		if ($title !== NULL)
@@ -182,7 +181,6 @@ class VirtualMinShell
 	}
 	public function setNginxConfig($domain, $server, $json)
 	{
-		set_time_limit(300);
 		$secret = Services::request()->config->sudoNginxSecret;
 		$ch = curl_init("https://$server.rootkit.domcloud.id/nginx.php?" . http_build_query([
 			'secret' => $secret, 'domain' => $domain
@@ -198,7 +196,6 @@ class VirtualMinShell
 	}
 	public function getNginxConfig($domain, $server)
 	{
-		set_time_limit(300);
 		$secret = Services::request()->config->sudoNginxSecret;
 		$ch = curl_init("https://$server.rootkit.domcloud.id/nginx.php?" . http_build_query([
 			'secret' => $secret, 'domain' => $domain
@@ -210,7 +207,6 @@ class VirtualMinShell
 	}
 	public function updateIpTables($server)
 	{
-		set_time_limit(300);
 		$secret = Services::request()->config->sudoNginxSecret;
 		$ch = curl_init("https://$server.rootkit.domcloud.id/iptables.php?" . http_build_query([
 			'secret' => $secret, 'action' => 'refresh'
@@ -222,7 +218,6 @@ class VirtualMinShell
 	}
 	public function checkIpTablesLimit($user, $server)
 	{
-		set_time_limit(300);
 		$secret = Services::request()->config->sudoNginxSecret;
 		$ch = curl_init("https://$server.rootkit.domcloud.id/iptables.php?" . http_build_query([
 			'secret' => $secret, 'action' => 'check', 'user' => $user
@@ -234,7 +229,6 @@ class VirtualMinShell
 	}
 	public function addIpTablesLimit($user, $server)
 	{
-		set_time_limit(300);
 		$secret = Services::request()->config->sudoNginxSecret;
 		$ch = curl_init("https://$server.rootkit.domcloud.id/iptables.php?" . http_build_query([
 			'secret' => $secret, 'action' => 'add_user', 'user' => $user
@@ -247,7 +241,6 @@ class VirtualMinShell
 	}
 	public function delIpTablesLimit($user, $server)
 	{
-		set_time_limit(300);
 		$secret = Services::request()->config->sudoNginxSecret;
 		$ch = curl_init("https://$server.rootkit.domcloud.id/iptables.php?" . http_build_query([
 			'secret' => $secret, 'action' => 'del_user', 'user' => $user
