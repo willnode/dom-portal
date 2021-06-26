@@ -27,8 +27,10 @@ class DeployJob extends BaseCommand
                 $host = $deploy->host;
                 set_time_limit($timeout = (($host->plan_id + 1) * 300));
                 $template = Yaml::parse($deploy->template);
+                $home = '~/public_html';
                 if (isset($template['subdomain']) && is_string($template['subdomain']) && preg_match('/[a-zA-Z0-9-]+/', $template['subdomain'])) {
                     $deploy->domain = $template['subdomain'] . '.' . $deploy->domain;
+                    $home = "~/domains/$deploy->domain/public_html";
                 }
                 $deploy->result = "Running in background with execution limit of {$timeout} seconds....";
                 if ($deploy->hasChanged()) {
@@ -41,6 +43,7 @@ class DeployJob extends BaseCommand
                     $host->username,
                     $host->password,
                     $template,
+                    $home,
                     $timeout
                 );
                 register_shutdown_function(function () use ($result, $deploy) {

@@ -52,7 +52,7 @@
 	'createLimitUpgrade' => 'Maaf, limit jumlah hosting anda tercapai, paling tidak anda harus punya hosting dengan paket {0} sebelum lanjut.',
 	'bandwidthLegend' => 'Penggunaan Harian Bandwidth dalam MB',
 	'waitForDataHint' => 'Data penggunaan hosting akan muncul disini. Tunggulah satu jam kemudian agar datanya muncul.',
-	'waitingDeployHint' => 'Operasi masih belum selesai. Akan dibatalkan {0}',
+	'waitingDeployHint' => 'Deployment task ini masih belum dimulai.',
 
 	'check' => 'Cek {0}',
 	'manageHost' => 'Kelola Hosting',

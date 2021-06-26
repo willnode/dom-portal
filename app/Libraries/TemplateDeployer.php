@@ -29,7 +29,7 @@ class TemplateDeployer
         }
     }
 
-    public function deploy($server, $domain, $username, $password, $config, $timeout)
+    public function deploy($server, $domain, $username, $password, $config, $home, $timeout)
     {
         $timing = microtime(true);
         $log = '';
@@ -41,6 +41,25 @@ class TemplateDeployer
         } else {
             $ssh->setTimeout($timeout);
         }
+
+        $queueTask = function (string $task, $password = null) use ($ssh, $log) {
+            $tmplog = '$> ' . $task . "\n";
+            $ssh->write($task . "\n");
+            $read = true;
+            do {
+                $read = $ssh->read();
+                if ($read) {
+                    $tmplog .= $read;
+                }
+            } while ($read);
+            if (substr($tmplog, -1) !== "\n") {
+                $tmplog .= "\n";
+            }
+            if ($password) {
+                $tmplog = str_replace($password, '[password]', $tmplog);
+            }
+            $log .= $tmplog;
+        };
 
         $log .= '#----- DEPLOYMENT STARTED -----#' . "\n";
         $log .= 'Time of execution in UTC: ' . date('Y-m-d H:i:s') . "\n\n";
@@ -87,24 +106,20 @@ class TemplateDeployer
                     $log .= "WARNING: The resource doesn't have Content-Type: application/zip header. Likely not a zip file.\n";
                 }
                 // build command
-                $cmd = "cd ~/public_html ; rm -rf * .* 2>/dev/null ; ";
+                $log .= (isset($cloning) ? 'Cloning ' : 'Fetching ') . $path . "\n";
+                $queueTask('cd ' . $home);
+                $queueTask('rm -rf * .* 2>/dev/null');
                 if (isset($cloning)) {
-                    $cmd .= "git clone " . escapeshellarg($path) . " ." . $directory . " ; ";
+                    $queueTask("git clone " . escapeshellarg($path) . " ." . $directory, $tpass);
                 } else {
-                    $cmd .= "wget -q -O _.zip " . escapeshellarg($path) . " ; ";
-                    $cmd .= "unzip -q -o _.zip ; rm _.zip ; chmod -R 0750 * .* ; ";
+                    $queueTask("wget -q -O _.zip " . escapeshellarg($path), $tpass);
+                    $queueTask("unzip -q -o _.zip ; rm _.zip ; chmod -R 0750 * .*");
                     if ($directory) {
                         $directory = sanitize_shell_arg_dir($directory);
-                        $cmd .= "mv $directory/{.,}* . 2>/dev/null ; rmdir $directory ; ";
+                        $queueTask("mv $directory/{.,}* . 2>/dev/null ; rmdir $directory");
                     }
                 }
-                $log .= (isset($cloning) ? 'Cloning ' : 'Fetching ') . $path . "\n";
-                $log .= $tpass ? str_replace($tpass, '[password]', "$> $cmd\n") : "$> $cmd\n";
-                $path = $tpass ? str_replace($tpass, '[password]', $path) : $path;
-
-                // execute
-                $log .= $ssh->exec($cmd);
-                $log .= "\nExit status: " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
+                $log .= "\nDone\n";
             } else {
                 $log .= 'Error: unknown URL scheme. must be either HTTP or HTTPS' . "\n";
             }
@@ -155,9 +170,7 @@ class TemplateDeployer
                     case 'ssl':
                         // SSL is enabled by default
                         if (isset($config['root']) && $ssh) {
-                            $cmd = 'mkdir -m 0750 -p ~/' . sanitize_shell_arg_dir($config['root'] . '/.well-known');
-                            $log .= "$> $cmd\n";
-                            $log .= $ssh->exec($cmd);
+                            $queueTask('mkdir -m 0750 -p ~/' . sanitize_shell_arg_dir($config['root'] . '/.well-known'));
                         }
                         $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->requestLetsEncrypt($domain, $server));
                         break;
@@ -179,15 +192,14 @@ class TemplateDeployer
         if (!empty($config['commands']) && $ssh) {
             $dbname = $dbname ?? $username . '_db';
             $log .= '#----- EXECUTING COMMANDS -----#' . "\n";
-            $cmd = "cd ~/public_html ; ";
-            $cmd .= "DATABASE='$dbname' ; ";
-            $cmd .= "DOMAIN='$domain' ; ";
-            $cmd .= "USERNAME='$username' ; ";
-            $cmd .= "PASSWORD='$password' ; ";
-            $cmd .= implode(' ; ', $config['commands']);
-            $log .= str_replace($password, '[password]', "$> $cmd\n\n");
-            $log .= str_replace($password, '[password]', $ssh->exec($cmd));
-            $log .= "\nExit status: " . json_encode($ssh->getExitStatus() ?: 0) . "\n";
+            $queueTask("DATABASE='$dbname' ; DOMAIN='$domain' ; USERNAME='$username' ; PASSWORD='$password' ; cd $home", $password);
+            foreach ($config['commands'] as $cmd) {
+                $queueTask($cmd);
+                if ($ssh->getExitStatus() ?: 0) {
+                    $log .= 'Exit status: '.$ssh->getExitStatus()."\n";
+                }
+            }
+            $log .= "Done\n";
         }
         if (!empty($config['nginx'])) {
             $log .= '#----- APPLYING NGINX CONFIG -----#' . "\n";
