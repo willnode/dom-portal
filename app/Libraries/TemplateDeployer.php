@@ -48,12 +48,12 @@ class TemplateDeployer
         $queueTask = function (string $task, $password = null) use ($ssh, $writeLog) {
             $tmplog = '$> ' . $task . "\n";
             $ssh->write($task . "\n");
-            $read = $ssh->read('/.*@.*[$|#]/', SSH2::READ_REGEX);
+            $read = $ssh->read('/[.+?@.+? .+?]\$/', SSH2::READ_REGEX);
             $tmplog .= $read;
             if (substr($tmplog, -1) !== "\n") {
                 $tmplog .= "\n";
             }
-            $tmplog = preg_replace('/.*@.*[$|#]/', '', $tmplog);
+            $tmplog = preg_replace('/[.+?@.+? .+?]\$/', '', $tmplog);
             $tmplog = str_replace("\r\n", '', $tmplog);
             $tmplog = preg_replace('/^.+\r/m', '', $tmplog);
             if ($password) {
