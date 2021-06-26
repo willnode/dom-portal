@@ -46,7 +46,9 @@
           $('#tiploading').removeClass('d-none');
           let completedomain = $('#sub').val() + '.' + domain;
           if (completedomain.startsWith('.')) completedomain = completedomain.slice(1);
-          fetch(window.location).then(x => x.text().then(y => report(y)));
+          fetch(window.location, {
+              method: 'POST'
+          }).then(x => x.text().then(y => report(y)));
         }
         window.onload = cek;
       </script>

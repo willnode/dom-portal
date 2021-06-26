@@ -452,18 +452,18 @@ class User extends BaseController
 	}
 	protected function firewallHost(Host $host)
 	{
+		if ($this->request->getMethod() === 'post') {
+			// @codeCoverageIgnoreStart
+			$nginx = (new VirtualMinShell())->checkIpTablesLimit($host->username, $host->server->alias);
+			return $this->response->setContentType('text/plain')->setBody((string)$nginx);
+			// @codeCoverageIgnoreEnd
+		}
 		return view('user/host/firewall', [
 			'host' => $host
 		]);
 	}
 	protected function dnsHost(Host $host)
 	{
-		if ($this->request->getMethod() === 'post') {
-			// @codeCoverageIgnoreStart
-			$nginx = (new VirtualMinShell())->checkIpTablesLimit($host->username, $host->server->alias);
-			return $this->response->setContentType('application/nginx')->setBody($nginx);
-			// @codeCoverageIgnoreEnd
-		}
 		return view('user/host/dns', [
 			'host' => $host
 		]);
