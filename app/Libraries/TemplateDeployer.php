@@ -69,63 +69,6 @@ class TemplateDeployer
             $writeLog('#----- CONFIGURING WEB ROOT -----#' . "\n");
             $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server)));
         }
-        if (!empty($config['source']) && $ssh) {
-            $writeLog('#----- OVERWRITING HOST FILES WITH SOURCE -----#' . "\n");
-            $path = $config['source'];
-            $directory = $config['directory'] ?? '';
-            $tdomain = strtolower(parse_url($path, PHP_URL_HOST));
-            $tscheme = strtolower(parse_url($path, PHP_URL_SCHEME));
-            $tpath = parse_url($path, PHP_URL_PATH);
-            $thash = parse_url($path, PHP_URL_FRAGMENT);
-            $tpass = parse_url($path, PHP_URL_PASS);
-            // Check if it was HTTP
-            if ($tscheme === 'https' || $tscheme === 'http') {
-                // expand clone/github/gitlab URLs
-                if (substr_compare($tpath, '.git', -strlen('.git')) === 0) {
-                    // use git clone
-                    $cloning = true;
-                    if ($directory) {
-                        $directory = " -b " . $directory;
-                    }
-                    if (isset($config['args'])) {
-                        $directory .= " " . $config['args']; // maybe couple finetuning
-                    } else {
-                        $directory .= " --depth 1"; // faster clone
-                    }
-                } else if ($tdomain === 'github.com' && preg_match('/^\/([-_\w]+)\/([-_\w]+)/', $tpath, $matches)) {
-                    $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
-                    $path = "https://github.com/$matches[1]/$matches[2]/archive/$thash.zip";
-                    $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
-                    $directory = "$matches[2]-$thash";
-                } else if ($tdomain === 'gitlab.com' && preg_match('/^\/([-_\w]+)\/([-_\w]+)/', $tpath, $matches)) {
-                    $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
-                    $path = "https://gitlab.com/$matches[1]/$matches[2]/-/archive/$thash/$tpath-$thash.zip";
-                    $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
-                    $directory = "$matches[2]-$thash";
-                }
-                // check headers
-                if (!isset($cloning) && array_search('Content-Type: application/zip', get_headers($path)) === false) {
-                    $writeLog("WARNING: The resource doesn't have Content-Type: application/zip header. Likely not a zip file.\n");
-                }
-                // build command
-                $writeLog((isset($cloning) ? 'Cloning ' : 'Fetching ') . $path . "\n");
-                $queueTask('cd ' . $home);
-                $queueTask('rm -rf * .* 2>/dev/null');
-                if (isset($cloning)) {
-                    $queueTask("git clone " . escapeshellarg($path) . " ." . $directory, $tpass);
-                } else {
-                    $queueTask("wget -q -O _.zip " . escapeshellarg($path), $tpass);
-                    $queueTask("unzip -q -o _.zip ; rm _.zip ; chmod -R 0750 * .*");
-                    if ($directory) {
-                        $directory = sanitize_shell_arg_dir($directory);
-                        $queueTask("mv $directory/{.,}* . 2>/dev/null ; rmdir $directory");
-                    }
-                }
-                $writeLog("\nDone\n");
-            } else {
-                $writeLog('Error: unknown URL scheme. must be either HTTP or HTTPS' . "\n");
-            }
-        }
         if (!empty($config['features'])) {
             $writeLog('#----- APPLYING FEATURES -----#' . "\n");
             foreach ($config['features'] as $feature) {
@@ -189,6 +132,63 @@ class TemplateDeployer
                             }
                         }
                 }
+            }
+        }
+        if (!empty($config['source']) && $ssh) {
+            $writeLog('#----- OVERWRITING HOST FILES WITH SOURCE -----#' . "\n");
+            $path = $config['source'];
+            $directory = $config['directory'] ?? '';
+            $tdomain = strtolower(parse_url($path, PHP_URL_HOST));
+            $tscheme = strtolower(parse_url($path, PHP_URL_SCHEME));
+            $tpath = parse_url($path, PHP_URL_PATH);
+            $thash = parse_url($path, PHP_URL_FRAGMENT);
+            $tpass = parse_url($path, PHP_URL_PASS);
+            // Check if it was HTTP
+            if ($tscheme === 'https' || $tscheme === 'http') {
+                // expand clone/github/gitlab URLs
+                if (substr_compare($tpath, '.git', -strlen('.git')) === 0) {
+                    // use git clone
+                    $cloning = true;
+                    if ($directory) {
+                        $directory = " -b " . $directory;
+                    }
+                    if (isset($config['args'])) {
+                        $directory .= " " . $config['args']; // maybe couple finetuning
+                    } else {
+                        $directory .= " --depth 1"; // faster clone
+                    }
+                } else if ($tdomain === 'github.com' && preg_match('/^\/([-_\w]+)\/([-_\w]+)/', $tpath, $matches)) {
+                    $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
+                    $path = "https://github.com/$matches[1]/$matches[2]/archive/$thash.zip";
+                    $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
+                    $directory = "$matches[2]-$thash";
+                } else if ($tdomain === 'gitlab.com' && preg_match('/^\/([-_\w]+)\/([-_\w]+)/', $tpath, $matches)) {
+                    $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
+                    $path = "https://gitlab.com/$matches[1]/$matches[2]/-/archive/$thash/$tpath-$thash.zip";
+                    $thash = (strpos($thash, 'v') === 0 ? substr($thash, 1) : $thash);
+                    $directory = "$matches[2]-$thash";
+                }
+                // check headers
+                if (!isset($cloning) && array_search('Content-Type: application/zip', get_headers($path)) === false) {
+                    $writeLog("WARNING: The resource doesn't have Content-Type: application/zip header. Likely not a zip file.\n");
+                }
+                // build command
+                $writeLog((isset($cloning) ? 'Cloning ' : 'Fetching ') . $path . "\n");
+                $queueTask('cd ' . $home);
+                $queueTask('rm -rf * .* 2>/dev/null');
+                if (isset($cloning)) {
+                    $queueTask("git clone " . escapeshellarg($path) . " ." . $directory, $tpass);
+                } else {
+                    $queueTask("wget -q -O _.zip " . escapeshellarg($path), $tpass);
+                    $queueTask("unzip -q -o _.zip ; rm _.zip ; chmod -R 0750 * .*");
+                    if ($directory) {
+                        $directory = sanitize_shell_arg_dir($directory);
+                        $queueTask("mv $directory/{.,}* . 2>/dev/null ; rmdir $directory");
+                    }
+                }
+                $writeLog("\nDone\n");
+            } else {
+                $writeLog('Error: unknown URL scheme. must be either HTTP or HTTPS' . "\n");
             }
         }
         if (!empty($config['commands']) && $ssh) {
