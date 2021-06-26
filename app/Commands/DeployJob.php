@@ -25,7 +25,6 @@ class DeployJob extends BaseCommand
         /** @var HostDeploy */
         $deploy = (new HostDeployModel())->find($params[0]);
         if ($deploy) {
-            $finished = false;
             try {
                 $host = $deploy->host;
                 set_time_limit($timeout = (($host->plan_id + 1) * 15));
@@ -39,15 +38,15 @@ class DeployJob extends BaseCommand
                 if ($deploy->hasChanged()) {
                     (new HostDeployModel())->save($deploy);
                 }
-
-                register_shutdown_function(function () use ($finished, $deploy) {
-                    if (!$finished) {
-                        $deploy->result .= 'Sorry, this task didn\'t finish in time.';
-                        $deploy->result = preg_replace('/^.+\n/', '', $deploy->result);
-                        (new HostDeployModel())->save($deploy);
-                    }
-                });
-                $result = (new TemplateDeployer())->deploy(
+                // register_shutdown_function(function () use ($deploy) {
+                    // $deploy = (new HostDeployModel())->find($deploy->id);
+                    // if (!($_SERVER['finished'] ?? false)) {
+                    //     $deploy->result .= 'Sorry, this task didn\'t finish in time.';
+                    //     $deploy->result = preg_replace('/^.+\n/', '', $deploy->result);
+                    //     (new HostDeployModel())->save($deploy);
+                    // }
+                // });
+                (new TemplateDeployer())->deploy(
                     $host->server->alias,
                     $deploy->domain,
                     $host->username,
@@ -55,25 +54,24 @@ class DeployJob extends BaseCommand
                     $template,
                     $home,
                     $timeout,
-                    function (string $x) use ($deploy)
-                    {
+                    function (string $x) use ($deploy) {
                         $deploy->result .= $x;
+                        CLI::write($x);
                         (new HostDeployModel())->save($deploy);
                     }
                 );
-                $finished = true;
-                $deploy->result = $result;
+                $_SERVER['finished'] = true;
             } catch (\Throwable $th) {
-                $finished = true;
+                $_SERVER['finished'] = true;
                 $deploy->result .= 'Error: ' . $th;
             } finally {
                 if ($host->status === 'starting') {
                     $host->status = 'active';
                     (new HostModel())->save($host);
                 }
-                if ($deploy->hasChanged()) {
-                    (new HostDeployModel())->save($deploy);
-                }
+                $deploy->result = preg_replace('/^.+\n/', '', $deploy->result);
+                (new HostDeployModel())->save($deploy);
+                sleep(3); // let everything flushes
             }
         }
     }

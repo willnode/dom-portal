@@ -43,6 +43,7 @@ class TemplateDeployer
             $ssh = null;
         } else {
             $ssh->setTimeout($timeout);
+            $ssh->enablePTY();
         }
         $queueTask = function (string $task, $password = null) use ($ssh, $writeLog) {
             $tmplog = '$> ' . $task . "\n";
