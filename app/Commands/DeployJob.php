@@ -37,6 +37,12 @@ class DeployJob extends BaseCommand
                     (new HostDeployModel())->save($deploy);
                 }
                 $result = '';
+                register_shutdown_function(function () use ($result, $deploy) {
+                    if (!$result) {
+                        $deploy->result = 'Sorry, this task didn\'t finish successfully due to emergency exit is triggered.';
+                        (new HostDeployModel())->save($deploy);
+                    }
+                });
                 $result = (new TemplateDeployer())->deploy(
                     $host->server->alias,
                     $deploy->domain,
@@ -46,12 +52,6 @@ class DeployJob extends BaseCommand
                     $home,
                     $timeout
                 );
-                register_shutdown_function(function () use ($result, $deploy) {
-                    if (!$result) {
-                        $deploy->result = 'Sorry, this task didn\'t finish successfully due to emergency exit is triggered.';
-                        (new HostDeployModel())->save($deploy);
-                    }
-                });
                 $deploy->result = $result;
             } catch (\Throwable $th) {
                 $deploy->result .= 'Error: ' . $th;
