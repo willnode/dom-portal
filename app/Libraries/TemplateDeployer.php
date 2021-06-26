@@ -53,7 +53,8 @@ class TemplateDeployer
                 $tmplog .= "\n";
             }
             $tmplog = preg_replace('/.*@.*[$|#]/', '', $tmplog);
-            $tmplog = str_replace("\r", '', $tmplog);
+            $tmplog = str_replace("\r\n", '', $tmplog);
+            $tmplog = preg_replace('/^.+\r/m', '', $tmplog);
             if ($password) {
                 $tmplog = str_replace($password, '[password]', $tmplog);
             }

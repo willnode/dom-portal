@@ -34,14 +34,15 @@ class DeployJob extends BaseCommand
                     $deploy->domain = $template['subdomain'] . '.' . $deploy->domain;
                     $home = "~/domains/$deploy->domain/public_html";
                 }
-                $deploy->result = "Running in background with execution limit of {$timeout} seconds....";
+                $deploy->result = "Running in background with execution limit of {$timeout} seconds....\n";
                 if ($deploy->hasChanged()) {
                     (new HostDeployModel())->save($deploy);
                 }
                 $result = '';
                 register_shutdown_function(function () use ($result, $deploy) {
                     if (!$result) {
-                        $deploy->result = 'Sorry, this task didn\'t finish successfully due to emergency exit is triggered.';
+                        $deploy->result .= 'Sorry, this task didn\'t finish successfully due to emergency exit is triggered.';
+                        $deploy->result = preg_replace('/^.+\n/', '', $deploy->result);
                         (new HostDeployModel())->save($deploy);
                     }
                 });
