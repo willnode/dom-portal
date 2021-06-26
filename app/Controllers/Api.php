@@ -156,13 +156,7 @@ class Api extends BaseController
                                 $vm->enableFeature($host->domain, $sv, 'dns');
                             }
                             if ($metadata->template) {
-                                // @codeCoverageIgnoreStart
-                                (new TemplateDeployer())->schedule(
-                                    $host->id,
-                                    $host->domain,
-                                    $metadata->template
-                                );
-                                // @codeCoverageIgnoreEnd
+                                $template = $metadata->template;
                             }
                         } else {
                             // Re-enable and upgrade
@@ -210,6 +204,15 @@ class Api extends BaseController
                     }
                     if ($vm->output) {
                         $vm->saveOutput($host, 'Applying upgrade');
+                    }
+                    if (isset($template)) {
+                        // @codeCoverageIgnoreStart
+                        (new TemplateDeployer())->schedule(
+                            $host->id,
+                            $host->domain,
+                            $metadata->template
+                        );
+                        // @codeCoverageIgnoreEnd
                     }
                 }
                 $purchase->metadata = $metadata;

@@ -319,6 +319,9 @@ class User extends BaseController
 						$payment->host_id = $id;
 						(new PurchaseModel())->insert($payment);
 					} else if ($data['template'] ?? '') {
+						if (isset($vm)) {
+							$vm->saveOutput((object)['id' => $id], 'Creating host');
+						}
 						// @codeCoverageIgnoreStart
 						(new TemplateDeployer())->schedule(
 							$id,
@@ -326,9 +329,6 @@ class User extends BaseController
 							$data['template']
 						);
 						// @codeCoverageIgnoreEnd
-					}
-					if (isset($vm)) {
-						$vm->saveOutput((object)['id' => $id], 'Creating host');
 					}
 					return $this->response->redirect('/user/host/invoices/' . $id);
 				}
