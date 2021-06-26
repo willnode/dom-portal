@@ -52,13 +52,15 @@ class TemplateDeployer
             $ssh->write($task . "\n");
             $read = $ssh->read('/\[.+?\@.+? .+?\]\$/', SSH2::READ_REGEX);
             $tmplog .= $read;
+            CLI::write(json_encode($read));
+
             $tmplog = str_replace("\0", "", $tmplog);
             $tmplog = preg_replace('/\[.+?\]\$$/', '', $tmplog);
             $tmplog = str_replace("\r\n", "\n", $tmplog);
             $tmplog = preg_replace('/\r./', '', $tmplog);
-            if (substr($tmplog, -1) !== "\n") {
-                $tmplog .= "\n";
-            }
+            $tmplog = trim($tmplog);
+            $tmplog .= "\n";
+            CLI::write('>> ' . json_encode($tmplog));
             if ($password) {
                 $tmplog = str_replace($password, '[password]', $tmplog);
             }
