@@ -47,7 +47,7 @@ class TemplateDeployer
             $ssh->write($task . "\n");
             $read = true;
             do {
-                $read = $ssh->read();
+                $read = $ssh->read('', SSH2::READ_NEXT);
                 if ($read) {
                     $tmplog .= $read;
                 }
