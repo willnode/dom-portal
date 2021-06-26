@@ -41,7 +41,7 @@ class DeployJob extends BaseCommand
                 $result = '';
                 register_shutdown_function(function () use ($result, $deploy) {
                     if (!$result) {
-                        $deploy->result .= 'Sorry, this task didn\'t finish successfully due to emergency exit is triggered.';
+                        $deploy->result .= 'Sorry, this task didn\'t finish in time.';
                         $deploy->result = preg_replace('/^.+\n/', '', $deploy->result);
                         (new HostDeployModel())->save($deploy);
                     }
