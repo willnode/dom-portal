@@ -29,46 +29,45 @@ class TemplateDeployer
         }
     }
 
-    public function deploy($server, $domain, $username, $password, $config, $home, $timeout)
+    public function deploy($server, $domain, $username, $password, $config, $home, $timeout, $writer)
     {
         $timing = microtime(true);
         $log = '';
-
+        $writeLog = function ($str) use ($writer, $log) {
+            $log .= ($str);
+            $writer($str);
+        };
         $ssh = new SSH2($server . '.domcloud.id');
         if (!$ssh->login($username, $password)) {
-            $log .= 'CRITICAL: SSH login failed. Most procedure will not execute.';
+            $writeLog('CRITICAL: SSH login failed. Most procedure will not execute.');
             $ssh = null;
         } else {
             $ssh->setTimeout($timeout);
         }
-
-        $queueTask = function (string $task, $password = null) use ($ssh, $log) {
+        $queueTask = function (string $task, $password = null) use ($ssh, $writeLog) {
             $tmplog = '$> ' . $task . "\n";
             $ssh->write($task . "\n");
-            $read = true;
-            do {
-                $read = $ssh->read('', SSH2::READ_NEXT);
-                if ($read) {
-                    $tmplog .= $read;
-                }
-            } while ($read);
+            $read = $ssh->read('/.*@.*[$|#]/', SSH2::READ_REGEX);
+            $tmplog .= $read;
             if (substr($tmplog, -1) !== "\n") {
                 $tmplog .= "\n";
             }
+            $tmplog = preg_replace('/.*@.*[$|#]/', '', $tmplog);
+            $tmplog = str_replace("\r", '', $tmplog);
             if ($password) {
                 $tmplog = str_replace($password, '[password]', $tmplog);
             }
-            $log .= $tmplog;
+            $writeLog($tmplog);
         };
 
-        $log .= '#----- DEPLOYMENT STARTED -----#' . "\n";
-        $log .= 'Time of execution in UTC: ' . date('Y-m-d H:i:s') . "\n\n";
+        $writeLog('#----- DEPLOYMENT STARTED -----#' . "\n");
+        $writeLog('Time of execution in UTC: ' . date('Y-m-d H:i:s') . "\n\n");
         if (!empty($config['root'])) {
-            $log .= '#----- CONFIGURING WEB ROOT -----#' . "\n";
-            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server));
+            $writeLog('#----- CONFIGURING WEB ROOT -----#' . "\n");
+            $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->modifyWebHome(trim($config['root'], ' /'), $domain, $server)));
         }
         if (!empty($config['source']) && $ssh) {
-            $log .= '#----- OVERWRITING HOST FILES WITH SOURCE -----#' . "\n";
+            $writeLog('#----- OVERWRITING HOST FILES WITH SOURCE -----#' . "\n");
             $path = $config['source'];
             $directory = $config['directory'] ?? '';
             $tdomain = strtolower(parse_url($path, PHP_URL_HOST));
@@ -103,10 +102,10 @@ class TemplateDeployer
                 }
                 // check headers
                 if (!isset($cloning) && array_search('Content-Type: application/zip', get_headers($path)) === false) {
-                    $log .= "WARNING: The resource doesn't have Content-Type: application/zip header. Likely not a zip file.\n";
+                    $writeLog("WARNING: The resource doesn't have Content-Type: application/zip header. Likely not a zip file.\n");
                 }
                 // build command
-                $log .= (isset($cloning) ? 'Cloning ' : 'Fetching ') . $path . "\n";
+                $writeLog((isset($cloning) ? 'Cloning ' : 'Fetching ') . $path . "\n");
                 $queueTask('cd ' . $home);
                 $queueTask('rm -rf * .* 2>/dev/null');
                 if (isset($cloning)) {
@@ -119,13 +118,13 @@ class TemplateDeployer
                         $queueTask("mv $directory/{.,}* . 2>/dev/null ; rmdir $directory");
                     }
                 }
-                $log .= "\nDone\n";
+                $writeLog("\nDone\n");
             } else {
-                $log .= 'Error: unknown URL scheme. must be either HTTP or HTTPS' . "\n";
+                $writeLog('Error: unknown URL scheme. must be either HTTP or HTTPS' . "\n");
             }
         }
         if (!empty($config['features'])) {
-            $log .= '#----- APPLYING FEATURES -----#' . "\n";
+            $writeLog('#----- APPLYING FEATURES -----#' . "\n");
             foreach ($config['features'] as $feature) {
                 $args = null;
                 if (is_string($feature)) {
@@ -140,31 +139,31 @@ class TemplateDeployer
                 switch ($args[0]) {
                     case 'dns':
                         if (count($args) == 1 || $args[1] == 'on') {
-                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, 'dns'));
+                            $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, 'dns')));
                         } else if (count($args) == 2 && $args[1] == 'off') {
-                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->disableFeature($domain, $server, 'dns'));
+                            $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->disableFeature($domain, $server, 'dns')));
                         }
                         break;
                     case 'mysql':
                         if (count($args) == 1 || $args[1] == 'on') {
-                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, 'mysql'));
+                            $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, 'mysql')));
                         } else if (count($args) == 2 && $args[1] == 'off') {
-                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->disableFeature($domain, $server, 'mysql'));
+                            $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->disableFeature($domain, $server, 'mysql')));
                         }
                         if (count($args) == 1 || $args[1] === 'create') {
                             $dbname = ($username . '_' . ($args[2] ?? $config['subdomain'] ?? 'db'));
-                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->createDatabase($dbname, 'mysql', $domain, $server));
+                            $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->createDatabase($dbname, 'mysql', $domain, $server)));
                         }
                         break;
                     case 'postgres':
                         if (count($args) == 1 || $args[1] == 'on') {
-                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, 'postgres'));
+                            $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->enableFeature($domain, $server, 'postgres')));
                         } else if (count($args) == 2 && $args[1] == 'off') {
-                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->disableFeature($domain, $server, 'postgres'));
+                            $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->disableFeature($domain, $server, 'postgres')));
                         }
                         if (count($args) == 1 || $args[1] === 'create') {
                             $dbname = ($username . '_' . ($args[2] ?? $config['subdomain'] ?? 'db'));
-                            $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->createDatabase($dbname, 'postgres', $domain, $server));
+                            $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->createDatabase($dbname, 'postgres', $domain, $server)));
                         }
                         break;
                     case 'ssl':
@@ -172,18 +171,18 @@ class TemplateDeployer
                         if (isset($config['root']) && $ssh) {
                             $queueTask('mkdir -m 0750 -p ~/' . sanitize_shell_arg_dir($config['root'] . '/.well-known'));
                         }
-                        $log .= str_replace("\n\n", "\n", (new VirtualMinShell())->requestLetsEncrypt($domain, $server));
+                        $writeLog(str_replace("\n\n", "\n", (new VirtualMinShell())->requestLetsEncrypt($domain, $server)));
                         break;
                     case 'firewall':
                         if (count($args) == 1 || $args[1] == 'on') {
-                            $log .= "Adding user to firewall list\n";
-                            $log .= (new VirtualMinShell())->addIpTablesLimit($username, $server);
+                            $writeLog("Adding user to firewall list\n");
+                            $writeLog((new VirtualMinShell())->addIpTablesLimit($username, $server));
                         } else if (count($args) == 2 && $args[1] == 'off') {
                             if (str_ends_with(trim($config['root'] ?? '', '/'), '/public') || ($config['nginx']['fastcgi'] ?? '') == 'off') {
-                                $log .= "Removing user to firewall list\n";
-                                $log .= (new VirtualMinShell())->delIpTablesLimit($username, $server);
+                                $writeLog("Removing user to firewall list\n");
+                                $writeLog((new VirtualMinShell())->delIpTablesLimit($username, $server));
                             } else {
-                                $log .= "Can't remove user from firewall list due to unsatisfied condition.\n";
+                                $writeLog("Can't remove user from firewall list due to unsatisfied condition.\n");
                             }
                         }
                 }
@@ -191,37 +190,37 @@ class TemplateDeployer
         }
         if (!empty($config['commands']) && $ssh) {
             $dbname = $dbname ?? $username . '_db';
-            $log .= '#----- EXECUTING COMMANDS -----#' . "\n";
+            $writeLog('#----- EXECUTING COMMANDS -----#' . "\n");
             $queueTask("DATABASE='$dbname' ; DOMAIN='$domain' ; USERNAME='$username' ; PASSWORD='$password' ; cd $home", $password);
             foreach ($config['commands'] as $cmd) {
                 $queueTask($cmd);
                 if ($ssh->getExitStatus() ?: 0) {
-                    $log .= 'Exit status: '.$ssh->getExitStatus()."\n";
+                    $writeLog('Exit status: ' . $ssh->getExitStatus() . "\n");
                 }
             }
-            $log .= "Done\n";
+            $writeLog("Done\n");
         }
         if (!empty($config['nginx'])) {
-            $log .= '#----- APPLYING NGINX CONFIG -----#' . "\n";
-            $log .= '$> ' . ($nginx = json_encode($config['nginx'])) . "\n";
+            $writeLog('#----- APPLYING NGINX CONFIG -----#' . "\n");
+            $writeLog('$> ' . ($nginx = json_encode($config['nginx'])) . "\n");
             $res = (new VirtualMinShell)->setNginxConfig($domain, $server, $nginx);
             if ($res) {
-                $log .= "$res\nExit status: config discarded.\n";
+                $writeLog("$res\nExit status: config discarded.\n");
             } else {
                 $res = (new VirtualMinShell)->getNginxConfig($domain, $server);
-                $log .= "$res\nExit status: config applied.\n";
+                $writeLog("$res\nExit status: config applied.\n");
             }
         }
         if (($config['root'] ?? '') || ($config['nginx'] ?? '')) {
             if (!str_ends_with(trim($config['root'] ?? '', '/'), '/public') && ($config['nginx']['fastcgi'] ?? '') != 'off') {
                 if ((new VirtualMinShell())->checkIpTablesLimit($username, $server) === 0) {
-                    $log .= "Firewall condition breaks! Making sure user is on firewall back.\n";
-                    $log .= (new VirtualMinShell())->addIpTablesLimit($username, $server);
+                    $writeLog("Firewall condition breaks! Making sure user is on firewall back.\n");
+                    $writeLog((new VirtualMinShell())->addIpTablesLimit($username, $server));
                 }
             }
         }
-        $log .= '#----- DEPLOYMENT ENDED -----#' . "\n";
-        $log .= "execution time: " . number_format(microtime(true) - $timing, 3) . " s";
+        $writeLog('#----- DEPLOYMENT ENDED -----#' . "\n");
+        $writeLog("execution time: " . number_format(microtime(true) - $timing, 3) . " s");
         return str_replace("\0", "", $log);
     }
 }

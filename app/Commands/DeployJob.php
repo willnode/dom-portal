@@ -7,6 +7,8 @@ use App\Libraries\TemplateDeployer;
 use App\Models\HostDeployModel;
 use App\Models\HostModel;
 use CodeIgniter\CLI\BaseCommand;
+use CodeIgniter\CLI\CLI;
+use CodeIgniter\CLI\Console;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -50,7 +52,12 @@ class DeployJob extends BaseCommand
                     $host->password,
                     $template,
                     $home,
-                    $timeout
+                    $timeout,
+                    function (string $x) use ($deploy)
+                    {
+                        $deploy->result .= $x;
+                        (new HostDeployModel())->save($deploy);
+                    }
                 );
                 $deploy->result = $result;
             } catch (\Throwable $th) {
