@@ -241,7 +241,7 @@ class VirtualMinShell
 		]));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
-		VirtualMinShell::$output .= $response . "\n";
+		$this->output .= $response . "\n";
 		curl_close($ch);
 		return $response;
 	}
@@ -254,7 +254,7 @@ class VirtualMinShell
 		]));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
-		VirtualMinShell::$output .= $response . "\n";
+		$this->output .= $response . "\n";
 		curl_close($ch);
 		return $response;
 	}

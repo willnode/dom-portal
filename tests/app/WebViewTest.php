@@ -93,7 +93,7 @@ class WebViewTest extends CIDatabaseTestCase
             $this->assertTrue(is_string($user->host('create')));
             foreach ([
                 'detail', 'see', 'nginx', 'invoices', 'upgrade',
-                'dns', 'ssl', 'rename', 'cname', 'delete', 'deploys',
+                'dns', 'firewall', 'rename', 'cname', 'delete', 'deploys',
                 'transfer'
             ] as $page) {
                 $this->assertTrue(is_string($user->host($page, 1)));
