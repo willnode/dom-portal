@@ -56,20 +56,24 @@
       var x = 'nginx:\n';
       // check ssl config
       var listen80 = /^\s*listen [\d\.]+;$/gm.test(t);
-      var listen443 = /^\s*listen [\d\.]+:443 ssl;$/gm.test(t);
+      var listen443 = /^\s*listen [\d\.]+:443 ssl( http2)?;$/gm.test(t);
       x += '  ssl: ' + (listen80 ? (listen443 ? 'on' : 'off') : 'enforce') + '\n';
       // check passenger config
-      var r = /^\s*passenger_(\w+): (.+);$/gm;
+      var r = /^\s*passenger_(\w+) '?(.+?)'?;$/gm;
       var p = r.exec(t);
       if (p) {
         x += '  passenger:\n';
         do {
-          x += '    ' + p[1] + ": ".p[2];
+          x += '    ' + p[1] + ": " + p[2] + "\n";
         }
         while (p = r.exec(t));
       }
       // check location config
       var locations = t.match(/^\s*location .+?{.+?}$/gms);
+      var lastLoc = locations[locations.length - 1];
+      if (lastLoc.includes('return')) {
+        x += '  fastcgi: off\n';
+      }
       if (locations.length > 1) {
         x += '  locations:\n';
         x += locations.slice(null, -1).map(l => {

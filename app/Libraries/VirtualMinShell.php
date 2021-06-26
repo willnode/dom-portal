@@ -2,6 +2,7 @@
 
 namespace App\Libraries;
 
+use App\Models\HostDeployModel;
 use Config\Services;
 
 /**
@@ -9,19 +10,20 @@ use Config\Services;
  */
 class VirtualMinShell
 {
-	public static string $output = '';
+	public string $output = '';
+	public static string $mockTest = '';
 
 	protected function execute($cmd, $title = '')
 	{
 		if (ENVIRONMENT === 'testing') {
-			VirtualMinShell::$output .= parse_url($cmd, PHP_URL_QUERY) . "\n";
+			VirtualMinShell::$mockTest .= parse_url($cmd, PHP_URL_QUERY) . "\n";
 			return $cmd;
 		}
 		set_time_limit(300);
 		$username = Services::request()->config->sudoWebminUser;
 		$password = Services::request()->config->sudoWebminPass;
 		if ($title !== NULL)
-			VirtualMinShell::$output .= 'HOSTING: ' . $title . ' (' . $cmd . ')' . "\n";
+			VirtualMinShell::$output .= 'HOSTING: ' . $title . "\n";
 		$ch = curl_init($cmd);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -239,6 +241,7 @@ class VirtualMinShell
 		]));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
+		VirtualMinShell::$output .= $response . "\n";
 		curl_close($ch);
 		return $response;
 	}
@@ -251,7 +254,16 @@ class VirtualMinShell
 		]));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
+		VirtualMinShell::$output .= $response . "\n";
 		curl_close($ch);
 		return $response;
+	}
+	public function saveOutput($host, $name)
+	{
+		(new HostDeployModel())->save([
+			'host_id' => $host->id,
+			'template' => '# ' . $name,
+			'result' => $this->output,
+		]);
 	}
 }

@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Entities\Domain;
 use App\Entities\Host;
 use App\Entities\HostCoupon;
+use App\Entities\HostDeploy;
 use App\Entities\Liquid;
 use App\Entities\Login;
 use App\Entities\Plan;
@@ -301,7 +302,8 @@ class User extends BaseController
 					$hosting->status = ($data['template'] ?? '') ? 'starting' : 'active';
 					$hosting->expiry_at = date('Y-m-d H:i:s', strtotime("+2 months", \time()));
 					$hosting->domain = $hosting->username . $server->domain;
-					(new VirtualMinShell())->createHost(
+					$vm = new VirtualMinShell();
+					$vm->createHost(
 						$hosting->username,
 						$hosting->password,
 						$this->login->email,
@@ -309,8 +311,7 @@ class User extends BaseController
 						$server->alias,
 						$plan->alias
 					);
-					(new VirtualMinShell())->addIpTablesLimit($hosting->username, $server->alias);
-					log_message('notice', VirtualMinShell::$output);
+					$vm->addIpTablesLimit($hosting->username, $server->alias);
 				}
 				// Send to Database
 				if ($id = (new HostModel())->insert($hosting)) {
@@ -325,6 +326,9 @@ class User extends BaseController
 							$data['template']
 						);
 						// @codeCoverageIgnoreEnd
+					}
+					if (isset($vm)) {
+						$vm->saveOutput((object)['id' => $id], 'Creating host');
 					}
 					return $this->response->redirect('/user/host/invoices/' . $id);
 				}
@@ -446,16 +450,18 @@ class User extends BaseController
 			'shown' => $shown,
 		]);
 	}
+	protected function firewallHost(Host $host)
+	{
+		return view('user/host/firewall', [
+			'host' => $host
+		]);
+	}
 	protected function dnsHost(Host $host)
 	{
 		if ($this->request->getMethod() === 'post') {
 			// @codeCoverageIgnoreStart
-			$domain = $host->domain;
-			if (!empty($this->request->getPost('sub'))) {
-				$domain = $this->request->getPost('sub') . '.' . $host->domain;
-			}
-			$heads = dns_get_record($domain, DNS_ANY);
-			return $this->response->setJSON($heads);
+			$nginx = (new VirtualMinShell())->checkIpTablesLimit($host->username, $host->server->alias);
+			return $this->response->setContentType('application/nginx')->setBody($nginx);
 			// @codeCoverageIgnoreEnd
 		}
 		return view('user/host/dns', [
@@ -475,44 +481,6 @@ class User extends BaseController
 			'host' => $host
 		]);
 	}
-	/** @param Host $host  */
-	protected function sslHost(Host $host)
-	{
-		if ($this->request->getMethod() === 'post') {
-			// @codeCoverageIgnoreStart
-			if (($this->request->getPost('action')) == 'fix3') {
-				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, 'ssl');
-				(new VirtualMinShell())->requestLetsEncrypt($host->domain, $host->server->alias);
-				return $this->response->redirect('/user/host/ssl/' . $host->id);
-			} else if (($this->request->getPost('action')) == 'fix4') {
-				(new VirtualMinShell())->enableFeature($host->domain, $host->server->alias, 'ssl');
-				(new VirtualMinShell())->requestLetsEncrypt($host->domain, $host->server->alias);
-				return $this->response->redirect('/user/host/ssl/' . $host->id);
-			}
-			$t = [0, 0, 0, 0];
-			$domain = $host->domain;
-			$heads = @get_headers("http://$domain/");
-			if ($heads) {
-				$t[0] = 1;
-				if (array_search("Location: https://$domain/", $heads)) {
-					$t[3] = 1;
-				}
-				$heads = @get_headers("https://$domain/");
-				if ($heads) {
-					$t[2] = 1;
-				}
-				$heads = @get_headers(($t[3] ? "https:" : "http:") . "//$domain/.well-known/");
-				if ($heads && strpos($heads[0], "403 Forbidden") !== false) {
-					$t[1] = $t[3] ? $t[2] : 1;
-				}
-			}
-			return $this->response->setJSON($t);
-			// @codeCoverageIgnoreEnd
-		}
-		return view('user/host/ssl', [
-			'host' => $host
-		]);
-	}
 	protected function renameHost(Host $host)
 	{
 		if ($this->request->getMethod() === 'post' && $host->status === 'active') {
@@ -523,22 +491,23 @@ class User extends BaseController
 			}
 			$username = strtolower($this->request->getPost('username'));
 			if (array_search($username, (new BannedNames())->names) !== FALSE) return;
-			(new VirtualMinShell())->renameHost(
-				$host->domain,
-				$host->server->alias,
-				$username
-			);
+			$vm = new VirtualMinShell();
+			$sa = $host->server->alias;
+			$vm->renameHost($host->domain, $sa, $username);
 			if ($host->plan_id === 1) {
-				(new VirtualMinShell())->delIpTablesLimit($host->username, $host->server->alias);
-				(new VirtualMinShell())->addIpTablesLimit($username, $host->server->alias);
+				if ($vm->checkIpTablesLimit($host->username, $sa)) {
+					$vm->delIpTablesLimit($host->username, $sa);
+					$vm->addIpTablesLimit($username, $sa);
+				}
 				$newcname = $username . $host->server->domain;
-				(new VirtualMinShell())->cnameHost(
+				$vm->cnameHost(
 					$host->domain,
-					$host->server->alias,
+					$sa,
 					$newcname
 				);
 				$host->domain = $newcname;
 			}
+			$vm->saveOutput($host, 'Renaming user');
 			$host->username = $username;
 			(new HostModel())->save($host);
 		}
@@ -676,10 +645,11 @@ class User extends BaseController
 	{
 		if ($this->request->getMethod() === 'post' && $host->status != 'banned' && $host->plan_id === 1 && ($this->request->getPost('wordpass')) === $host->username) {
 			// @codeCoverageIgnoreStart
-			(new VirtualMinShell())->delIpTablesLimit($host->username, $host->server->alias);
-			(new VirtualMinShell())->deleteHost($host->domain, $host->server->alias);
+			$vm = new VirtualMinShell();
+			$vm->delIpTablesLimit($host->username, $host->server->alias);
+			$vm->deleteHost($host->domain, $host->server->alias);
+			$vm->saveOutput($host, 'Deleting host');
 			(new HostModel())->delete($host->id);
-			log_message('notice', VirtualMinShell::$output);
 			return $this->response->redirect('/user/host/');
 			// @codeCoverageIgnoreEnd
 		}
@@ -706,8 +676,8 @@ class User extends BaseController
 						return $this->deployesHost($host);
 					case 'see':
 						return $this->seeHost($host);
-					case 'ssl':
-						return $this->sslHost($host);
+					case 'firewall':
+						return $this->firewallHost($host);
 					case 'dns':
 						return $this->dnsHost($host);
 					case 'nginx':

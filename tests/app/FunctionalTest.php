@@ -173,12 +173,12 @@ class FunctionalTest extends CIDatabaseTestCase
             'server_id' => 1,
             'plan_id' => 1,
         ]);
-        $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
+        $this->assertEquals(explode("\n", trim(VirtualMinShell::$mockTest)), [
             'program=create-domain&user=contoso&pass=mycontoso&email=contoso@example.com' .
                 '&domain=contoso.dom.my.id&plan=Freedom&limits-from-plan=&dir=&webmin=' .
                 '&virtualmin-nginx=&virtualmin-nginx-ssl=&unix='
         ]);
-        VirtualMinShell::$output = '';
+        VirtualMinShell::$mockTest = '';
 
         // Okay, try rename
 
@@ -189,11 +189,11 @@ class FunctionalTest extends CIDatabaseTestCase
         $req->setGlobal('request', $post_data);
         $user->host('rename', $host->id);
         $this->assertTrue((new HostModel())->find(1)->domain === 'emily.dom.my.id');
-        $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
+        $this->assertEquals(explode("\n", trim(VirtualMinShell::$mockTest)), [
             'program=modify-domain&domain=contoso.dom.my.id&user=emily',
             'program=modify-domain&domain=contoso.dom.my.id&newdomain=emily.dom.my.id'
         ]);
-        VirtualMinShell::$output = '';
+        VirtualMinShell::$mockTest = '';
 
         // Okay, try extend (free)
 
@@ -247,8 +247,8 @@ class FunctionalTest extends CIDatabaseTestCase
             'program=disable-feature&domain=emily.com&dns=', // we use custom bind
             'program=enable-domain&domain=emily.com',
             'program=modify-domain&domain=emily.com&apply-plan=Lite'
-        ], explode("\n", trim(VirtualMinShell::$output)));
-        VirtualMinShell::$output = '';
+        ], explode("\n", trim(VirtualMinShell::$mockTest)));
+        VirtualMinShell::$mockTest = '';
 
         // Okay, try to change domain
 
@@ -260,10 +260,10 @@ class FunctionalTest extends CIDatabaseTestCase
         /** @var Host */
         $host = (new HostModel())->find(1);
         $this->assertTrue($host->domain === 'emily.me');
-        $this->assertEquals(explode("\n", trim(VirtualMinShell::$output)), [
+        $this->assertEquals(explode("\n", trim(VirtualMinShell::$mockTest)), [
             'program=modify-domain&domain=emily.com&newdomain=emily.me',
         ]);
-        VirtualMinShell::$output = '';
+        VirtualMinShell::$mockTest = '';
 
         // Okay, try add more addons
 
@@ -295,8 +295,8 @@ class FunctionalTest extends CIDatabaseTestCase
         $this->assertEquals([
             'program=modify-domain&domain=emily.me&bw=32212254720',
             'program=enable-domain&domain=emily.me',
-        ], explode("\n", trim(VirtualMinShell::$output)));
-        VirtualMinShell::$output = '';
+        ], explode("\n", trim(VirtualMinShell::$mockTest)));
+        VirtualMinShell::$mockTest = '';
 
         // Okay, try to extend
 
@@ -439,8 +439,8 @@ class FunctionalTest extends CIDatabaseTestCase
             'program=create-domain&user=contoso&pass=mycontoso&email=contoso@example.com&domain=example.com&plan=Lite&limits-from-plan=&dir=&webmin=&virtualmin-nginx=&virtualmin-nginx-ssl=&unix=',
             'program=enable-feature&domain=example.com&dns=',
             'program=modify-domain&domain=example.com&bw=26843545600'
-        ], explode("\n", trim(VirtualMinShell::$output)));
-        VirtualMinShell::$output = '';
+        ], explode("\n", trim(VirtualMinShell::$mockTest)));
+        VirtualMinShell::$mockTest = '';
 
         $host = (new HostModel())->find(1);
         $purchase = $host->purchase;

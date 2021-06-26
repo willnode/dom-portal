@@ -124,17 +124,18 @@ class Api extends BaseController
 
                     $host = $purchase->host;
                     $login = $host->login;
+                    $vm = new VirtualMinShell();
 
                     if ($metadata->domain && $host->domain != $metadata->domain) {
-                        (new VirtualMinShell())->cnameHost(
+                        $vm->cnameHost(
                             $host->domain,
                             $sv = $host->server->alias,
                             $metadata->domain
                         );
                         if ($purchase->domain_id && $host->status != 'pending') {
-                            (new VirtualMinShell())->enableFeature($metadata->domain, $sv, 'dns');
+                            $vm->enableFeature($metadata->domain, $sv, 'dns');
                         } else if (!$purchase->domain_id && $host->status != 'pending') {
-                            (new VirtualMinShell())->disableFeature($metadata->domain, $sv, 'dns');
+                            $vm->disableFeature($metadata->domain, $sv, 'dns');
                         }
                         $host->domain = $metadata->domain;
                     }
@@ -143,7 +144,7 @@ class Api extends BaseController
                         $plan = (new PlanModel())->find($metadata->plan);
                         if ($host->status === 'pending') {
                             // First time creation
-                            (new VirtualMinShell())->createHost(
+                            $vm->createHost(
                                 $host->username,
                                 $host->password,
                                 $login->email,
@@ -152,7 +153,7 @@ class Api extends BaseController
                                 $plan->alias
                             );
                             if ($purchase->domain_id) {
-                                (new VirtualMinShell())->enableFeature($host->domain, $sv, 'dns');
+                                $vm->enableFeature($host->domain, $sv, 'dns');
                             }
                             if ($metadata->template) {
                                 // @codeCoverageIgnoreStart
@@ -165,18 +166,14 @@ class Api extends BaseController
                             }
                         } else {
                             // Re-enable and upgrade
-                            (new VirtualMinShell())->enableHost(
+                            $vm->enableHost(
                                 $host->domain,
                                 $host->server->alias
                             );
-                            (new VirtualMinShell())->upgradeHost(
+                            $vm->upgradeHost(
                                 $host->domain,
                                 $host->server->alias,
                                 $plan->alias,
-                            );
-                            (new VirtualMinShell())->delIpTablesLimit(
-                                $host->username,
-                                $host->server->alias,
                             );
                         }
                         $host->plan_id = $metadata->plan;
@@ -195,14 +192,14 @@ class Api extends BaseController
                         $host->addons += $metadata->addons * 1024;
                         isset($plan) || ($plan = $host->plan);
                         // Add more bandwidth
-                        (new VirtualMinShell())->adjustBandwidthHost(
+                        $vm->adjustBandwidthHost(
                             ($host->addons + ($plan->net * 1024 / 12)),
                             $host->domain,
                             $host->server->alias
                         );
                         if (!$metadata->plan) {
                             // Re-enable (in case disabled by bandwidth)
-                            (new VirtualMinShell())->enableHost(
+                            $vm->enableHost(
                                 $host->domain,
                                 $host->server->alias
                             );
@@ -210,6 +207,9 @@ class Api extends BaseController
                     }
                     if ($host->hasChanged()) {
                         (new HostModel())->save($host);
+                    }
+                    if ($vm->output) {
+                        $vm->saveOutput($host, 'Applying upgrade');
                     }
                 }
                 $purchase->metadata = $metadata;
