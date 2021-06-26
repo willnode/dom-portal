@@ -27,7 +27,7 @@ class DeployJob extends BaseCommand
         if ($deploy) {
             try {
                 $host = $deploy->host;
-                set_time_limit($timeout = (($host->plan_id + 1) * 15));
+                ini_set('max_execution_time', $timeout = (($host->plan_id + 1) * 300));
                 $template = Yaml::parse($deploy->template);
                 $home = '~/public_html';
                 if (isset($template['subdomain']) && is_string($template['subdomain']) && preg_match('/[a-zA-Z0-9-]+/', $template['subdomain'])) {
@@ -39,6 +39,14 @@ class DeployJob extends BaseCommand
                     (new HostDeployModel())->save($deploy);
                 }
                 // doesn't work I think
+                // register_shutdown_function(function ($id) {
+                //     CLI::write('icanhaz');
+                //     $deploy = (new HostDeployModel())->find($id);
+                //     if (!($_SERVER['finished'] ?? false)) {
+                //         CLI::write('icanhazw');
+                //         $deploy->result .= 'Sorry, this task didn\'t finish in time.';
+                //         (new HostDeployModel())->save($deploy);
+                //     }
                 // }, $deploy->id);
                 (new TemplateDeployer())->deploy(
                     $host->server->alias,
