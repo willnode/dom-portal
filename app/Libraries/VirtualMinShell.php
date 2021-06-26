@@ -23,14 +23,14 @@ class VirtualMinShell
 		$username = Services::request()->config->sudoWebminUser;
 		$password = Services::request()->config->sudoWebminPass;
 		if ($title !== NULL)
-			VirtualMinShell::$output .= 'HOSTING: ' . $title . "\n";
+			$this->output .=  $title . "\n";
 		$ch = curl_init($cmd);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
 		$response = curl_exec($ch);
 		if ($title !== NULL)
-			VirtualMinShell::$output .= $response . "\n";
+			$this->output .= $response . "\n";
 		curl_close($ch);
 		return $title . "\n" . $response;
 	}
