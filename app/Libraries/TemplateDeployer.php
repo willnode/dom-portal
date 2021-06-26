@@ -44,18 +44,21 @@ class TemplateDeployer
         } else {
             $ssh->setTimeout($timeout);
             $ssh->enablePTY();
+            // drop initial welcome msg
+            $ssh->read('/\[.+?\@.+? .+?\]\$/', SSH2::READ_REGEX);
         }
         $queueTask = function (string $task, $password = null) use ($ssh, $writeLog) {
-            $tmplog = '$> ' . $task . "\n";
+            $tmplog = '$> ';
             $ssh->write($task . "\n");
-            $read = $ssh->read('/[.+?@.+? .+?]\$/', SSH2::READ_REGEX);
+            $read = $ssh->read('/\[.+?\@.+? .+?\]\$/', SSH2::READ_REGEX);
             $tmplog .= $read;
+            $tmplog = str_replace("\0", "", $tmplog);
+            $tmplog = preg_replace('/\[.+?\]\$$/', '', $tmplog);
+            $tmplog = str_replace("\r\n", "\n", $tmplog);
+            $tmplog = preg_replace('/\r./', '', $tmplog);
             if (substr($tmplog, -1) !== "\n") {
                 $tmplog .= "\n";
             }
-            $tmplog = preg_replace('/[.+?@.+? .+?]\$/', '', $tmplog);
-            $tmplog = str_replace("\r\n", '', $tmplog);
-            $tmplog = preg_replace('/^.+\r/m', '', $tmplog);
             if ($password) {
                 $tmplog = str_replace($password, '[password]', $tmplog);
             }

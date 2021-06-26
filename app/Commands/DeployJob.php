@@ -56,7 +56,6 @@ class DeployJob extends BaseCommand
                     $timeout,
                     function (string $x) use ($deploy) {
                         $deploy->result .= $x;
-                        CLI::write($x);
                         (new HostDeployModel())->save($deploy);
                     }
                 );
