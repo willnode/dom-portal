@@ -109,4 +109,6 @@
 	'invoiceNotFound' => 'Data Pembelian tidak ditemukan untuk hosting ini',
 	'redeploy' => 'Deploy Ulang',
 	'deployNow' => 'Execute!',
+	'deployOverwriteWarn' => 'Anda menyebutkan parameter source, yang berarti file HOME anda akan di-OVERWRITE secara PERMANEN. Aksi ini tidak dapat dikembalikan. Apakah anda yakin?',
+	'deployClearHint' => 'Hapus semua deploy?',
 ];

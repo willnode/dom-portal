@@ -52,7 +52,7 @@
 	'createLimitUpgrade' => 'Sorry, the limit for the number of your hosting has been reached, at least you must have hosting with package {0} before continuing.',
 	'bandwidthLegend' => 'Daily Usage of Bandwidth in MB',
 	'waitForDataHint' => 'Hosting usage data will appear here. Wait an hour later for the data to appear.',
-	'waitingDeployHint' => 'The operation is still not over. Will be canceled {0}',
+	'waitingDeployHint' => 'This deployment task is not running yet.',
 
 	'check' => 'Check {0}',
 	'manageHost' => 'Manage Host',
@@ -108,4 +108,6 @@
 	'invoiceNotFound' => 'Invoice not found for this host',
 	'redeploy' => 'Redeploy',
 	'deployNow' => 'Eksekusi!',
+	'deployOverwriteWarn' => 'You mentioned the source parameter, which means your HOME file will be PERMANENTLY OVERWRITTEN. This action cannot be reversed. Are you sure?',
+	'deployClearHint' => 'Clear all logs?',
 ];

@@ -30,7 +30,12 @@ class DeployJob extends BaseCommand
                 if (isset($template['subdomain']) && is_string($template['subdomain']) && preg_match('/[a-zA-Z0-9-]+/', $template['subdomain'])) {
                     $deploy->domain = $template['subdomain'] . '.' . $deploy->domain;
                 }
-                $deploy->result = (new TemplateDeployer())->deploy(
+                $deploy->result = "Running in background with execution limit of {$timeout} seconds....";
+                if ($deploy->hasChanged()) {
+                    (new HostDeployModel())->save($deploy);
+                }
+                $result = '';
+                $result = (new TemplateDeployer())->deploy(
                     $host->server->alias,
                     $deploy->domain,
                     $host->username,
@@ -38,6 +43,13 @@ class DeployJob extends BaseCommand
                     $template,
                     $timeout
                 );
+                register_shutdown_function(function () use ($result, $deploy) {
+                    if (!$result) {
+                        $deploy->result = 'Sorry, this task didn\'t finish successfully due to emergency exit is triggered.';
+                        (new HostDeployModel())->save($deploy);
+                    }
+                });
+                $deploy->result = $result;
             } catch (\Throwable $th) {
                 $deploy->result .= 'Error: ' . $th;
             } finally {

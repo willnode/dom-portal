@@ -16,7 +16,7 @@
         <form method="POST">
           <?= csrf_field() ?>
           <input type="hidden" name="delete" value="y">
-          <button onclick="return confirm('Hapus semua deploy?')" class="btn btn-danger mb-3">
+          <button onclick="return confirm('<?= lang('Host.deployClearHint') ?>')" class="btn btn-danger mb-3">
             Clear
           </button>
         </form>
@@ -37,7 +37,7 @@
                   <pre class="output-highlight" style="white-space: pre-wrap;"><?= esc($deploy->result) ?></pre>
                 <?php else : ?>
                   <p class="text-center">
-                    <i><?= lang('Host.waitingDeployHint', [humanize($deploy->created_at->addMinutes($host->plan_id * 5 + 5))]) ?></i>
+                    <i><?= lang('Host.waitingDeployHint') ?></i>
                   </p>
                 <?php endif ?>
               </div>
@@ -83,7 +83,7 @@
     function isItSafe(f) {
       var t = f.template.value;
       if (/^source:/gm.test(t)) {
-        return confirm('Anda menyebutkan parameter source, yang berarti file HOME anda akan di-OVERWRITE secara PERMANEN. Aksi ini tidak dapat dikembalikan. Apakah anda yakin?');
+        return confirm('<?= lang('Host.deployOverwriteWarn') ?>');
       }
       return true;
     }

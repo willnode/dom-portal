@@ -12,11 +12,18 @@
       <div class="col-lg-4 mb-3">
         <div class="card">
           <div class="card-body">
-            <h2>Cek Koneksi DNS</h2>
-            <p>DNS adalah gerbang utama untuk mengidentifikasi alamat website anda. Disini anda dapat cek apakah
-              DNS website anda bekerja.
-            </p>
-            <p class="mb-0">Domain yang dites: </p>
+            <?php if (lang('Interface.code') === 'id') : ?>
+              <h2>Cek Koneksi DNS</h2>
+              <p>DNS adalah gerbang utama untuk mengidentifikasi alamat website anda. Disini anda dapat cek apakah
+                DNS website anda bekerja.
+              </p>
+              <p class="mb-0">Domain yang dites: </p>
+            <?php elseif (lang('Interface.code') === 'en') : ?>
+              <h2>Check DNS Connection</h2>
+              <p>DNS is the main gateway to identify your website address. Here you can check if your website's DNS is working.
+              </p>
+              <p class="mb-0">Tested domain: </p>
+            <?php endif ?>
             <p><input id="sub" placeholder="subdomain" class="form-inline" style="max-width: 120px;"><b>.<?= $host->domain ?></b>
               <input type="button" value="<?= lang('Domain.check') ?>" onclick="cek()">
             </p>
@@ -26,8 +33,9 @@
       <div class="col-lg-8 mb-3">
         <div class="card">
           <div class="card-body">
+          <?php if (lang('Interface.code') === 'id') : ?>
             <div id="tiploading">
-              ⏳ Sedang menguji website anda.
+              ⏳ Sedang mengambil data...
             </div>
             <h5 id="tipfound" class="d-none">
               ✔ DNS sepertinya berfungsi dengan baik
@@ -37,8 +45,23 @@
             </h5>
             <div id="tiperr" class="d-none">
               <h5 class="text-danger">🛑 Sepertinya DNS server mempunyai kendala</h5>
-              <p>Cobalah untuk mengecek apakah Anda sudah mengarahkan Nameserver domain dengan benar dan DNS server yang tituju sedang berjalan normal.</p>
+              <p>Cobalah untuk mengecek apakah Anda sudah mengarahkan Nameserver domain dengan benar dan DNS server yang dituju sedang berjalan normal.</p>
             </div>
+          <?php elseif (lang('Interface.code') === 'en') : ?>
+            <div id="tiploading">
+              ⏳ Gathering data...
+            </div>
+            <h5 id="tipfound" class="d-none">
+              ✔ DNS seems functioning well
+            </h5>
+            <h5 id="tipnull" class="d-none">
+              ⚠ There's no DNS records found
+            </h5>
+            <div id="tiperr" class="d-none">
+              <h5 class="text-danger">🛑 It seems the DNS server have problems</h5>
+              <p>Try to check if you have routed the domain Nameservers correctly and the DNS servers are running normally.</p>
+            </div>
+          <?php endif ?>
             <table class="table table-sm table-striped" id="table">
 
             </table>
