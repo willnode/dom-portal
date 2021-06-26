@@ -48,19 +48,15 @@ class TemplateDeployer
             $ssh->read('/\[.+?\@.+? .+?\]\$/', SSH2::READ_REGEX);
         }
         $queueTask = function (string $task, $password = null) use ($ssh, $writeLog) {
-            $tmplog = '$> ';
             $ssh->write($task . "\n");
             $read = $ssh->read('/\[.+?\@.+? .+?\]\$/', SSH2::READ_REGEX);
-            $tmplog .= $read;
-            CLI::write(json_encode($read));
-
+            $tmplog = $read;
             $tmplog = str_replace("\0", "", $tmplog);
             $tmplog = preg_replace('/\[.+?\]\$$/', '', $tmplog);
             $tmplog = str_replace("\r\n", "\n", $tmplog);
             $tmplog = preg_replace('/\r./', '', $tmplog);
             $tmplog = trim($tmplog);
-            $tmplog .= "\n";
-            CLI::write('>> ' . json_encode($tmplog));
+            $tmplog = '$> ' . $tmplog . "\n";
             if ($password) {
                 $tmplog = str_replace($password, '[password]', $tmplog);
             }
