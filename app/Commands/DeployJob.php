@@ -25,6 +25,7 @@ class DeployJob extends BaseCommand
         /** @var HostDeploy */
         $deploy = (new HostDeployModel())->find($params[0]);
         if ($deploy) {
+            $finished = false;
             try {
                 $host = $deploy->host;
                 set_time_limit($timeout = (($host->plan_id + 1) * 15));
@@ -38,9 +39,9 @@ class DeployJob extends BaseCommand
                 if ($deploy->hasChanged()) {
                     (new HostDeployModel())->save($deploy);
                 }
-                $result = '';
-                register_shutdown_function(function () use ($result, $deploy) {
-                    if (!$result) {
+
+                register_shutdown_function(function () use ($finished, $deploy) {
+                    if (!$finished) {
                         $deploy->result .= 'Sorry, this task didn\'t finish in time.';
                         $deploy->result = preg_replace('/^.+\n/', '', $deploy->result);
                         (new HostDeployModel())->save($deploy);
@@ -60,8 +61,10 @@ class DeployJob extends BaseCommand
                         (new HostDeployModel())->save($deploy);
                     }
                 );
+                $finished = true;
                 $deploy->result = $result;
             } catch (\Throwable $th) {
+                $finished = true;
                 $deploy->result .= 'Error: ' . $th;
             } finally {
                 if ($host->status === 'starting') {
