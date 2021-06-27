@@ -1,6 +1,5 @@
 <?php
 
-use CodeIgniter\Config\Services as ConfigServices;
 use CodeIgniter\Email\Email;
 use CodeIgniter\I18n\Time;
 use Config\Services;
@@ -121,7 +120,7 @@ function humanize(Time $time)
 
 function sendEmail(string $to, string $title, string $body)
 {
-    $email = ConfigServices::email();
+    $email = Services::email();
     $email->setTo($to);
     $email->setSubject($title);
     $email->setMessage($body);
