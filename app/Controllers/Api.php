@@ -33,7 +33,7 @@ class Api extends BaseController
             $id = (new LoginModel())->register([
                 'email' => $email,
                 'name' => $name,
-            ], true, false);
+            ], true, true);
             if ($id && ENVIRONMENT === 'production') {
                 (new LoginModel())->find($id)->sendVerifyEmail();
             }

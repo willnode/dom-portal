@@ -4,6 +4,7 @@ namespace App\Entities;
 
 use App\Libraries\SendGridEmail;
 use App\Models\LoginModel;
+use CodeIgniter\Email\Email;
 use CodeIgniter\Entity;
 
 /**
@@ -38,15 +39,9 @@ class Login extends Entity
             (new LoginModel())->save($this);
         }
         $code = urlencode(base64_encode($this->email . ':' . $this->otp));
-        (new SendGridEmail())->send('verify_email', 'billing', [[
-            'to' => [[
-                'email' => $this->email,
-                'name' => $this->name,
-            ]],
-            'dynamic_template_data' => [
-                'name' => $this->name,
-                'verify_url' => base_url("verify?code=$code"),
-            ]
-        ]]);
+        sendEmail($this->email, 'Verify Your Email', view('email/verify', [
+            'name' => $this->name,
+            'link' => base_url("verify?code=$code"),
+        ]));
     }
 }

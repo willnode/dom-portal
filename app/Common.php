@@ -1,5 +1,6 @@
 <?php
 
+use CodeIgniter\Email\Email;
 use CodeIgniter\I18n\Time;
 use Config\Services;
 
@@ -115,4 +116,13 @@ function humanize(Time $time)
     }
 
     return $before ? lang('Time.ago', [$phrase]) : lang('Time.inFuture', [$phrase]);
+}
+
+function sendEmail(string $to, string $title, string $body)
+{
+    $email = new Email();
+    $email->setTo($to);
+    $email->setSubject($title);
+    $email->setMessage($body);
+    $email->send();
 }
