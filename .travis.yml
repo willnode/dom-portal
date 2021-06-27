@@ -3,7 +3,7 @@ cache:
   - $HOME/.composer/cache/files
 dist: bionic
 php:
-  - '7.4'
+  - '8.0'
 services:
   - mysql
 before_install:

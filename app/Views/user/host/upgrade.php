@@ -242,6 +242,7 @@
       if (name.reportValidity && (!name.reportValidity() || !scheme.reportValidity())) {
         return;
       }
+      name.value = String(name.value).toLowerCase();
       activedomain = null;
       recalculate();
       $('#buy-status-available,#buy-status-error,#buy-status-prompt').toggleClass('d-none', true);

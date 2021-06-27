@@ -309,6 +309,7 @@
           return;
         }
         activedomain = null;
+        name.value = String(name.value).toLowerCase();
         $('#buy-status-available,#buy-status-error,#buy-status-prompt').toggleClass('d-none', true);
         $('#buy-status-loading').toggleClass('d-none', false);
         recalculate();
