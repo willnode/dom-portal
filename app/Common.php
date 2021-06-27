@@ -124,5 +124,8 @@ function sendEmail(string $to, string $title, string $body)
     $email->setTo($to);
     $email->setSubject($title);
     $email->setMessage($body);
-    $email->send();
+    if (!$email->send()) {
+        echo $email->printDebugger();
+        die();
+    }
 }
