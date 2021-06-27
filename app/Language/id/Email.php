@@ -1,8 +1,14 @@
 <?php return [
-    'greet' => 'Hai',
-    'verifyTitle' => 'Konfimasikan Email Kamu',
-    'verifyBody' => '<p>Terima kasih sudah mendaftar di DOM Cloud. Segera konfirmasikan email kamu agar kamu bisa memulai menyiapkan hosting.</p>
-    <a href="{0}" class="button"> Konfirmasi Email Sekarang</a>
-    <p>Apabila link diatas bermasalah, salin link berikut:</p>
-    <pre>{0}</pre>'
+    'verifyTitle' => 'Konfirmasikan Email Anda',
+    'receiptTitle' => 'Transaksi Berhasil',
+    'remindTitle' => 'Mengingatkan tentang Pemesanan Hosting Anda',
+    'remind_1' => 'Pesan ini akan diulang lagi apabila anda belum memperbarui ekspirasi 1 minggu dari jatuh tempo',
+    'remind_2' => 'Pesan ini adalah peringatan terakhir sebelum pembelian anda jatuh tempo.',
+    'suspendTitle' => 'Hosting Anda Tersuspended',
+    'overDisk' => 'Kehabisan Ruang Disk',
+    'overDiskHint' => 'Anda dapat membuka berkas penyimpanan website lalu menghapus beberapa file yang besar. Hosting akan kembali aktif secara otomatis apabila ada cukup ruang satu jam mendatang.',
+    'overBw' => 'Kehabisan Bandwidth',
+    'overBwHint' => 'Anda dapat membeli tambahan (add-ons) untuk menutupi kekurangan bandwidth. Hosting akan kembali aktif apabila bandwidth tersedia lagi',
+    'expired' => 'Melewati Batas Kadarluarsa',
+    'expiredHint' => 'Anda dapat memperpanjang batas kadarluarsa sekarang agar tidak menjadi subjek penghapusan data permanen dalam beberapa pekan mendatang.'
 ];

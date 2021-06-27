@@ -42,9 +42,6 @@ class FunctionalTest extends CIDatabaseTestCase
         $login = (new LoginModel())->find(1);
         $this->assertTrue($login !== null);
         $this->assertTrue($login->otp !== null);
-        $this->assertTrue(SendGridEmail::$sentEmail === 'verify_email');
-        $sentEmail = json_decode(SendGridEmail::$sentBody)->personalizations[0]->to[0]->email ?? '';
-        $this->assertTrue($sentEmail === $login->email);
 
         // okay, check if we can verify
 

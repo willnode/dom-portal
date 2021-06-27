@@ -5,7 +5,6 @@ namespace App\Commands;
 use App\Entities\Host;
 use App\Entities\HostStat;
 use App\Entities\Server;
-use App\Libraries\SendGridEmail;
 use App\Libraries\VirtualMinShell;
 use App\Models\HostModel;
 use App\Models\HostStatModel;
@@ -14,6 +13,7 @@ use App\Models\ServerStatModel;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\I18n\Time;
+use Config\Services;
 use DateTime;
 use Symfony\Component\Yaml\Yaml;
 
@@ -86,81 +86,57 @@ class CronJob extends BaseCommand
                 $overBw = ($stat->quota_net) > $plan->net * 1024 * 1024 * 1024 / 12 + $host->addons * 1024 * 1024;
                 // CLI::write('INJURY TIME ' . json_encode([$host->domain, $stat->disabled, $expired, $overDisk, $overBw]));
                 $login = $host->login;
+                Services::request()->setLocale($login->lang);
                 if (!$stat->disabled) {
                     if ($overDisk) {
                         // Disable
                         $vm->disableHost($host->domain, $server->alias, 'Running out Disk Space');
                         $host->status = 'suspended';
-                        (new SendGridEmail())->send('suspension_email', 'depletion', [[
-                            'to' => [[
-                                'email' => $login->email,
-                                'name' => $login->name,
-                            ]],
-                            'dynamic_template_data' => [
-                                'name' => $login->name,
-                                'domain' =>  $host->domain,
-                                'date' => date('Y-m-d H:i:s'),
-                                'reason' => 'Kehabisan Ruang Disk',
-                                'solution' => 'Anda dapat membuka berkas penyimpanan website lalu menghapus beberapa file yang besar. Hosting akan kembali aktif secara otomatis apabila ada cukup ruang satu jam mendatang.',
-                                'url' => base_url('user/host/detail/'.$host->id),
-                            ]
-                        ]]);
+                        sendEmail($login->email, lang('Email.suspendTitle'), view('email/suspend', [
+                            'name' => $login->name,
+                            'domain' =>  $host->domain,
+                            'date' => date('Y-m-d H:i:s'),
+                            'reason' => lang('Email.overDisk'),
+                            'solution' => lang('Email.overDiskHint'),
+                            'link' => base_url('user/host/detail/' . $host->id),
+                       ]));
                     } else if ($overBw) {
                         // Disable
                         $vm->disableHost($host->domain, $server->alias, 'Running out Bandwidth');
                         $host->status = 'suspended';
-                        (new SendGridEmail())->send('suspension_email', 'depletion', [[
-                            'to' => [[
-                                'email' => $login->email,
-                                'name' => $login->name,
-                            ]],
-                            'dynamic_template_data' => [
-                                'name' => $login->name,
-                                'domain' =>  $host->domain,
-                                'date' => date('Y-m-d H:i:s'),
-                                'reason' => 'Kehabisan Bandwidth',
-                                'solution' => 'Anda dapat membeli tambahan (add-ons) untuk menutupi kekurangan bandwidth. Hosting akan kembali aktif apabila bandwidth tersedia lagi',
-                                'url' => base_url('user/host/detail/'.$host->id),
-                            ]
-                        ]]);
+                        sendEmail($login->email, lang('Email.suspendTitle'), view('email/suspend', [
+                            'name' => $login->name,
+                            'domain' =>  $host->domain,
+                            'date' => date('Y-m-d H:i:s'),
+                            'reason' => lang('Email.overBw'),
+                            'solution' => lang('Email.overBwHint'),
+                            'link' => base_url('user/host/detail/' . $host->id),
+                        ]));
                     } else if ($expired) {
                         // Disable
-                        $vm->disableHost($host->domain, $server->alias, 'host expired');
+                        $vm->disableHost($host->domain, $server->alias, 'Host is expired');
                         $host->status = 'expired';
-                        (new SendGridEmail())->send('suspension_email', 'billing', [[
-                            'to' => [[
-                                'email' => $login->email,
-                                'name' => $login->name,
-                            ]],
-                            'dynamic_template_data' => [
-                                'name' => $login->name,
-                                'domain' =>  $host->domain,
-                                'date' => $host->expiry_at->toDateString(),
-                                'reason' => 'Melewati Batas Kadarluarsa',
-                                'solution' => 'Anda dapat memperpanjang batas kadarluarsa sekarang agar tidak menjadi subjek penghapusan data permanen dalam beberapa pekan mendatang.',
-                                'url' => base_url('user/host/detail/'.$host->id),
-                            ]
-                        ]]);
+                        sendEmail($login->email, lang('Email.suspendTitle'), view('email/suspend', [
+                            'name' => $login->name,
+                            'domain' =>  $host->domain,
+                            'date' => $host->expiry_at->toDateString(),
+                            'reason' => lang('Email.expired'),
+                            'solution' => lang('Email.expiredHint'),
+                            'link' => base_url('user/host/detail/' . $host->id),
+                        ]));
                     } else {
                         $diff = (new Time())->difference($host->expiry_at);
                         $rangerem = $diff->getSeconds() <= 0 ? 0 : ($diff->getMonths() > 0 ? 0 : ($diff->getWeeks() > 0 ? 1 : 2));
 
                         if ($rangerem > 0 && $host->notification < $rangerem) {
-                            (new SendGridEmail())->send('reminder_email', 'billing', [[
-                                'to' => [[
-                                    'email' => $login->email,
-                                    'name' => $login->name,
-                                ]],
-                                'dynamic_template_data' => [
-                                    'name' => $login->name,
-                                    'type' => 'Hosting',
-                                    'domain' =>  $host->domain,
-                                    'remaining' => humanize($host->expiry_at),
-                                    'date' => $host->expiry_at->toDateString(),
-                                    'repeat' => $rangerem == 1 ? 'Pesan ini akan diulang lagi apabila anda belum memperbarui ekspirasi 1 minggu dari jatuh tempo' : 'Pesan ini adalah peringatan terakhir sebelum pembelian anda jatuh tempo.',
-                                    'extend_url' => base_url('user/host/upgrade/'.$host->id),
-                                ]
-                            ]]);
+                            sendEmail($login->email, lang('Email.remindTitle'), view('email/remind', [
+                                'name' => $login->name,
+                                'domain' =>  $host->domain,
+                                'remaining' => humanize($host->expiry_at),
+                                'expiry' => $host->expiry_at->toDateString(),
+                                'reminder' => lang($rangerem == 1 ? 'Email.remind_1' : 'Email.remind_2'),
+                                'link' => base_url('user/host/upgrade/' . $host->id),
+                            ]));
                             $host->notification = $rangerem;
                         }
                     }

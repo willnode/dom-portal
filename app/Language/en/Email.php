@@ -1,8 +1,14 @@
 <?php return [
-    'greet' => 'Hi',
     'verifyTitle' => 'Confirm Your Email',
-    'verifyBody' => '<p> Thank you for registering on DOM Cloud. Immediately confirm your email so you can start setting up hosting. </p>
-    <a href="{0}" class="button"> Confirm Email Now </a>
-    <p> If the link above is problematic, copy the following link: </p>
-    <pre>{0}</pre>'
+    'receiptTitle' => 'Transaction Succeeded',
+    'remindTitle' => 'Reminder about Your Hosting Order',
+    'remind_1' => 'This message will be repeated again if you have not renewed the expiration a week from the due date.',
+    'remind_2' => 'This message is a final warning before your purchase is due.',
+    'suspendTitle' => 'Your Hosting is Suspended',
+    'overDisk' => 'Running out of Disk Space',
+    'overDiskHint' => 'You can open the website\'s save file and then delete some of the larger files. Hosting will be reactivated automatically when there is enough space in the next hour.',
+    'overBw' => 'Running out of Bandwidth',
+    'overBwHint' => 'You can purchase add-ons to cover bandwidth shortages. Hosting will be active back when bandwidth is available again',
+    'expired' => 'Host is expired',
+    'expiredHint' => 'You can extend the expiration date now to avoid being subject to permanent data deletion in the coming weeks.'
 ];

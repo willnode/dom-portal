@@ -120,12 +120,15 @@ function humanize(Time $time)
 
 function sendEmail(string $to, string $title, string $body)
 {
-    $email = Services::email();
-    $email->setTo($to);
-    $email->setSubject($title);
-    $email->setMessage($body);
-    if (!$email->send()) {
-        echo $email->printDebugger();
-        die();
+    if (ENVIRONMENT !== 'testing')
+    {
+        $email = Services::email();
+        $email->setTo($to);
+        $email->setSubject($title);
+        $email->setMessage($body);
+        if (!$email->send()) {
+            echo $email->printDebugger();
+            die();
+        }
     }
 }

@@ -7,7 +7,6 @@ use App\Entities\Purchase;
 use App\Libraries\DigitalRegistra;
 use App\Libraries\GitHubOAuth;
 use App\Libraries\Recaptha;
-use App\Libraries\SendGridEmail;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\TransferWiseGate;
 use App\Libraries\VirtualMinShell;
@@ -226,20 +225,14 @@ class Api extends BaseController
                         $plan,
                     ]));
 
-                    (new SendGridEmail())->send('receipt_email', 'billing', [[
-                        'to' => [[
-                            'email' => $login->email,
-                            'name' => $login->name,
-                        ]],
-                        'dynamic_template_data' => [
-                            'name' => $login->name,
-                            'price' => format_money($metadata->price, $metadata->price_unit),
-                            'description' => $desc,
-                            'id' => $metadata->_id,
-                            'timestamp' => $metadata->_invoiced,
-                            'via' => $metadata->_via,
-                        ]
-                    ]]);
+                    sendEmail($login->email, lang('Email.receiptTitle'), view('email/receipt', [
+                        'name' => $login->name,
+                        'price' => format_money($metadata->price, $metadata->price_unit),
+                        'description' => $desc,
+                        'id' => $metadata->_id,
+                        'timestamp' => $metadata->_invoiced,
+                        'via' => $metadata->_via,
+                    ]));
                 }
                 return "OK";
             }
