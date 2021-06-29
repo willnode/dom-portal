@@ -31,7 +31,7 @@ class IpaymuGate
 			'buyer_name' => $login->name,
 			'buyer_email' => $login->email,
 			'buyer_phone' => $login->phone,
-			'auto_redirect' => 10,
+			'auto_redirect' => -1,
 		]);
 
 		// execute!
