@@ -99,7 +99,7 @@ class CronJob extends BaseCommand
                             'reason' => lang('Email.overDisk'),
                             'solution' => lang('Email.overDiskHint'),
                             'link' => base_url('user/host/detail/' . $host->id),
-                       ]));
+                        ]));
                     } else if ($overBw) {
                         // Disable
                         $vm->disableHost($host->domain, $server->alias, 'Running out Bandwidth');
@@ -144,6 +144,7 @@ class CronJob extends BaseCommand
                     if ((strtotime('-4 weeks', time()) >= $host->expiry_at->getTimestamp()) || ($stat->quota_server > $plan->disk * 1024 * 1024 * 3)) {
                         if (!$host->purchase) {
                             // Paid hosts should be immune from this, in case error logic happens...
+                            $vm->delIpTablesLimit($host->username, $server->alias);
                             $vm->deleteHost($host->domain, $server->alias);
                             $host->status = 'removed';
                         }
