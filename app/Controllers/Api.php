@@ -186,7 +186,7 @@ class Api extends BaseController
                         isset($plan) || ($plan = $host->plan);
                         // Add more bandwidth
                         $vm->adjustBandwidthHost(
-                            $host->addons,
+                            ($host->addons + ($plan->net * 1024 / 12)),
                             $host->domain,
                             $host->server->alias
                         );
