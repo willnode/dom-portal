@@ -8,6 +8,15 @@
   <div class="container">
     <?= view('user/host/navbar') ?>
     <div class="card">
+      <div class="p-3">
+        <?php if (lang('Interface.code') === 'id') : ?>
+          <p>Gunakan akses login berikut untuk mengupload atau mengedit konten website anda.
+            <a href="https://github.com/domcloud/domcloud-id#bagaimana-cara-mengedit-website">Pelajari lebih lanjut</a>.</p>
+        <?php else : ?>
+          <p>Use the following login access to upload or edit your website content.
+            <a href="https://github.com/domcloud/domcloud-io#how-to-edit-a-website">Learn more</a>.</p>
+        <?php endif ?>
+      </div>
       <div class="row">
         <div class="col-md-6 col-xl-3">
           <div class="card-body d-flex flex-column h-100">
@@ -19,9 +28,6 @@
               <input name="user" class="d-none" value="<?= esc($user) ?>">
               <input name="pass" class="d-none" value="<?= esc($rawpass) ?>">
               <p><small><a href="https://<?= $slave ?>.domcloud.id:<?= $webminport ?>/filemin/index.cgi?path=%2F&xnavigation=1" target="_blank"><?= lang('Host.openPortal') ?></a></small> / <input type="submit" value="Auto Login" class="btn btn-sm btn-link p-0"></p>
-              <?php if (lang('Interface.code') === 'id') : ?>
-                <p><small><a href="https://domcloud.id/faq#:~:text=Saya%20Mendapat%20cookie,portal%20Webmin." target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
-              <?php endif ?>
             </form>
           </div>
         </div>
@@ -35,9 +41,6 @@
                 <a href="https://phpmyadmin<?= $alias ?>/" target="_blank" rel="noreferrer">phpMyAdmin</a> /
                 <a href="https://phppgadmin<?= $alias ?>/" target="_blank" rel="noreferrer">phpPgAdmin</a>
               </small></p>
-            <?php if (lang('Interface.code') === 'id') : ?>
-              <p><small><a href="https://domcloud.id/faq#:~:text=Saya%20tidak%20bisa%20login%20ke%20database" target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
-            <?php endif ?>
           </div>
         </div>
         <div class="col-md-6 col-xl-3">
@@ -48,9 +51,6 @@
             <p><small>
                 <a href="https://webssh<?= $alias ?>/?<?= http_build_query(['hostname' => 'localhost', 'username' => $user, 'password' => base64_encode($rawpass)]) ?>" target="_blank" rel="noreferrer">Web SSH</a>
               </small></p>
-            <?php if (lang('Interface.code') === 'id') : ?>
-              <p><small><a href="https://domcloud.id/faq#:~:text=Bagaimana%20cara%20mengakses%20SSH?" target="_blank" rel="noopener noreferrer">Punya masalah?</a></small></p>
-            <?php endif ?>
           </div>
         </div>
         <div class="col-md-6 col-xl-3">
@@ -64,9 +64,9 @@
       </div>
       <div class="card-body">
         <?php if ($shown) : ?>
-          <a href="?" class="mt-3 btn btn-warning float-end"><?= lang('Host.hidePassword') ?></a>
+          <a href="?" class="mt-3 btn btn-warning float-end"><i class="fas fa-lock me-2"></i> <?= lang('Host.hidePassword') ?></a>
         <?php else : ?>
-          <a href="?show=password" class="mt-3 btn btn-warning float-end"><?= lang('Host.showPassword') ?></a>
+          <a href="?show=password" class="mt-3 btn btn-warning float-end"><i class="fas fa-unlock me-2"></i> <?= lang('Host.showPassword') ?></a>
         <?php endif ?>
         <a href="/user/host/detail/<?= $id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
       </div>

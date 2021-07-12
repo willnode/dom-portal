@@ -206,7 +206,9 @@
                     <div class="ms-auto" id="specbwb">- GiB</div>
                   </div>
                 </div>
-                <input type="submit" id="submitBtn" value="<?= lang('Host.orderNow') ?>" class="form-control btn-lg btn btn-outline-warning mt-3">
+                <button type="submit" id="submitBtn" class="form-control btn-lg btn btn-outline-warning mt-3">
+                  <i class="fas fa-shopping-cart me-2"></i> <?= lang('Host.orderNow') ?>
+                </button>
               </div>
             </div>
           </div>

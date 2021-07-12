@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-md navbar-light bg-light mb-4">
   <div class="container-fluid">
     <a class="navbar-brand" href="https://domcloud.id">
-      <img src="/logo.svg" width="64px" height="60px" alt="" class="me-2">
+      <img src="/logo.svg" width="64px" height="60px" alt="" class="me-1">
       <span class="d-none d-sm-inline">&nbsp; DOM Cloud Hosting</span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -11,21 +11,21 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link <?= ($page ?? '') === 'hosting' ? 'active' : '' ?>" href="/user/host"><?= lang('Interface.hosting') ?></a>
+          <a class="nav-link <?= ($page ?? '') === 'hosting' ? 'active' : '' ?>" href="/user/host"><i class="fas fa-home me-1"></i> <?= lang('Interface.hosting') ?></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= ($page ?? '') === 'domain' ? 'active' : '' ?>" href="/user/domain"><?= lang('Interface.domain') ?></a>
+          <a class="nav-link <?= ($page ?? '') === 'domain' ? 'active' : '' ?>" href="/user/domain"><i class="fas fa-atlas me-1"></i> <?= lang('Interface.domain') ?></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= ($page ?? '') === 'status' ? 'active' : '' ?>" href="/user/status"><?= lang('Interface.status') ?></a>
+          <a class="nav-link <?= ($page ?? '') === 'status' ? 'active' : '' ?>" href="/user/status"><i class="fas fa-tachometer-alt me-1"></i> <?= lang('Interface.status') ?></a>
         </li>
         <?php if ($_SESSION['login'] == 1) : ?>
           <li class="nav-item">
-            <a class="nav-link <?= ($page ?? '') === 'sales' ? 'active' : '' ?>" href="/user/sales"><?= lang('Interface.sales') ?></a>
+            <a class="nav-link <?= ($page ?? '') === 'sales' ? 'active' : '' ?>" href="/user/sales"><i class="fas fa-scroll me-1"></i> <?= lang('Interface.sales') ?></a>
           </li>
         <?php endif ?>
         <li class="nav-item">
-            <a class="nav-link" href="<?= lang('Interface.helpLink') ?>"><?= lang('Interface.help') ?>?</a>
+            <a class="nav-link" href="<?= lang('Interface.helpLink') ?>"><i class="fas fa-question-circle me-1"></i> <?= lang('Interface.help') ?>?</a>
         </li>
       </ul>
 

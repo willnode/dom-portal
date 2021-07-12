@@ -7,12 +7,12 @@
         <a class="nav-link <?= $path == 'invoices' ? 'active' : '' ?>" href="/user/domain/invoices/<?= $domain->id ?>">Invoice</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link <?= $path == 'dns' ? 'active' : '' ?>" href="/user/domain/dns/<?= $domain->id ?>">DNS</a>
-    </li>
-    <li class="nav-item ms-auto">
-        <span class="nav-link"><a href="http://<?= $domain->name ?>" target="_blank" rel="noopener noreferrer"><?= $domain->name ?></a></span>
+        <a class="nav-link <?= $path == 'renew' ? 'active' : '' ?>" href="/user/domain/renew/<?= $domain->id ?>">Renew</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link <?= $path == 'renew' ? 'active' : '' ?>" href="/user/domain/renew/<?= $domain->id ?>">Renew</a>
+        <a class="nav-link <?= $path == 'dns' ? 'active' : '' ?>" href="/user/domain/dns/<?= $domain->id ?>">DNS</a>
+    </li>
+    <li class="nav-item ms-auto d-none d-md-block">
+        <span class="nav-link"><a href="http://<?= $domain->name ?>" target="_blank" rel="noopener noreferrer"><?= $domain->name ?></a> <i class="ms-2 fas fa-external-link-alt"></i></span>
     </li>
 </ul>

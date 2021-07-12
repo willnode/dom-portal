@@ -68,7 +68,9 @@
                 <div class="ms-auto" id="outexp">-</div>
               </div>
               <p><i><small>Perlu diingat anda hanya mendaftarkan domain. Apabila anda ingin mendaftarkan domain sekaligus hosting, anda dapat <a href="/user/host/create">melakukannya disini</a> </small></i></p>
-              <input type="submit" id="submitBtn" class="btn btn-primary btn-block" value="<?= lang('Host.orderNow') ?>">
+              <button type="submit" id="submitBtn" class="form-control btn-lg btn btn-outline-warning mt-3">
+                  <i class="fas fa-shopping-cart me-2"></i> <?= lang('Host.orderNow') ?>
+                </button>
             </div>
           </div>
         </div>
