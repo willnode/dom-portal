@@ -159,15 +159,15 @@ class CronJob extends BaseCommand
                     (new HostModel())->save($host);
                 }
             }
-            $yaml = $vm->listSystemInfo($server->alias);
-            $yaml = Yaml::parse($yaml);
-            $data = [
-                'server_id' => $server->id,
-                // php_yaml can't handle 64 bit ints properly
-                'metadata' => json_encode($yaml),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ];
-            (new ServerStatModel())->replace($data);
+            // $yaml = $vm->listSystemInfo($server->alias);
+            // $yaml = Yaml::parse($yaml);
+            // $data = [
+            //     'server_id' => $server->id,
+            //     // php_yaml can't handle 64 bit ints properly
+            //     'metadata' => json_encode($yaml),
+            //     'updated_at' => date('Y-m-d H:i:s'),
+            // ];
+            // (new ServerStatModel())->replace($data);
             (new VirtualMinShell())->updateIpTables($server->alias);
         }
     }

@@ -2,7 +2,8 @@
   <div class="container-fluid">
     <a class="navbar-brand" href="https://domcloud.id">
       <img src="/logo.svg" width="64px" height="60px" alt="" class="me-1">
-      <span class="d-none d-sm-inline">&nbsp; DOM Cloud Hosting</span>
+      <span class="d-none d-sm-inline">&nbsp; DOM Cloud
+      <span class="d-none d-lg-inline">Hosting</span></span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -11,7 +12,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link <?= ($page ?? '') === 'hosting' ? 'active' : '' ?>" href="/user/host"><i class="fas fa-home me-1"></i> <?= lang('Interface.hosting') ?></a>
+          <a class="nav-link <?= ($page ?? '') === 'hosting' ? 'active' : '' ?>" href="/user/host"><i class="fas fa-home me-1"></i>&nbsp;<?= lang('Interface.hosting') ?></a>
         </li>
         <li class="nav-item">
           <a class="nav-link <?= ($page ?? '') === 'domain' ? 'active' : '' ?>" href="/user/domain"><i class="fas fa-atlas me-1"></i> <?= lang('Interface.domain') ?></a>
@@ -20,7 +21,7 @@
           <a class="nav-link <?= ($page ?? '') === 'status' ? 'active' : '' ?>" href="/user/status"><i class="fas fa-tachometer-alt me-1"></i> <?= lang('Interface.status') ?></a>
         </li>
         <?php if ($_SESSION['login'] == 1) : ?>
-          <li class="nav-item">
+          <li class="nav-item d-none d-lg-inline">
             <a class="nav-link <?= ($page ?? '') === 'sales' ? 'active' : '' ?>" href="/user/sales"><i class="fas fa-scroll me-1"></i> <?= lang('Interface.sales') ?></a>
           </li>
         <?php endif ?>

@@ -927,12 +927,23 @@ class User extends BaseController
 		return $this->response->redirect('/user/domain'); // @codeCoverageIgnore
 	}
 
-	public function status()
+	public function status($page = 'list', $id = 0)
 	{
-		return view('user/status', [
-			'page' => 'status',
-			'servers' => (new ServerModel())->findAll(),
-		]);
+		switch ($page) {
+			case 'list':
+				return view('user/status', [
+					'page' => 'status',
+					'servers' => (new ServerModel())->findAll(),
+				]);
+			case 'info':
+				return $this->response->setJSON(
+					(new VirtualMinShell)->checkStatus((new ServerModel())->find($id)->alias)
+				);
+			case 'version':
+				return $this->response->setJSON(
+					(new VirtualMinShell)->checkVersion((new ServerModel())->find($id)->alias)
+				);
+		}
 	}
 
 	public function sales()
