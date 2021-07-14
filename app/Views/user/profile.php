@@ -33,6 +33,8 @@
               </select>
               <?php if ($data->lang === 'en') : ?>
                 <p class="mt-2 alert alert-info"><small><i> By using English Language, all purchases will be translated to USD dollar and payments will be processed through PayPal.</i></small></p>
+              <?php elseif ($data->lang === 'id') : ?>
+                <p class="mt-2 alert alert-info"><small><i> Dengan menggunakan Bahasa Indonesia, semua pembayaran akan menggunakan IDR (Indonesia rupiah), pembelian domain Indonesia tersedia, dan pembayaran akan diproses oleh Payment Gate iPaymu.</i></small></p>
               <?php endif ?>
             </div>
             <p><input type="submit" class="btn btn-primary" value="<?= lang('Interface.saveProfile') ?>"></p>

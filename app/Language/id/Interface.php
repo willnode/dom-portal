@@ -63,6 +63,11 @@
 	'saveProfile' => 'Simpan Profil',
 	'deleteAccount' => 'Hapus Akun',
 
+	'deleteAccountTitle' => 'Menghapus Akun Anda',
+	'cantDeleteAccount' => 'Anda tidak dapat menghapus akun ini jika masih ada hosting atau domain yang terdaftar.',
+	'deleteAccountHint' => 'PERHATIAN! Penghapusan akun bersifat permanen dan kami tidak dapat mengembalikan aksi tersebut.',
+	'deleteAccountConf' => 'Mohon tulis "YA" untuk menyetujui penghapusan akun.',
+
 	'back' => 'Kembali',
 	'save' => 'Simpan',
 	'change' => 'Ganti',

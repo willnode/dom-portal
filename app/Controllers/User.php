@@ -579,7 +579,6 @@ class User extends BaseController
 					return $this->response->redirect('user/host');
 				}
 			} else if ($action === 'pay') {
-				$plan = (new PlanModel())->find($metadata->plan)->alias ?? '';
 				if ($metadata->price_unit === 'idr') {
 					$pay = (new IpaymuGate())->createPayment(
 						$current->id,
@@ -835,28 +834,43 @@ class User extends BaseController
 					(new DomainModel())->delete($domain->id);
 					return $this->response->redirect('user/domain/');
 				}
-			} else if ($action === 'pay' && $metadata->price_unit === 'idr') {
-				$pay = (new IpaymuGate())->createPayment(
-					$current->id,
-					$metadata->price,
-					lang('Domain.formatInvoice', [
-						"$metadata->domain",
-						$metadata->price
-					]),
-					$metadata->_challenge,
-					$domain->login
-				);
-				if ($pay && isset($pay->sessionID)) {
-					return $this->response->redirect(
-						$this->request->config->ipaymuURL . $pay->sessionID
+			} else if ($action === 'pay') {
+				if ($metadata->price_unit === 'idr') {
+					$pay = (new IpaymuGate())->createPayment(
+						$current->id,
+						$metadata->price,
+						$current->niceMessage,
+						$metadata->_challenge,
+						$domain->login
 					);
+					if ($pay && isset($pay->sessionID)) {
+						return $this->response->redirect(
+							$this->request->config->ipaymuURL . $pay->sessionID
+						);
+					}
+				} else if ($metadata->price_unit === 'usd') {
+					$pay = (new PayPalGate())->createPayment(
+						$current->id,
+						$metadata->price,
+						$current->niceMessage,
+						$metadata->_challenge,
+						$domain->login
+					);
+					if ($pay && isset($pay->id)) {
+						return $this->response->redirect(
+							(ENVIRONMENT === 'production' ? 'https://paypal.com' : 'https://sandbox.paypal.com') .
+								"/checkoutnow?token=" . urlencode($pay->id)
+						);
+					}
 				}
 				return $this->response->redirect('/user/domain/invoices/' . $domain->id);
 			}
 			// @codeCoverageIgnoreEnd
 		}
+		//var_dump($current); exit;
 		return view('user/domain/invoice', [
 			'domain' => $domain,
+			'current' => $current,
 		]);
 	}
 

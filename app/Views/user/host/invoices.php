@@ -41,12 +41,22 @@
                 <input type="submit" class="btn btn-danger" value="<?= lang('Host.cancelInvoice') ?>" onclick="return confirm('<?= lang('Host.cancelInvoceConfirm') ?>')">
               </form>
             <?php elseif ($host->status === 'active') : ?>
-              <p> Hosting anda sudah aktif dan dapat diakses sekarang. </p>
-              <p> Sisa Kadarluarsa Langganan: <?= humanize($host->expiry_at) ?>. </p>
-              <p><a target="_blank" href="http://<?= $host->domain ?>">Buka Website</a></p>
-              <p><a href="/user/host/see/<?= $host->id ?>">Edit Website</a></p>
+              <?php if (lang('Interface.code') === 'id') : ?>
+                <p> Hosting anda sudah aktif dan dapat diakses sekarang. </p>
+                <p> Sisa Kadarluarsa Langganan: <?= humanize($host->expiry_at) ?>. </p>
+                <p><a target="_blank" href="http://<?= $host->domain ?>">Buka Website</a></p>
+                <p><a href="/user/host/see/<?= $host->id ?>">Edit Website</a></p>
+              <?php else : ?>
+                <p> Your hosting is active and accessible now. </p>
+                <p> Remaining Subscription Expiration: <?= humanize($host->expiry_at) ?>. </p>
+                <p><a target="_blank" href="http://<?= $host->domain ?>">Open Website</a></p>
+                <p><a href="/user/host/see/<?= $host->id ?>">Edit Website</a></p>
+              <?php endif ?>
             <?php elseif ($host->status === 'expired') : ?>
-              <p> PERHATIAN: Status Langganan anda sudah ekspired dan perlu diperbarui segera sebelum terhapus oleh sistem secara permanen. </p>
+              <?php if (lang('Interface.code') === 'id') : ?>
+                <p> ATTENTION: Your Subscription Status has expired and needs to be updated immediately before it is permanently deleted by the system. </p>
+              <?php else : ?>
+              <?php endif ?>
             <?php elseif ($host->status === 'starting') : ?>
               <p><?= lang('Host.preparingHint') ?> </p>
             <?php endif ?>

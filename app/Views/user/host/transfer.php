@@ -8,16 +8,15 @@
   <div class="container text-center">
     <?= view('user/host/navbar') ?>
     <div class="m-auto" style="max-width: 576px;">
-      <h1 class="mb-3">Transfer Hosting</h1>
+      <h1 class="mb-3"><?= lang('Host.transferTitle') ?></h1>
       <?php if ($host->status === 'active' && !$host->domain_detail) : ?>
         <div class="card">
           <div class="card-body">
             <div class="alert alert-warning">
-              PERHATIAN! Transfer Hosting ini bertujuan untuk memindahkan hosting ke akun lain.
-              Sekali anda transfer anda akan kehilangan akses hosting ini karena sudah pindah tangan!
+            <?= lang('Host.transferWarn') ?>
             </div>
-            <p>Pemilik saat ini: <b><?= $host->login->email ?></b></p>
-            <p>Mohon ketik email akun yang ingin menerima:</p>
+            <p><?= lang('Host.transferCurHint') ?> <b><?= $host->login->email ?></b></p>
+            <p><?= lang('Host.transferHint') ?></p>
             <form method="POST">
               <?= csrf_field() ?>
               <input type="email" name="email" class="form-control text-center" required>
@@ -27,7 +26,7 @@
         </div>
       <?php else : ?>
         <div class="alert alert-warning">
-          Anda tidak dapat mentransfer hosting ini selama tidak aktif atau ada pembelian domain yang terikat
+        <?= lang('Host.transferDisabled') ?>
         </div>
       <?php endif ?>
       <a href="/user/host/detail/<?= $host->id ?>" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>

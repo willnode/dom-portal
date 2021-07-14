@@ -26,7 +26,7 @@
                   <input id="domain_available" hidden <?= ENVIRONMENT === 'production' ? 'required' : '' ?>>
                   <input name="domain[name]" id="domain_name" class="form-control" pattern="^[-\w]+$" required oninput="recalculate()">
                   <select class="form-select" name="domain[scheme]" id="domain_scheme" required style="max-width: 120px" onchange="recalculate()">
-                    <?php foreach ($schemes as $s) : if ($s->price_local !== 0) : ?>
+                    <?php foreach ($schemes as $s) : if ($s->price_local) : ?>
                         <option value="<?= $s->id ?>"><?= $s->alias ?></option>
                     <?php endif;
                     endforeach; ?>
@@ -67,7 +67,11 @@
                 <h6><?= lang('Host.expirationDate') ?></h6>
                 <div class="ms-auto" id="outexp">-</div>
               </div>
-              <p><i><small>Perlu diingat anda hanya mendaftarkan domain. Apabila anda ingin mendaftarkan domain sekaligus hosting, anda dapat <a href="/user/host/create">melakukannya disini</a> </small></i></p>
+              <?php if (lang('Interface.code') == 'id') : ?>
+                <p><i><small>Perlu diingat anda hanya mendaftarkan domain. Apabila anda ingin mendaftarkan domain sekaligus hosting, anda dapat <a href="/user/host/create">melakukannya disini</a> </small></i></p>
+              <?php else : ?>
+                <p><i><small>Keep in mind you are only registering a domain. If you want to register a domain as well as hosting, you can <a href="/user/host/create">do it here</a> </small></i></p>
+              <?php endif ?>
               <button type="submit" id="submitBtn" class="form-control btn-lg btn btn-outline-warning mt-3">
                   <i class="fas fa-shopping-cart me-2"></i> <?= lang('Host.orderNow') ?>
                 </button>

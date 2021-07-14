@@ -75,9 +75,9 @@ class Purchase extends Entity
                     if ($host->status === 'pending') {
                         $hword = 'Purchase of ';
                     } else if ($metadata->plan) {
-                        if ($metadata->plan > $host->plan) {
+                        if ($metadata->plan > $host->plan_id) {
                             $hword = 'Upgrade of ';
-                        } else if ($metadata->plan < $host->plan) {
+                        } else if ($metadata->plan < $host->plan_id) {
                             $hword = 'Downgrade of ';
                         } else {
                             $hword = 'Renew of ';
@@ -122,9 +122,9 @@ class Purchase extends Entity
                     if ($host->status === 'pending') {
                         $hword = 'Pembelian ';
                     } else if ($metadata->plan) {
-                        if ($metadata->plan > $host->plan) {
+                        if ($metadata->plan > $host->plan_id) {
                             $hword = 'Upgrade ';
-                        } else if ($metadata->plan < $host->plan) {
+                        } else if ($metadata->plan < $host->plan_id) {
                             $hword = 'Downgrade ';
                         } else {
                             $hword = 'Pembaruan ';

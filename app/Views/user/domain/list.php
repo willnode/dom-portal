@@ -15,9 +15,9 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th>Domain</th>
-              <th>Status</th>
-              <th>Masa Tenggang</th>
+              <th><?= lang('Interface.domain') ?></th>
+              <th><?= lang('Interface.status') ?></th>
+              <th><?= lang('Interface.expiration') ?></th>
             </tr>
           </thead>
           <tbody>

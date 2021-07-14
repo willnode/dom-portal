@@ -211,6 +211,9 @@
                 </button>
               </div>
             </div>
+            <p class="text-end d-none" id="wrong-notice">
+             <i>Wrong currency? <a href="/user/profile">Change your language.</a></i>
+            </p>
           </div>
         </div>
 
@@ -409,6 +412,7 @@
           $('#outtip').text(formatter.format(tip));
           $('#outbill').text(formatter.format(unit * years + addons * bww + scheme + tip));
         }
+        $('#wrong-notice').toggleClass('d-none', unit == 0);
         $('#specdisk').text(plan['disk'] + ' MiB');
         $('#specbwt').text(plan['net'] * Math.max(years, 1) + ' GiB');
         $('#specbwb').text(plan['net'] / 12 * Math.floor(years) + addons + ' GiB');

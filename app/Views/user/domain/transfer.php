@@ -25,7 +25,7 @@
                   <input id="domain_bio" hidden name="domain[bio]" required>
                   <input name="domain[name]" id="domain_name" class="form-control" pattern="^[-\w]+$" required oninput="recalculate()">
                   <select class="form-select" name="domain[scheme]" id="domain_scheme" required style="max-width: 120px" onchange="recalculate()">
-                    <?php foreach ($schemes as $s) : if ($s->price_local !== 0) : ?>
+                    <?php foreach ($schemes as $s) : if ($s->price_local) : ?>
                         <option value="<?= $s->id ?>"><?= $s->alias ?></option>
                     <?php endif;
                     endforeach; ?>
@@ -72,7 +72,11 @@
                 <h6><?= lang('Host.expirationDate') ?></h6>
                 <div class="ms-auto" id="outexp">-</div>
               </div>
-              <p><i><small>Perlu diingat anda hanya mendaftarkan domain. Apabila anda ingin mendaftarkan domain sekaligus hosting, anda dapat <a href="/user/host/create">melakukannya disini</a> </small></i></p>
+              <?php if (lang('Interface.code') == 'id') : ?>
+                <p><i><small>Pastikan bahwa anda memiliki hak akses untuk mentransfer domain dari layanan lain. Kami akan menjangkau anda apabila transfer domain gagal setelah pembayaran, namun apabila anda gagal untuk membuktikan kepemilikan domain melalui EPP code atau syarat dokumen yang ada, kami tidak dapat membantu anda. Secara ToS anda tidak akan mendapatkan kembalian/refund dalam pembelian domain dalam situasi apapun.</small></i></p>
+              <?php else : ?>
+                <p><i><small>Make sure that you have access rights to transfer the domain from another service. We will reach out to you if the domain transfer fails after payment, but if you fail to prove domain ownership through the EPP code or existing document requirements, we cannot help you. By ToS you will not get a refund in the purchase of a domain under any circumstances.</small></i></p>
+              <?php endif ?>
               <input type="submit" id="submitBtn" class="btn btn-primary btn-block" value="<?= lang('Host.orderNow') ?>">
             </div>
           </div>

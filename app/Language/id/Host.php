@@ -93,6 +93,11 @@
 	'formatInvoiceAlt' => 'Pembayaran Hosting Paket {0} dengan domain {1}',
 	'formatInvoiceSum' => ' seharga {0} ',
 
+	'transferTitle' => 'Transfer Hosting',
+	'transferWarn' => 'PERHATIAN! Transfer Hosting ini bertujuan untuk memindahkan hosting ke akun lain. Sekali anda transfer anda akan kehilangan akses hosting ini karena sudah pindah tangan!',
+	'transferCurHint' => 'Pemilik saat ini: ',
+	'transferHint' => 'Mohon ketik email akun yang ingin menerima:',
+	'transferDisabled' => ' Anda tidak dapat mentransfer hosting ini selama tidak aktif atau ada pembelian domain yang terikat.',
 	'deleteTitle' => 'Hapus Hosting',
 	'deleteWarn' => 'PERHATIAN! Penghapusan hosting bersifat permanen dan kami tidak dapat mengembalikan aksi tersebut. Mohon teliti dengan cermat.',
 	'deleteHint' => 'Mohon ketik username hosting untuk menyetujui penghapusan hosting.',

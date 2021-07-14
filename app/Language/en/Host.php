@@ -92,6 +92,12 @@
 	'formatInvoiceAlt' => 'Payment for {0} Plan Host with domain {1}',
 	'formatInvoiceSum' => ' for {0} ',
 
+
+	'transferTitle' => 'Transfer Hosting',
+	'transferWarn' => 'ATTENTION! This Hosting Transfer aims to move hosting to another account. Once you transfer you will lose access to this hosting because it has changed hands!',
+	'transferCurHint' => 'Current owner:',
+	'transferHint' => 'Please enter the email of the account you wish to receive:',
+	'transferDisabled' => 'You cannot transfer this hosting during inactivity or a purchase of a bound domain.',
 	'deleteTitle' => 'Delete Host',
 	'deleteWarn' => 'ATTENTION! Host deletions are permanent and we can\'t reverse the action. Please be certain.',
 	'deleteHint' => 'Please enter your hosting username to agree to host deletion.',

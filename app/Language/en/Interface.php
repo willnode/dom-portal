@@ -63,6 +63,11 @@
 	'saveProfile' => 'Save Profile',
 	'deleteAccount' => 'Delete Account',
 
+	'deleteAccountTitle' => 'Deleting your Account',
+	'cantDeleteAccount' => 'You cannot delete this account if there is still hosting or a registered domain.',
+	'deleteAccountHint' => 'ATTENTION! Account deletion is permanent and we cannot reverse the action.',
+	'deleteAccountConf' => 'Please write "YES" to agree to account deletion.',
+
 	'back' => 'Back',
 	'save' => 'Save',
 	'change' => 'Change',

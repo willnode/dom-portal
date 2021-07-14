@@ -6,15 +6,14 @@
 <body>
 	<?= view('user/navbar') ?>
 	<div class="container text-center" style="max-width: 576px;">
-		<h1 class="mb-3">Menghapus Akun</h1>
+		<h1 class="mb-3"><?= lang('Interface.deleteAccountTitle') ?></h1>
 		<?php if ($ok) : ?>
 			<div class="card">
 				<div class="card-body">
 					<div class="alert alert-danger">
-						PERHATIAN! Penghapusan akun bersifat permanen dan
-						kami tidak dapat mengembalikan aksi tersebut.
+						<?= lang('Interface.deleteAccountHint') ?>
 					</div>
-					<p>Mohon ketik "YA" untuk menyetujui penghapusan akun.</p>
+					<p><?= lang('Interface.deleteAccountConf') ?></p>
 					<form method="POST">
 						<?= csrf_field() ?>
 						<input type="text" name="wordpass" class="form-control" required>
@@ -24,10 +23,10 @@
 			</div>
 		<?php else : ?>
 			<div class="alert alert-danger">
-				Anda tidak dapat menghapus akun ini jika masih ada hosting atau domain yang terdaftar.
+				<?= lang('Interface.cantDeleteAccount') ?>
 			</div>
 		<?php endif ?>
-		<a href="/user/profile" class="mt-3 btn btn-secondary">Kembali</a>
+		<a href="/user/profile" class="mt-3 btn btn-secondary"><?= lang('Interface.back') ?></a>
 	</div>
 
 </body>
