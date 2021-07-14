@@ -75,6 +75,7 @@
 	'renew' => 'Renew',
 	'upgrade' => 'Upgrade',
 	'extend' => 'Extend',
+	'topup' => 'Topup',
 	'processing' => 'Processing',
 	'cancel' => 'Batal',
 ];

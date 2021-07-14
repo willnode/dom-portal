@@ -16,12 +16,12 @@
       <?php else : ?>
         <div class="card m-auto">
           <form method="POST" class="card-body">
-            <p>Domain saat ini: <b><?= $host->domain ?></b></p>
+            <p><?= lang('Host.cnameCurHint') ?> <b><?= $host->domain ?></b></p>
             <p><?= lang('Host.cnameHint') ?></p>
             <?= csrf_field() ?>
             <?php $default = $host->username . $host->server->domain ?>
             <input type="text" class="form-control mb-3" name="cname" value="<?= $host->domain === $default ? '' : $host->domain ?>" placeholder="Kosongkan untuk default (<?= $default ?>)">
-            <p>Pastikan bahwa anda punya kepemilikan domain tersebut dan anda sudah mengarahkan DNS record dengan benar.</p>
+            <p><?= lang('Host.cnameWarn') ?></p>
             <input type="submit" value="<?= lang('Interface.save') ?>" class="btn btn-primary btn-block">
           </form>
         </div>

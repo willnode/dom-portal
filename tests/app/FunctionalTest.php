@@ -13,6 +13,8 @@ use App\Libraries\VirtualMinShell;
 use App\Models\DomainModel;
 use App\Models\HostModel;
 use App\Models\LoginModel;
+use CodeIgniter\Config\Services as ConfigServices;
+use CodeIgniter\HTTP\Request;
 use CodeIgniter\Test\CIDatabaseTestCase;
 use Config\Services;
 
@@ -325,7 +327,7 @@ class FunctionalTest extends CIDatabaseTestCase
         $user->host('upgrade', $host->id);
         /** @var Host */
         $host = (new HostModel())->find(1);
-        $this->assertEquals($host->purchase->metadata->price, 155000);
+        $this->assertEquals($host->purchase->metadata->price, 15.96);
     }
 
     public function testCreateHostWithDomain()
@@ -376,8 +378,8 @@ class FunctionalTest extends CIDatabaseTestCase
         $this->assertTrue($domain->status === 'pending' && $host->status === 'pending');
         $this->assertEquals($meta->toRawArray(), [
             'type' => "hosting",
-            'price' => 220000,
-            'price_unit' => "idr",
+            'price' => 17.02,
+            'price_unit' => "usd",
             'template' => "",
             'expiration' =>  $meta->expiration,
             'years' =>  1,
@@ -485,8 +487,8 @@ class FunctionalTest extends CIDatabaseTestCase
         $meta = $domain->purchase->metadata;
         $this->assertEquals($meta->toRawArray(), [
             'type' => "domain",
-            'price' => 165000,
-            'price_unit' => "idr",
+            'price' => 11.3,
+            'price_unit' => "usd",
             'expiration' =>  $meta->expiration,
             'years' =>  1,
             'domain' =>  'example.com',
@@ -564,8 +566,8 @@ class FunctionalTest extends CIDatabaseTestCase
         $meta = $domain->purchase->metadata;
         $this->assertEquals($meta->toRawArray(), [
             'type' => "domain",
-            'price' => 165000,
-            'price_unit' => "idr",
+            'price' => 11.3,
+            'price_unit' => "usd",
             'expiration' =>  $meta->expiration,
             'years' =>  1,
             'domain' =>  'example.com',
@@ -607,6 +609,8 @@ class FunctionalTest extends CIDatabaseTestCase
     {
         parent::setUp();
         $this->db->resetDataCache();
+        $r = Services::request();
+        Services::injectMock('request', $r);
     }
 
     protected function tearDown(): void

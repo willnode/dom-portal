@@ -18,17 +18,21 @@
             <div class="input-group my-3">
               <h3><?= ucfirst($domain->status) ?></h3>
             </div>
-            <?php $metadata = $current->metadata ?>
-            <?php $money = format_money($metadata->price, $metadata->price_unit) ?>
-            <p><?= $current->niceMessage . lang("Host.formatInvoiceSum", ["<b>$money</b>"])  ?></p>
+            <?php if ($current) : ?>
+              <?php $metadata = $current->metadata ?>
+              <?php $money = format_money($metadata->price, $metadata->price_unit) ?>
+              <p><?= $current->niceMessage . lang("Host.formatInvoiceSum", ["<b>$money</b>"])  ?></p>
+            <?php endif ?>
             <?php if ($domain->status === 'pending') : ?>
               <form method="post" class="my-2">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="pay">
                 <input type="submit" class="btn btn-primary" value="<?= lang('Host.finishPayment') ?>">
               </form>
-              <?php if ($metadata->price_unit === 'usd') : ?>
-                <p class="mt-2 alert alert-info"><small><i> Heads up! The merchant displayed in the PayPal confirmation page will be "Wello Soft", which means the fund will going directly to <a href="https://wellosoft.net" target="_blank">the creator of DOM Cloud</a>.</i></small></p>
+              <?php if ($current) : ?>
+                <?php if ($metadata->price_unit === 'usd') : ?>
+                  <p class="mt-2 alert alert-info"><small><i> Heads up! The merchant displayed in the PayPal confirmation page will be "Wello Soft", which means the fund will going directly to <a href="https://wellosoft.net" target="_blank">the creator of DOM Cloud</a>.</i></small></p>
+                <?php endif ?>
               <?php endif ?>
             <?php endif ?>
           </div>

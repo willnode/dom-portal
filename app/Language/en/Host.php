@@ -83,6 +83,7 @@
 	'renewHint' => 'This method replaces previous plan purchases. You are free to choose the type of plan you want to apply.',
 	'extendHint' => 'This method extends the host period. You can only extend the term within the same plan type.',
 	'upgradeHint' => 'This method combines the previous plan (does not increase the host period). You can only choose a higher plan with the benefit of getting a discount according to previous purchases.',
+	'topupHint' => 'This method only adds add-ons data from previous package purchases.',
 	'manageInvoice' => 'Manage Invoice',
 	'statusInvoice' => 'Current Invoice Status',
 	'cancelInvoice' => 'Cancel Invoice',
@@ -91,7 +92,6 @@
 	'formatInvoice' => 'Payment for {0} Plan Host',
 	'formatInvoiceAlt' => 'Payment for {0} Plan Host with domain {1}',
 	'formatInvoiceSum' => ' for {0} ',
-
 
 	'transferTitle' => 'Transfer Hosting',
 	'transferWarn' => 'ATTENTION! This Hosting Transfer aims to move hosting to another account. Once you transfer you will lose access to this hosting because it has changed hands!',
@@ -104,7 +104,9 @@
 	'deleteDisabled' => 'You cannot delete this host as long as it\'s not reached the expiry time.',
 	'cnameTitle' => 'Changing the Domain Name of Host',
 	'cnameDisabled' => 'Changing Domain hosting is not available if it has not been paid or is currently using a Freedom plan.',
+	'cnameCurHint' => 'Current domain name: ',
 	'cnameHint' => 'You can change the main domain name hosting here. Enter the new domain name:',
+	'cnameWarn' => 'Make sure that you have ownership of the domain and that you have routed the DNS records correctly.',
 	'renameTitle' => 'Changing the Host Username',
 	'renameDisabled' => 'Changing the host username is not available if you haven\'t paid or are currently using the Freedom plan.',
 	'renameHint' => 'You can change your hosting username here. Enter the new username:',

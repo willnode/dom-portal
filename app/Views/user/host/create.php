@@ -85,7 +85,7 @@
                 </div>
                 <p>
                   <small class="form-text text-muted">
-                    <a href="<?= lang('Interface.lang') == 'id' ? 'https://domcloud.id/price' : 'https://domcloud.id/en/price' ?>" target="_blank"><?= lang('Host.lookPacketDiff') ?></a>.
+                    <a href="<?= lang('Interface.lang') == 'id' ? 'https://domcloud.id/price' : 'https://domcloud.io/price' ?>" target="_blank"><?= lang('Host.lookPacketDiff') ?></a>.
                   </small>
                 </p>
                 <h3 class="card-title"><?= lang('Interface.domain') ?></h3>
@@ -102,7 +102,7 @@
                     <input class="form-control" id="free_cname" value="" disabled>
                     <small class="form-text text-muted">
                       <?= lang('Host.freeDomainHint') ?>
-                      <br><a href="https://panduan.domcloud.id/domain" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
+                      <br><a href="https://github.com/domcloud/domcloud-io#how-to-point-a-custom-domain-here" target="_blank" rel="noopener noreferrer"><?= lang('Interface.learnMore') ?></a>.
                     </small>
                   </div>
                 </fieldset>
