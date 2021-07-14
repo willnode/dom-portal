@@ -18,14 +18,9 @@
             <?php if ($current && $current->status === 'pending') : ?>
               <p>
                 <?php $metadata = $current->metadata ?>
-                <?php $money = format_money($metadata->price) ?>
+                <?php $money = format_money($metadata->price, $metadata->price_unit) ?>
                 <?php $plan = (new \App\Models\PlanModel())->find($metadata->plan)->alias ?>
-                <?= ($metadata->registrar ? lang('Host.formatInvoiceAlt', [
-                  "<b>$plan</b>",
-                  "<b>{$metadata->domain}</b>",
-                ]) : lang('Host.formatInvoice', [
-                  "<b>$plan</b>",
-                ])) . lang("Host.formatInvoiceSum", ["<b>$money</b>"]) ?>
+                <?= $current->niceMessage . lang("Host.formatInvoiceSum", ["<b>$money</b>"]) ?>
               </p>
 
               <form method="post" class="my-2">
@@ -34,7 +29,7 @@
                 <input type="submit" class="btn btn-primary" value="<?= lang('Host.finishPayment') ?>">
               </form>
 
-              <?php if (lang('Interface.code') === 'en') : ?>
+              <?php if ($metadata->price_unit === 'usd') : ?>
                 <p class="mt-2 alert alert-info"><small><i> Heads up! The merchant displayed in the PayPal confirmation page will be "Wello Soft", which means the fund will going directly to <a href="https://wellosoft.net" target="_blank">the creator of DOM Cloud</a>.</i></small></p>
               <?php endif ?>
               <p>

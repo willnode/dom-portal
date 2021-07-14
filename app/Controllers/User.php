@@ -584,10 +584,7 @@ class User extends BaseController
 					$pay = (new IpaymuGate())->createPayment(
 						$current->id,
 						$metadata->price,
-						lang('Host.formatInvoiceAlt', [
-							"$plan",
-							"$metadata->domain",
-						]) . lang("Host.formatInvoiceSum", ["$metadata->price"]),
+						$current->niceMessage,
 						$metadata->_challenge,
 						$host->login
 					);
@@ -600,10 +597,7 @@ class User extends BaseController
 					$pay = (new PayPalGate())->createPayment(
 						$current->id,
 						$metadata->price,
-						lang('Host.formatInvoiceAlt', [
-							"$plan",
-							"$metadata->domain",
-						]) . lang("Host.formatInvoiceSum", ["$metadata->price"]),
+						$current->niceMessage,
 						$metadata->_challenge,
 						$host->login
 					);

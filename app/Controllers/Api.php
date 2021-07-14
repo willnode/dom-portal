@@ -215,25 +215,15 @@ class Api extends BaseController
                     }
                 }
                 $purchase->metadata = $metadata;
-                (new PurchaseModel())->save($purchase); {
-                    // Email
-                    $plan = $plan->alias;
-                    $desc = ($metadata->registrar ? lang('Host.formatInvoiceAlt', [
-                        $plan,
-                        $metadata->domain,
-                    ]) : lang('Host.formatInvoice', [
-                        $plan,
-                    ]));
-
-                    sendEmail($login->email, lang('Email.receiptTitle'), view('email/receipt', [
-                        'name' => $login->name,
-                        'price' => format_money($metadata->price, $metadata->price_unit),
-                        'description' => $desc,
-                        'id' => $metadata->_id,
-                        'timestamp' => $metadata->_invoiced,
-                        'via' => $metadata->_via,
-                    ]));
-                }
+                (new PurchaseModel())->save($purchase);
+                sendEmail($login->email, lang('Email.receiptTitle'), view('email/receipt', [
+                    'name' => $login->name,
+                    'price' => format_money($metadata->price, $metadata->price_unit),
+                    'description' => $purchase->niceMessage,
+                    'id' => $metadata->_id,
+                    'timestamp' => $metadata->_invoiced,
+                    'via' => $metadata->_via,
+                ]));
                 return "OK";
             }
         }
