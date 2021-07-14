@@ -87,7 +87,7 @@
               </div>
               <div class="row g-0 mb-3">
                 <div class="col-12 col-lg-3">
-                  <h4 class="my-2">Bandwidth</h4>
+                  <h4 class="my-2">Data Transfer</h4>
                 </div>
                 <div class="col-12 col-lg-9">
                   <div class="progress justify-content-end my-3">
@@ -155,7 +155,7 @@
           data: {
             labels: Object.keys(data).map(x => x.substring(5, 10)),
             datasets: [{
-              label: 'Bandwidth (MB)',
+              label: 'Data Transfer (MB)',
               backgroundColor: 'rgba(255,0,0,0.4)',
               borderColor: 'red',
               borderWidth: 1,

@@ -50,7 +50,7 @@
 	'preparingHint' => 'Host anda sedang disiapkan. Tunggulah beberapa menit kemudian.',
 	'createLimitVerEmail' => 'Maaf, limit jumlah hosting anda tercapai, anda harus mengkonfirmasi email terlebih dahulu',
 	'createLimitUpgrade' => 'Maaf, limit jumlah hosting anda tercapai, paling tidak anda harus punya hosting dengan paket {0} sebelum lanjut.',
-	'bandwidthLegend' => 'Penggunaan Harian Bandwidth dalam MB',
+	'bandwidthLegend' => 'Penggunaan Harian Data Transfer dalam MB',
 	'waitForDataHint' => 'Data penggunaan hosting akan muncul disini. Tunggulah satu jam kemudian agar datanya muncul.',
 	'waitingDeployHint' => 'Deployment task ini masih belum dimulai.',
 

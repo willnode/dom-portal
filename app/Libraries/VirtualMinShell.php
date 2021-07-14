@@ -100,7 +100,7 @@ class VirtualMinShell
 	{
 		$bw_bytes = floor($bw_mb) * 1024 * 1024;
 		$cmd = "program=modify-domain&domain=$domain&bw=$bw_bytes";
-		return $this->execute($this->wrapWget($cmd, $server), " Adjust $domain Bandwidth to $bw_bytes bytes ");
+		return $this->execute($this->wrapWget($cmd, $server), " Adjust $domain Data Transfer to $bw_bytes bytes ");
 	}
 	public function createDatabase($name, $type, $domain, $server)
 	{

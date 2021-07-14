@@ -102,7 +102,7 @@ class CronJob extends BaseCommand
                         ]));
                     } else if ($overBw) {
                         // Disable
-                        $vm->disableHost($host->domain, $server->alias, 'Running out Bandwidth');
+                        $vm->disableHost($host->domain, $server->alias, 'Running out Data Transfer');
                         $host->status = 'suspended';
                         sendEmail($login->email, lang('Email.suspendTitle'), view('email/suspend', [
                             'name' => $login->name,

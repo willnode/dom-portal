@@ -7,7 +7,7 @@
     'suspendTitle' => 'Your Hosting is Suspended',
     'overDisk' => 'Running out of Disk Space',
     'overDiskHint' => 'You can open the website\'s save file and then delete some of the larger files. Hosting will be reactivated automatically when there is enough space in the next hour.',
-    'overBw' => 'Running out of Bandwidth',
+    'overBw' => 'Running out of Data Transfer',
     'overBwHint' => 'You can purchase add-ons to cover bandwidth shortages. Hosting will be active back when bandwidth is available again',
     'expired' => 'Host is expired',
     'expiredHint' => 'You can extend the expiration date now to avoid being subject to permanent data deletion in the coming weeks.'

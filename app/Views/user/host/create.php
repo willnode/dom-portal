@@ -198,7 +198,7 @@
                     <div class="ms-auto" id="specdisk">- MiB</div>
                   </div>
                   <div class="col">
-                    <h6>Bandwidth</h6>
+                    <h6>Data Transfer</h6>
                     <div class="ms-auto" id="specbwt">- GiB</div>
                   </div>
                   <div class="col">

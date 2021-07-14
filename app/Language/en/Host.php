@@ -50,7 +50,7 @@
 	'preparingHint' => 'Your host is being set up. Wait a few minutes later.',
 	'createLimitVerEmail' => 'Sorry, the limit for the number of your hosting has been reached, you must confirm your email first',
 	'createLimitUpgrade' => 'Sorry, the limit for the number of your hosting has been reached, at least you must have hosting with package {0} before continuing.',
-	'bandwidthLegend' => 'Daily Usage of Bandwidth in MB',
+	'bandwidthLegend' => 'Daily Usage of Data Transfer in MB',
 	'waitForDataHint' => 'Hosting usage data will appear here. Wait an hour later for the data to appear.',
 	'waitingDeployHint' => 'This deployment task is not running yet.',
 
