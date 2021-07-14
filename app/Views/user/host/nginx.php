@@ -31,7 +31,7 @@
                 </a>
               </p>
               <?= csrf_field() ?>
-              <textarea class="form-control font-monospace" name="template" id="template" cols="30" rows="10" required></textarea>
+              <textarea data-enable-grammarly="false" class="form-control font-monospace" name="template" id="template" cols="30" rows="10" required></textarea>
               <input type="submit" value="Save" class="btn btn-primary my-1">
             </form>
           </div>

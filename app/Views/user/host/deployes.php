@@ -30,7 +30,7 @@
             <summary><?= humanize($deploy->updated_at) ?></summary>
             <div class="row my-2">
               <div class="col-md-6">
-                <textarea name="template" class="form-control font-monospace h-100" style="min-height: 200px;"><?= $deploy->template ?></textarea>
+                <textarea data-enable-grammarly="false" name="template" class="form-control font-monospace h-100" style="min-height: 200px;"><?= $deploy->template ?></textarea>
               </div>
               <div class="col-md-6 bg-dark text-white">
                 <?php if ($deploy->result) : ?>
@@ -58,7 +58,7 @@
         </div>
         <div class="modal-body">
           <?= csrf_field() ?>
-          <textarea name="template" id="template" class="form-control font-monospace h-100" style="min-height: 200px;"></textarea>
+          <textarea data-enable-grammarly="false" name="template" id="template" class="form-control font-monospace h-100" style="min-height: 200px;"></textarea>
           <a href="https://github.com/domcloud/dom-templates" target="_blank" rel="noopener noreferrer">Deploy Config Reference</a>
         </div>
         <div class="modal-footer">
