@@ -282,6 +282,7 @@ class Api extends BaseController
         $r = $this->request;
         if ($r->getMethod() === 'post') {
             $body = json_decode($this->request->getBody());
+            log_message('notice', $this->request->getBody());
             if (($body->event_type ?? '') == 'CHECKOUT.ORDER.APPROVED' && isset($body->resource->purchase_units[0])) {
                 $r->setGlobal('get', $get_data = [
                     'id' => $body->resource->purchase_units[0]->reference_id,

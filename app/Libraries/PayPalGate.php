@@ -7,7 +7,9 @@ use Config\Services;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
+use PayPalCheckoutSdk\Orders\OrdersAuthorizeRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
+use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 use PayPalHttp\HttpException;
 
 /**
@@ -43,6 +45,38 @@ class PayPalGate
             ]
         ];
 
+        try {
+            // Call API with your client and get a response for your call
+            return $client->execute($request)->result;
+        } catch (HttpException $ex) {
+            echo $ex->statusCode;
+            print_r($ex->getMessage());
+        }
+    }
+
+    public function getPayment($id)
+    {
+        $key = Services::request()->config->paypalClient;
+        $secret = Services::request()->config->paypalSecret;
+        $environment = ENVIRONMENT === 'production' ? new ProductionEnvironment($key, $secret) : new SandboxEnvironment($key, $secret);
+        $client = new PayPalHttpClient($environment);
+        $request = new OrdersGetRequest($id);
+        try {
+            // Call API with your client and get a response for your call
+            return $client->execute($request)->result;
+        } catch (HttpException $ex) {
+            echo $ex->statusCode;
+            print_r($ex->getMessage());
+        }
+    }
+
+    public function authorizePayment($id)
+    {
+        $key = Services::request()->config->paypalClient;
+        $secret = Services::request()->config->paypalSecret;
+        $environment = ENVIRONMENT === 'production' ? new ProductionEnvironment($key, $secret) : new SandboxEnvironment($key, $secret);
+        $client = new PayPalHttpClient($environment);
+        $request = new OrdersAuthorizeRequest($id);
         try {
             // Call API with your client and get a response for your call
             return $client->execute($request)->result;
