@@ -340,9 +340,9 @@
         var exp = mode === 'new' ? new Date(Date.now() + 1000 * 86400 * 365 * years) : (
           mode === 'extend' ? new Date(Number(oldexp) + 1000 * 86400 * 365 * years) : oldexp);
 
-
         if (currency === 'usd') {
-          tip += Math.round((unit * years - cashback + addons * bww + scheme) * 0.044 * 100) / 100 // paypal fee
+          var value = unit * years - cashback + addons * bww + scheme;
+          tip = Math.round((value + tip) / (1 - 0.044) * 100) / 100 - value; // paypal fee
         }
 
         // Show values

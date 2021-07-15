@@ -61,9 +61,10 @@ function sanitize_shell_arg_dir($dir)
     }, explode('/', trim($dir, ' /'))));
 }
 
-function get_gravatar( $email, $s = 80, $d = 'mp', $r = 'g' ) {
+function get_gravatar($email, $s = 80, $d = 'mp', $r = 'g')
+{
     $url = 'https://www.gravatar.com/avatar/';
-    $url .= md5( strtolower( trim( $email ) ) );
+    $url .= md5(strtolower(trim($email)));
     $url .= "?s=$s&d=$d&r=$r";
     return $url;
 }
@@ -120,8 +121,7 @@ function humanize(Time $time)
 
 function sendEmail(string $to, string $title, string $body)
 {
-    if (ENVIRONMENT !== 'testing')
-    {
+    if (ENVIRONMENT !== 'testing') {
         $email = Services::email();
         $email->setTo($to);
         $email->setSubject($title);
@@ -130,5 +130,17 @@ function sendEmail(string $to, string $title, string $body)
             echo $email->printDebugger();
             die();
         }
+    }
+}
+
+function calculateTip($metadata)
+{
+    switch ($metadata->price_unit) {
+        case 'usd':
+            return round(($metadata->price + 0.3) / (1 - 0.044), 2) - $metadata->price;
+        case 'idr':
+            return 5000;
+        default:
+            return 0;
     }
 }

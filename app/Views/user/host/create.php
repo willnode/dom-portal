@@ -387,7 +387,8 @@
         }
 
         if (currency === 'usd') {
-          tip += Math.round((unit * years + addons * bww + scheme) * 0.044 * 100) / 100 // paypal fee
+          var value = unit * years + addons * bww + scheme;
+          tip = Math.round((value + tip) / (1 - 0.044) * 100) / 100 - value // paypal fee
         }
 
 
@@ -415,7 +416,7 @@
         $('#wrong-notice').toggleClass('d-none', unit == 0);
         $('#specdisk').text(plan['disk'] + ' MiB');
         $('#specbwt').text(plan['net'] * Math.max(years, 1) + ' GiB');
-        $('#specbwb').text(plan['net'] / 12 * Math.floor(years) + addons + ' GiB');
+        $('#specbwb').text(plan['net'] / 4 * Math.floor(years) + addons + ' GiB');
         $('#outexp').text(exp.toISOString().substr(0, 10));
       }
     </script>

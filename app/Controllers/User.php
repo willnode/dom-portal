@@ -280,15 +280,15 @@ class User extends BaseController
 							"_status" => null,
 						]);
 						$metadata->price += $plan->price_local * $r->getPost('years');
+						$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
 						/** @var HostCoupon $coupon */
 						if ($coupon) {
 							$metadata->price -= min($coupon->max, max($coupon->min, $coupon->discount * $plan->price_local));
 							$coupon->redeems--;
 							(new HostCouponModel())->save($coupon);
 						} else {
-							$metadata->price += ['idr' => 5000, 'usd' => round($metadata->price * 0.044 + 0.3, 2)][$metadata->price_unit];
+							$metadata->price += calculateTip($metadata);
 						}
-						$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
 						$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
 						$hosting->expiry_at = $metadata->expiration;
 						$hosting->status = 'pending';
@@ -410,7 +410,7 @@ class User extends BaseController
 				$metadata->price = ($plan->price_local - $host->plan->price_local) * $metadata->years;
 			}
 			$metadata->price += ['idr' => 1000, 'usd' => 0.1][$metadata->price_unit] * $metadata->addons;
-			$metadata->price += ['idr' => 5000, 'usd' => round($metadata->price * 0.044 + 0.3, 2)][$metadata->price_unit];
+			$metadata->price += calculateTip($metadata);
 			$payment->metadata = $metadata;
 			$payment->host_id = $host->id;
 			if ($mode === 'new')
@@ -745,7 +745,7 @@ class User extends BaseController
 					"_invoiced" => null,
 					"_status" => null,
 				]);
-				$metadata->price += ['idr' => 5000, 'usd' => round($metadata->price * 0.044 + 0.3, 2)][$metadata->price_unit];
+				$metadata->price += calculateTip($metadata);
 				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
 				if ($newdomain = $this->processNewDomainTransaction($metadata, $r->getPost('domain'))) {
 					if ($newdomain instanceof Domain) {
@@ -786,7 +786,7 @@ class User extends BaseController
 					"_invoiced" => null,
 					"_status" => null,
 				]);
-				$metadata->price += ['idr' => 5000, 'usd' => round($metadata->price * 0.044 + 0.3, 2)][$metadata->price_unit];
+				$metadata->price += calculateTip($metadata);
 				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years"));
 				if ($newdomain = $this->processTransferDomainTransaction($metadata, $r->getPost('domain'))) {
 					if ($newdomain instanceof Domain) {

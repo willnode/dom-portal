@@ -121,7 +121,8 @@
       var price = schdata[`renew_${currency}`] * (years);
 
       if (currency === 'usd') {
-        tip += Math.round(price * 0.044 * 100) / 100 // paypal fee
+        var value = price;
+        tip = Math.round((value + tip) / (1 - 0.044) * 100) / 100 - value; // paypal fee
       }
 
       $('#domainname').text(activedomain && activedomain.domain);

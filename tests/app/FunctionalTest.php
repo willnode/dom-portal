@@ -327,7 +327,7 @@ class FunctionalTest extends CIDatabaseTestCase
         $user->host('upgrade', $host->id);
         /** @var Host */
         $host = (new HostModel())->find(1);
-        $this->assertEquals($host->purchase->metadata->price, 15.96);
+        $this->assertEquals($host->purchase->metadata->price, 16);
     }
 
     public function testCreateHostWithDomain()
@@ -378,7 +378,7 @@ class FunctionalTest extends CIDatabaseTestCase
         $this->assertTrue($domain->status === 'pending' && $host->status === 'pending');
         $this->assertEquals($meta->toRawArray(), [
             'type' => "hosting",
-            'price' => 17.02,
+            'price' => 17.07,
             'price_unit' => "usd",
             'template' => "",
             'expiration' =>  $meta->expiration,
@@ -487,7 +487,7 @@ class FunctionalTest extends CIDatabaseTestCase
         $meta = $domain->purchase->metadata;
         $this->assertEquals($meta->toRawArray(), [
             'type' => "domain",
-            'price' => 11.3,
+            'price' => 11.31,
             'price_unit' => "usd",
             'expiration' =>  $meta->expiration,
             'years' =>  1,
@@ -566,7 +566,7 @@ class FunctionalTest extends CIDatabaseTestCase
         $meta = $domain->purchase->metadata;
         $this->assertEquals($meta->toRawArray(), [
             'type' => "domain",
-            'price' => 11.3,
+            'price' => 11.31,
             'price_unit' => "usd",
             'expiration' =>  $meta->expiration,
             'years' =>  1,

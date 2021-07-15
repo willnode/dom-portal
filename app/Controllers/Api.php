@@ -6,6 +6,7 @@ use App\Entities\Plan;
 use App\Entities\Purchase;
 use App\Libraries\DigitalRegistra;
 use App\Libraries\GitHubOAuth;
+use App\Libraries\PayPalGate;
 use App\Libraries\Recaptha;
 use App\Libraries\TemplateDeployer;
 use App\Libraries\TransferWiseGate;
@@ -284,23 +285,29 @@ class Api extends BaseController
             $body = json_decode($this->request->getBody());
             log_message('notice', $this->request->getBody());
             if (($body->event_type ?? '') == 'CHECKOUT.ORDER.APPROVED' && isset($body->resource->purchase_units[0])) {
-                $r->setGlobal('get', $get_data = [
-                    'id' => $body->resource->purchase_units[0]->reference_id,
-                    'challenge' => $body->resource->purchase_units[0]->custom_id,
-                    'secret' => $secret,
-                ]);
-                $r->setGlobal('post', $post_data = [
-                    'trx_id' => $body->id,
-                    'via' => 'PayPal',
-                    'status' => 'berhasil',
-                ]);
-                $r->setGlobal('request', array_merge($get_data, $post_data));
-                return $this->notify();
-            } else {
-                // further inspection
-                log_message('notice', $this->request->getBody());
+                try {
+                    $r->setGlobal('get', $get_data = [
+                        'id' => $body->resource->purchase_units[0]->reference_id,
+                        'challenge' => $body->resource->purchase_units[0]->custom_id,
+                        'secret' => $secret,
+                    ]);
+                    $r->setGlobal('post', $post_data = [
+                        'trx_id' => $body->resource->id,
+                        'via' => 'PayPal',
+                        'status' => 'berhasil',
+                    ]);
+                    $r->setGlobal('request', array_merge($get_data, $post_data));
+                    return $this->notify();
+                } catch (\Throwable $th) {
+                    log_message('notice', $th->__toString());
+                    return 'ok';
+                } finally {
+                    // approve
+                    (new PayPalGate)->capturePayment($body->resource->id);
+                }
             }
         }
         return 'OK';
     }
+
 }
