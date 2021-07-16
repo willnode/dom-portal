@@ -19,7 +19,6 @@
               <p>
                 <?php $metadata = $current->metadata ?>
                 <?php $money = format_money($metadata->price, $metadata->price_unit) ?>
-                <?php $plan = (new \App\Models\PlanModel())->find($metadata->plan)->alias ?>
                 <?= $current->niceMessage . lang("Host.formatInvoiceSum", ["<b>$money</b>"]) ?>
               </p>
 
@@ -31,6 +30,8 @@
 
               <?php if ($metadata->price_unit === 'usd') : ?>
                 <p class="mt-2 alert alert-info"><small><i> Heads up! The merchant displayed in the PayPal confirmation page will be "Wello Soft", which means the fund will going directly to <a href="https://wellosoft.net" target="_blank">the creator of DOM Cloud</a>.</i></small></p>
+              <?php elseif ($metadata->price_unit === 'idr') : ?>
+                <p class="mt-2 alert alert-info"><small><i> Perhatian! Anda akan dialihkan ke pihak yang mengurusi pembayaran iPaymu. Silahkan menggunakan Virtual Account apabila ingin membayar menggunakan mobile banking (BRI/BNI/Mandiri), Convenience Store untuk membayar menggunakai gerai terdekat (Indomart/Alfamart), QRIS untuk menggunakan Scan QR Code ke payment digital (OVO/ShopeePay/GoPay/Dana/LinkAja). </i></small></p>
               <?php endif ?>
               <p>
                 <?= lang('Host.cancelInvoiceHint') ?>
