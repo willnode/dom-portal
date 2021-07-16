@@ -300,7 +300,7 @@ class User extends BaseController
 				} else {
 					// Free plan. Just create
 					$hosting->status = ($data['template'] ?? '') ? 'starting' : 'active';
-					$hosting->expiry_at = date('Y-m-d H:i:s', strtotime("+2 months", \time()));
+					$hosting->expiry_at = date('Y-m-d H:i:s', strtotime("+60 days", \time()));
 					$hosting->domain = $hosting->username . $server->domain;
 					$vm = new VirtualMinShell();
 					$vm->createHost(

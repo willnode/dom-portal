@@ -212,7 +212,7 @@
               </div>
             </div>
             <p class="text-end d-none" id="wrong-notice">
-             <i>Wrong currency? <a href="/user/profile">Change your language.</a></i>
+              <i>Wrong currency? <a href="/user/profile">Change your language.</a></i>
             </p>
           </div>
         </div>
@@ -364,6 +364,7 @@
 
         // Alter for free
         if (unit == 0) {
+          exp = new Date(Date.now() + 1000 * 86400 * 60);
           dommod = form.domain_mode.value = 'free';
           addons = 0;
           years = 1 / 6;
