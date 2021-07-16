@@ -402,7 +402,7 @@ class User extends BaseController
 				$metadata->price = $plan->price_local * $metadata->years;
 			} else if ($mode === 'extend') {
 				$metadata->expiration = date('Y-m-d H:i:s', strtotime("+$metadata->years years", strtotime($host->expiry_at)));
-				$metadata->price = $host->purchase->price_local *  $metadata->years;
+				$metadata->price = $host->plan->price_local *  $metadata->years;
 				// Todo: also expand domain
 			} else if ($mode === 'upgrade') {
 				// The years need to be revamped
