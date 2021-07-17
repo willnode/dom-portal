@@ -157,6 +157,8 @@ class TemplateDeployer
                     } else {
                         $directory .= " --depth 1"; // faster clone
                     }
+                } else if (substr_compare($tpath, '.zip', -strlen('.zip')) === 0) {
+                    // already a zip file
                 } else if ($tdomain === 'github.com' && preg_match('/^\/([-_\w]+)\/([-_\w]+)/', $tpath, $matches)) {
                     $thash = (strpos($thash, '#') === 0 ? substr($thash, 1) : $thash) ?: 'master';
                     $path = "https://github.com/$matches[1]/$matches[2]/archive/$thash.zip";
